@@ -116,12 +116,12 @@ fun ServiceRQP() {
                     .width(185.dp)
                     .height(185.dp)
                     .graphicsLayer(
-                        translationX = -25f,  // Adjust values to position the box
-                        translationY = 100f   // Adjust values to position the box
+                        translationX = -25f,
+                        translationY = 100f
                     )
                     .background(Color.Transparent)
             ) {
-                // Inner white box with content
+
                 Box(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
@@ -130,7 +130,7 @@ fun ServiceRQP() {
                         .background(colorChart, shape = RoundedCornerShape(16.dp))
                         .padding(vertical = 10.dp, horizontal = 10.dp)
                 ) {
-                    // Box with the dog image
+
                     Box(
                         modifier = Modifier
                             .width(155.dp)

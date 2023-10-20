@@ -126,14 +126,13 @@ fun LoginResQPet() {
 
                     Spacer(modifier = Modifier.height(10.dp))
 
-                    // Campo de texto para el correo electrónico
                     OutlinedTextField(
                         value = email,
                         onValueChange = { email = it },
                         label = { Text("Email") },
                         leadingIcon = { Icon(Icons.Default.Email, contentDescription = "Email Icon", tint = colorIcon) },
                         placeholder = { Text("Enter your email") },
-                        singleLine = true, // Para mejor visualización y manejo.
+                        singleLine = true,
                         colors = TextFieldDefaults.textFieldColors(
                             containerColor = colorBackground,
                             focusedIndicatorColor = colorBackground,
@@ -142,10 +141,8 @@ fun LoginResQPet() {
                         )
                     )
 
-                    // Espaciador
                     Spacer(modifier = Modifier.height(15.dp))
 
-                    // Campo de texto para la contraseña
                     OutlinedTextField(
                         value = password,
                         onValueChange = { password = it },
@@ -168,7 +165,6 @@ fun LoginResQPet() {
                     )
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    // Botón de "Login"
                     Button(
                         onClick = {
                             /* no hace nada */

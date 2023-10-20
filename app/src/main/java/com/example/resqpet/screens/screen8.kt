@@ -109,12 +109,12 @@ fun CharityRQP() {
                     .width(185.dp)
                     .height(185.dp)
                     .graphicsLayer(
-                        translationX = -25f,  // Adjust values to position the box
-                        translationY = 100f   // Adjust values to position the box
+                        translationX = -25f,
+                        translationY = 100f
                     )
                     .background(Color.Transparent)
             ) {
-                // Inner white box with content
+
                 Box(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
@@ -123,7 +123,7 @@ fun CharityRQP() {
                         .background(colorChart, shape = RoundedCornerShape(16.dp))
                         .padding(vertical = 10.dp, horizontal = 10.dp)
                 ) {
-                    // Box with the dog image
+
                     Box(
                         modifier = Modifier
                             .width(155.dp)
@@ -191,7 +191,7 @@ fun CharityRQP() {
                                 )
                             },
                             placeholder = { Text("Enter your name") },
-                            singleLine = true, // Para mejor visualización y manejo.
+                            singleLine = true,
                             colors = TextFieldDefaults.textFieldColors(
                                 containerColor = colorBackground,
                                 focusedIndicatorColor = colorBackground,
@@ -321,7 +321,7 @@ fun CharityRQP() {
                                     )
                                 },
                                 placeholder = { Text("Enter the foundation phone") },
-                                singleLine = true, // Para mejor visualización y manejo.
+                                singleLine = true,
                                 colors = TextFieldDefaults.textFieldColors(
                                     containerColor = colorBackground,
                                     focusedIndicatorColor = colorBackground,
@@ -348,7 +348,7 @@ fun CharityRQP() {
                                     )
                                 },
                                 placeholder = { Text("Enter the foundation address") },
-                                singleLine = true, // Para mejor visualización y manejo.
+                                singleLine = true,
                                 colors = TextFieldDefaults.textFieldColors(
                                     containerColor = colorBackground,
                                     focusedIndicatorColor = colorBackground,
@@ -375,7 +375,7 @@ fun CharityRQP() {
                                     )
                                 },
                                 placeholder = { Text("Enter your phone") },
-                                singleLine = true, // Para mejor visualización y manejo.
+                                singleLine = true,
                                 colors = TextFieldDefaults.textFieldColors(
                                     containerColor = colorBackground,
                                     focusedIndicatorColor = colorBackground,
@@ -402,7 +402,7 @@ fun CharityRQP() {
                                     )
                                 },
                                 placeholder = { Text("Enter your address") },
-                                singleLine = true, // Para mejor visualización y manejo.
+                                singleLine = true,
                                 colors = TextFieldDefaults.textFieldColors(
                                     containerColor = colorBackground,
                                     focusedIndicatorColor = colorBackground,

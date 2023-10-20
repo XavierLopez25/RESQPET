@@ -33,11 +33,11 @@ import androidx.compose.ui.unit.dp
 import com.example.resqpet.R
 
 data class Pet(
-    val imageResId: Int, // resource ID de la imagen de la mascota
-    val name: String, // nombre de la mascota
-    val age: String, // edad de la mascota
-    val gender: String, // sexo de la mascota
-    val breed: String // raza de la mascota
+    val imageResId: Int,
+    val name: String,
+    val age: String,
+    val gender: String,
+    val breed: String
 )
 @Composable
 fun PetCard(pet: Pet, modifier: Modifier = Modifier) {
@@ -46,21 +46,21 @@ fun PetCard(pet: Pet, modifier: Modifier = Modifier) {
             .fillMaxWidth()
             .padding(8.dp)
             .height(100.dp),
-        shape = RoundedCornerShape(30.dp), // Esquinas redondeadas
+        shape = RoundedCornerShape(30.dp),
     ) {
         Row(
-            modifier = Modifier.background(Color(0xFF2A5D71)), // Color de fondo azul
+            modifier = Modifier.background(Color(0xFF2A5D71)),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
             Image(
                 painter = painterResource(id = pet.imageResId),
-                contentDescription = "${pet.name}",
+                contentDescription = pet.name,
                 modifier = Modifier
-                    .size(100.dp) // Ajusta el tamaño como prefieras
-                    .clip(RoundedCornerShape(20.dp)) // Esquinas redondeadas para la imagen
+                    .size(100.dp)
+                    .clip(RoundedCornerShape(20.dp))
             )
-            Spacer(modifier = Modifier.width(8.dp)) // Espaciado entre la imagen y el texto
+            Spacer(modifier = Modifier.width(8.dp))
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -72,9 +72,9 @@ fun PetCard(pet: Pet, modifier: Modifier = Modifier) {
                     text = pet.name,
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFFF4F2DE) // Color de texto en blanco
+                    color = Color(0xFFF4F2DE)
                 )
-                Spacer(modifier = Modifier.height(4.dp)) // Espaciado entre el nombre y la descripción
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(text = "${pet.age}  |  ${pet.gender}  |  ${pet.breed}", color = Color(0xFFF4F2DE), style = MaterialTheme.typography.bodySmall)
             }
         }

@@ -16,7 +16,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
@@ -128,7 +127,6 @@ fun RegisterResQPet() {
 
                     Spacer(modifier = Modifier.height(10.dp))
 
-                    // Campo de texto para el correo electrónico
                     OutlinedTextField(
                         value = email,
                         onValueChange = { email = it },
@@ -141,7 +139,7 @@ fun RegisterResQPet() {
                             )
                         },
                         placeholder = { Text("Enter your username") },
-                        singleLine = true, // Para mejor visualización y manejo.
+                        singleLine = true,
                         colors = TextFieldDefaults.textFieldColors(
                             containerColor = colorBackground,
                             focusedIndicatorColor = colorBackground,
@@ -151,7 +149,7 @@ fun RegisterResQPet() {
                     )
 
                     Spacer(modifier = Modifier.height(10.dp))
-                    // Campo de texto para el correo electrónico
+
                     OutlinedTextField(
                         value = email,
                         onValueChange = { email = it },
@@ -164,7 +162,7 @@ fun RegisterResQPet() {
                             )
                         },
                         placeholder = { Text("Enter your email") },
-                        singleLine = true, // Para mejor visualización y manejo.
+                        singleLine = true,
                         colors = TextFieldDefaults.textFieldColors(
                             containerColor = colorBackground,
                             focusedIndicatorColor = colorBackground,
@@ -174,7 +172,6 @@ fun RegisterResQPet() {
                     )
 
                     Spacer(modifier = Modifier.height(10.dp))
-                    // Campo de texto para la contraseña
                     OutlinedTextField(
                         value = password,
                         onValueChange = { password = it },
@@ -202,7 +199,6 @@ fun RegisterResQPet() {
                     )
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    // Botón de "Login"
                     Button(
                         onClick = {
                             /* no hace nada */

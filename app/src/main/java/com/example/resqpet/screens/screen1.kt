@@ -52,7 +52,7 @@ fun ResqpetScreen() {
             painter = painterResource(id = R.drawable.house),
             contentDescription = "house image",
             modifier = Modifier
-                .size(230.dp)  // haz la imagen más grande; ajusta según tus necesidades
+                .size(230.dp)
                 .padding(top = 0.dp, start = 0.dp)
                 .align(Alignment.TopStart).offset((-55).dp,(-40).dp)
 
@@ -76,7 +76,6 @@ fun ResqpetScreen() {
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            // Texto "RESQPET"
             Text(
                 text = "RESQPET",
                 color = colorText,
@@ -87,7 +86,6 @@ fun ResqpetScreen() {
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            // Texto "FINDING HOPE, FINDING HOME"
             Text(
                 text = "FINDING HOPE, FINDING HOME",
                 color = colorText,
@@ -128,7 +126,6 @@ fun ResqpetScreen() {
 
             }
 
-            // Botón Login
             Button(
                 onClick = { /* Acción para Login */ },
                 colors = ButtonDefaults.buttonColors(colorButtons),
