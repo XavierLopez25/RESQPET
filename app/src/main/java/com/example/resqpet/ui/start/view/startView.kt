@@ -1,4 +1,4 @@
-package com.example.resqpet.screens
+package com.example.resqpet.ui.start.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -26,9 +26,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.resqpet.R
+import com.example.resqpet.ui.start.viewmodel.ResqpetViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun ResqpetScreen() {
+
+    val viewModel: ResqpetViewModel = viewModel()
 
     val colorBackground = Color(0xFFA1CCD1)
     val colorButtons = Color(0xFFF4F2DE)
@@ -39,7 +43,7 @@ fun ResqpetScreen() {
             .fillMaxSize()
             .background(colorBackground),
 
-    ) {
+        ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -48,15 +52,15 @@ fun ResqpetScreen() {
                 .align(Alignment.TopCenter)
         ){
 
-        Image(
-            painter = painterResource(id = R.drawable.house),
-            contentDescription = "house image",
-            modifier = Modifier
-                .size(230.dp)
-                .padding(top = 0.dp, start = 0.dp)
-                .align(Alignment.TopStart).offset((-55).dp,(-40).dp)
+            Image(
+                painter = painterResource(id = R.drawable.house),
+                contentDescription = "house image",
+                modifier = Modifier
+                    .size(230.dp)
+                    .padding(top = 0.dp, start = 0.dp)
+                    .align(Alignment.TopStart).offset((-55).dp,(-40).dp)
 
-        )}
+            )}
 
         Column(
             modifier = Modifier
@@ -113,7 +117,7 @@ fun ResqpetScreen() {
                 )}
             // Botón Register
             Button(
-                onClick = { /* Acción para Register */ },
+                onClick = { viewModel.onRegisterClicked() },
                 colors = ButtonDefaults.buttonColors(colorButtons),
                 modifier = Modifier
                     .fillMaxWidth(0.5f)
@@ -127,7 +131,7 @@ fun ResqpetScreen() {
             }
 
             Button(
-                onClick = { /* Acción para Login */ },
+                onClick = { viewModel.onLoginClicked() },
                 colors = ButtonDefaults.buttonColors(colorButtons),
                 modifier = Modifier
                     .fillMaxWidth(0.5f)
@@ -152,5 +156,3 @@ fun ResqpetScreen() {
         )
     }
 }
-
-
