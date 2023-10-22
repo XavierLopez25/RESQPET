@@ -1,15 +1,20 @@
-package com.example.resqpet.screens
+package com.example.resqpet.ui.mainmenu.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absoluteOffset
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -21,39 +26,56 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material3.Card
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.filled.LocalHospital
+import androidx.compose.material.icons.filled.ManageAccounts
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.resqpet.R
+import com.example.resqpet.ui.mainmenu.viewmodel.CardItem
+import com.example.resqpet.ui.mainmenu.viewmodel.MainMenuViewModel
 
 val primaryColor = Color(0xFF2A5D71)
 val backgroundColor = Color(0xFFF4F2DE)
 val secondaryColor = Color(0xFFA1CCD1)
 val textColor = Color.White
+
 @Preview
 @Composable
-fun PetAppUI() {
+fun MainMenuResQPet() {
 
+    val viewModel: MainMenuViewModel = viewModel()
+    val posts = viewModel.posts.observeAsState(initial = emptyList())
 
-    var selectedItem by remember { mutableStateOf(0) }
+    var selectedItem by remember { mutableIntStateOf(0) }
     listOf("Home", "Search", "Add", "Health", "Profile")
+
+    viewModel.fetchPosts()
 
     Column (modifier = Modifier.fillMaxSize()){
         Box(
@@ -168,13 +190,13 @@ fun PetAppUI() {
             }
         }
 
-        PostsBar(Modifier.weight(0.5f))
+        PostsBar(Modifier.weight(0.5f), posts)
     }
 
 }
 
 @Composable
-fun PostsBar(modifier: Modifier = Modifier) {
+fun PostsBar(modifier: Modifier = Modifier, posts: State<List<CardItem>>) {
     Box(
         modifier = modifier
             .background(primaryColor)
@@ -202,21 +224,13 @@ fun PostsBar(modifier: Modifier = Modifier) {
             }
             Spacer(modifier = Modifier.height(8.dp))
 
-            val examplePostsList = listOf(
-                CardItem("Cute Cat", R.drawable.doggo1),
-                CardItem("Playful Dog", R.drawable.doggo2),
-                CardItem("Cute Cat", R.drawable.catto4),
-                CardItem("Playful Dog", R.drawable.catto8),
-                CardItem("Cute Cat", R.drawable.doggo3),
-                CardItem("Playful Dog", R.drawable.doggo4),
-            )
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 contentPadding = PaddingValues(8.dp),
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
-                itemsIndexed(items = examplePostsList) { _, item  ->
+                itemsIndexed(items = posts.value) { _, item  ->
                     PostCard(postItem = item)
                 }
             }
@@ -251,12 +265,12 @@ fun PostsBar(modifier: Modifier = Modifier) {
             tint = primaryColor
         )
         Icon(
-            imageVector = Icons.Default.Warning,
+            imageVector = Icons.Default.LocalHospital,
             contentDescription = "Health Icon",
             tint = primaryColor
         )
         Icon(
-            imageVector = Icons.Default.Face,
+            imageVector = Icons.Default.ManageAccounts,
             contentDescription = "Profile Icon",
             tint = primaryColor
         )
@@ -274,7 +288,7 @@ fun PostCard(postItem: CardItem) {
         colors = CardDefaults.cardColors(
             containerColor = secondaryColor),
 
-    ) {
+        ) {
         Column {
             Text(
                 text = postItem.title,
@@ -295,8 +309,3 @@ fun PostCard(postItem: CardItem) {
         }
     }
 }
-
-data class CardItem(
-    val title: String,
-    val imageResId: Int
-)

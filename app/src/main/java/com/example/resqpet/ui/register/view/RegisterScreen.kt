@@ -1,4 +1,4 @@
-package com.example.resqpet.screens
+package com.example.resqpet.ui.register.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
@@ -27,6 +28,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,20 +42,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.resqpet.R
+import com.example.resqpet.ui.mainmenu.view.primaryColor
+import com.example.resqpet.ui.register.viewmodel.RegisterViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginResQPet() {
+fun RegisterResQPet() {
 
+    val viewModel: RegisterViewModel = viewModel()
     val colorBackground = Color(0xFFF4F2DE)
     val colorChartText = Color(0xFF2A5D71)
     val colorButton = Color(0xFFA1CCD1)
     val colorIcon = Color(0xFFE9B384)
 
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
+    // Observar los StateFlows como estados en Compose
+    val username by viewModel.username.collectAsState()
+    val email by viewModel.email.collectAsState()
+    val password by viewModel.password.collectAsState()
+    val passwordVisible by viewModel.passwordVisible.collectAsState()
 
     Box(
         modifier = Modifier
@@ -73,31 +82,34 @@ fun LoginResQPet() {
                 modifier = Modifier
                     .size(500.dp)
                     .padding(top = 0.dp, start = 0.dp)
-                    .align(Alignment.TopEnd).offset((150).dp, (-120).dp)
+                    .align(Alignment.TopEnd)
+                    .offset((150).dp, (-130).dp)
             )
 
             Spacer(modifier = Modifier.height(50.dp))
 
             Image(
-                painter = painterResource(id = R.drawable.catto1),
-                contentDescription = "cat1",
+                painter = painterResource(id = R.drawable.doggo1),
+                contentDescription = "doggo1",
                 modifier = Modifier
-                    .size(270.dp)
+                    .size(230.dp)
                     .padding(top = 0.dp, start = 0.dp)
-                    .align(Alignment.CenterEnd).offset((-70).dp, (97).dp)
+                    .align(Alignment.CenterEnd)
+                    .offset((-70).dp, (10).dp)
             )
         }
 
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .align(Alignment.BottomEnd).offset((0).dp, (-10).dp)
+                .align(Alignment.BottomEnd)
+                .offset((0).dp, (-2).dp)
                 .padding(30.dp)
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth(0.99f)
-                    .height(360.dp)
+                    .height(420.dp)
                     .clip(RoundedCornerShape(30.dp))
                     .background(colorChartText)
                     .padding(30.dp)
@@ -108,29 +120,59 @@ fun LoginResQPet() {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Hello!",
+                        text = "Welcome!",
                         fontWeight = FontWeight.Bold,
                         color = colorBackground,
                         style = MaterialTheme.typography.headlineLarge,
-                        modifier = Modifier.padding(top = 8.dp)
+                        modifier = Modifier.padding(top = 2.dp)
                     )
 
                     Spacer(modifier = Modifier.height(1.dp))
 
                     Text(
-                        text = "Sign in to your account",
+                        text = "Create a new account",
                         color = colorBackground,
                         style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(top = 8.dp)
+                        modifier = Modifier.padding(top = 2.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    OutlinedTextField(
+                        value = username,
+                        onValueChange = {  newValue -> viewModel.setUsername(newValue)},
+                        label = { Text("Username") },
+                        leadingIcon = {
+                            Icon(
+                                Icons.Default.Person,
+                                contentDescription = "User Icon",
+                                tint = colorIcon
+                            )
+                        },
+                        placeholder = { Text("Enter your username") },
+                        singleLine = true,
+                        colors = TextFieldDefaults.textFieldColors(
+                            containerColor = colorBackground,
+                            focusedIndicatorColor = colorBackground,
+                            focusedLabelColor = colorBackground,
+                            unfocusedLabelColor = colorBackground,
+                            textColor = primaryColor
+                        )
                     )
 
                     Spacer(modifier = Modifier.height(10.dp))
 
                     OutlinedTextField(
                         value = email,
-                        onValueChange = { email = it },
+                        onValueChange = {  newValue -> viewModel.setEmail(newValue) },
                         label = { Text("Email") },
-                        leadingIcon = { Icon(Icons.Default.Email, contentDescription = "Email Icon", tint = colorIcon) },
+                        leadingIcon = {
+                            Icon(
+                                Icons.Default.Email,
+                                contentDescription = "Email Icon",
+                                tint = colorIcon
+                            )
+                        },
                         placeholder = { Text("Enter your email") },
                         singleLine = true,
                         colors = TextFieldDefaults.textFieldColors(
@@ -138,19 +180,25 @@ fun LoginResQPet() {
                             focusedIndicatorColor = colorBackground,
                             focusedLabelColor = colorBackground,
                             unfocusedLabelColor = colorBackground,
+                            textColor = primaryColor
+
                         )
                     )
 
-                    Spacer(modifier = Modifier.height(15.dp))
-
+                    Spacer(modifier = Modifier.height(10.dp))
                     OutlinedTextField(
                         value = password,
-                        onValueChange = { password = it },
+                        onValueChange = {  newValue -> viewModel.setPassword(newValue)},
                         label = { Text("Password") },
                         trailingIcon = {
-                            val image = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
-                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                                Icon(image, contentDescription = "Toggle password visibility", tint = colorIcon)
+                            val image =
+                                if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
+                            IconButton(onClick = { viewModel.togglePasswordVisibility() }) {
+                                Icon(
+                                    image,
+                                    contentDescription = "Toggle password visibility",
+                                    tint = colorIcon
+                                )
                             }
                         },
                         placeholder = { Text("Enter your password") },
@@ -160,15 +208,15 @@ fun LoginResQPet() {
                             focusedIndicatorColor = colorBackground,
                             focusedLabelColor = colorBackground,
                             unfocusedLabelColor = colorBackground,
+                            textColor = primaryColor
+
                         ),
                         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
                     )
                     Spacer(modifier = Modifier.height(20.dp))
 
                     Button(
-                        onClick = {
-                            /* no hace nada */
-                        },
+                        onClick = {viewModel.onRegisterClicked(username, email, password)},
                         modifier = Modifier
                             .fillMaxWidth(0.7f)
                             .height(50.dp),

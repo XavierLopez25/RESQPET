@@ -30,7 +30,7 @@ import com.example.resqpet.ui.start.viewmodel.ResqpetViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
-fun ResqpetScreen() {
+fun MainMenu() {
 
     val viewModel: ResqpetViewModel = viewModel()
 

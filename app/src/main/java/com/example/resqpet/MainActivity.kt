@@ -10,6 +10,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.resqpet.ui.animalprofile.view.AnimalProfile
+import com.example.resqpet.ui.donation.view.Donation
+import com.example.resqpet.ui.login.view.LoginResQPet
+import com.example.resqpet.ui.start.view.MainMenu
+import com.example.resqpet.ui.editprofile.view.EditProfileScreen
+import com.example.resqpet.ui.mainmenu.view.MainMenuResQPet
+import com.example.resqpet.ui.petlist.view.PetList
+import com.example.resqpet.ui.register.view.RegisterResQPet
 import com.example.resqpet.ui.theme.RESQPETTheme
 
 class MainActivity : ComponentActivity() {
@@ -22,7 +30,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Android")
+                    Donation()
                 }
             }
         }

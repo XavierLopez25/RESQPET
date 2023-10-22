@@ -1,3 +1,5 @@
+package com.example.resqpet.ui.animalprofile.view
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,15 +17,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.Alignment
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -31,15 +24,40 @@ import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.resqpet.R
-import com.example.resqpet.screens.backgroundColor
-import com.example.resqpet.screens.primaryColor
-import com.example.resqpet.screens.secondaryColor
+import com.example.resqpet.ui.animalprofile.viewmodel.AnimalProfileViewModel
+import com.example.resqpet.ui.mainmenu.view.backgroundColor
+import com.example.resqpet.ui.mainmenu.view.primaryColor
+import com.example.resqpet.ui.mainmenu.view.secondaryColor
 
 @Composable
 fun AnimalProfile() {
+
+    val viewModel: AnimalProfileViewModel = viewModel()
+
+    val animalList by viewModel.animals.observeAsState(initial = emptyList())
+
+    val animal = animalList.firstOrNull()
+        ?:
+        return
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -62,13 +80,13 @@ fun AnimalProfile() {
                     )
                 }
 
-                Text("Hi! I'm Panchito", fontWeight = FontWeight.Bold, fontSize = 25.sp, modifier = Modifier
+                Text("Hi! I'm ${animal.name}", fontWeight = FontWeight.Bold, fontSize = 23.sp, modifier = Modifier
                     .align(Alignment.CenterStart)
                     .offset(x = 20.dp, y = 20.dp), style = MaterialTheme.typography.titleLarge, color = Color.White)
-                Text("Doberman", modifier = Modifier
+
+                Text("${animal.breed}", modifier = Modifier
                     .align(Alignment.CenterStart)
                     .offset(x = 80.dp, y = 60.dp), style = MaterialTheme.typography.labelLarge, color = Color.White)
-
 
                 Box(
                     modifier = Modifier
@@ -122,16 +140,16 @@ fun AnimalProfile() {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    ProfileInfoCard(title = "Description", content = "Information about the size, color, history, etc...")
-                    ProfileInfoCard(title = "Personality", content = "Information about the personality of the pet")
+                    ProfileInfoCard(title = "Description", content = "${animal.description}\nAge: ${animal.age}\nSex: ${animal.sex}")
+                    ProfileInfoCard(title = "Personality", content = animal.personality)
                 }
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    ProfileInfoCard(title = "Contact Info", content = "Information about the personality of the pet")
-                    HealthConditionsCard()
+                    ProfileInfoCard(title = "Contact Info", content = animal.contactInfo)
+                    HealthConditionsCard(animal.health.isVaccinated, animal.health.isCastrated)
                 }
             }
 
@@ -182,9 +200,9 @@ fun ProfileInfoCard(title: String, content: String) {
 }
 
 @Composable
-fun HealthConditionsCard() {
-    var vaccinated by remember { mutableStateOf(false) }
-    var castrated by remember { mutableStateOf(false) }
+fun HealthConditionsCard(vaccinatedState: Boolean, castratedState: Boolean) {
+    var vaccinated by remember { mutableStateOf(vaccinatedState) }
+    var castrated by remember { mutableStateOf(castratedState) }
 
     Card(
         modifier = Modifier
@@ -205,7 +223,7 @@ fun HealthConditionsCard() {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Start
             ) {
-                Checkbox(checked = vaccinated, onCheckedChange = { vaccinated = it }, colors = CheckboxDefaults.colors(uncheckedColor = Color.White, checkedColor = secondaryColor))
+                Checkbox(checked = vaccinated, onCheckedChange = { vaccinated = it }, colors = CheckboxDefaults.colors(uncheckedColor = Color.White, checkedColor = secondaryColor), enabled = false)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(text = "Vaccinated",fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge, fontSize = 15.sp, modifier = Modifier.padding(top = 12.dp), color = Color.White)
             }
@@ -213,7 +231,7 @@ fun HealthConditionsCard() {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Start
             ) {
-                Checkbox(checked = castrated, onCheckedChange = { castrated = it }, colors = CheckboxDefaults.colors(uncheckedColor = Color.White, checkedColor = secondaryColor))
+                Checkbox(checked = castrated, onCheckedChange = { castrated = it }, colors = CheckboxDefaults.colors(uncheckedColor = Color.White, checkedColor = secondaryColor), enabled = false)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(text = "Castrated",fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge, fontSize = 15.sp, modifier = Modifier.padding(top = 12.dp), color = Color.White)
             }
