@@ -1,4 +1,4 @@
-package com.example.resqpet.screens
+package com.example.resqpet.ui.health.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -31,9 +31,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.resqpet.ui.health.viewmodel.ServiceRQPViewModel
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,6 +42,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.resqpet.R
+import androidx.compose.runtime.collectAsState
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,14 +53,8 @@ fun ServiceRQP() {
     val colorChart = Color(0xFFA1CCD1)
     val colorIcon = Color(0xFFE9B384)
 
-    var fundationName by remember { mutableStateOf("") }
-    var time by remember { mutableStateOf("") }
-    var foundationAddress by remember { mutableStateOf("") }
-
-    var small by remember { mutableStateOf(false) }
-    var medium by remember { mutableStateOf(false) }
-    var big by remember { mutableStateOf(false) }
-
+    val viewModel: ServiceRQPViewModel = viewModel()
+    val foundation by viewModel.foundationInfo.collectAsState()
 
     Box(
         modifier = Modifier
@@ -186,10 +180,10 @@ fun ServiceRQP() {
                             color = colorBackground,
                             style = MaterialTheme.typography.titleMedium,
                         )
+                        Spacer(modifier = Modifier.height(10.dp))
                         OutlinedTextField(
-                            value = fundationName,
-                            onValueChange = { fundationName = it },
-                            label = { Text("Foundation Name") },
+                            value = foundation.name,
+                            onValueChange = {},
                             leadingIcon = {
                                 Icon(
                                     Icons.Default.Person,
@@ -204,6 +198,7 @@ fun ServiceRQP() {
                                 focusedIndicatorColor = colorBackground,
                                 focusedLabelColor = colorBackground,
                                 unfocusedLabelColor = colorBackground,
+
                             )
                         )
 
@@ -215,10 +210,10 @@ fun ServiceRQP() {
                             color = colorBackground,
                             style = MaterialTheme.typography.titleMedium,
                         )
+                        Spacer(modifier = Modifier.height(10.dp))
                         OutlinedTextField(
-                            value = time,
-                            onValueChange = { time = it },
-                            label = { Text("Time of the event") },
+                            value = foundation.eventTime,
+                            onValueChange = {},
                             leadingIcon = {
                                 Icon(
                                     Icons.Default.CalendarMonth,
@@ -244,11 +239,10 @@ fun ServiceRQP() {
                             color = colorBackground,
                             style = MaterialTheme.typography.titleMedium,
                         )
-
+                        Spacer(modifier = Modifier.height(10.dp))
                         OutlinedTextField(
-                            value = foundationAddress,
-                            onValueChange = { foundationAddress = it },
-                            label = { Text("Event Address") },
+                            value = foundation.address,
+                            onValueChange = {},
                             leadingIcon = {
                                 Icon(
                                     Icons.Default.House,
@@ -283,8 +277,8 @@ fun ServiceRQP() {
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Checkbox(
-                                    checked = small ,
-                                    onCheckedChange = { small = it },
+                                checked = foundation.small,
+                                onCheckedChange = {},
                                     colors = CheckboxDefaults.colors(
                                         checkedColor = colorChart,
                                         uncheckedColor = colorBackground
@@ -303,8 +297,8 @@ fun ServiceRQP() {
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Checkbox(
-                                    checked = medium,
-                                    onCheckedChange = { medium = it },
+                                    checked = foundation.medium,
+                                    onCheckedChange = {},
                                     colors = CheckboxDefaults.colors(
                                         checkedColor = colorChart,
                                         uncheckedColor = colorBackground
@@ -323,8 +317,8 @@ fun ServiceRQP() {
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Checkbox(
-                                    checked = big,
-                                    onCheckedChange = { big = it },
+                                    checked = foundation.big    ,
+                                    onCheckedChange = {},
                                     colors = CheckboxDefaults.colors(
                                         checkedColor = colorChart,
                                         uncheckedColor = colorBackground
@@ -345,9 +339,8 @@ fun ServiceRQP() {
             }
         }
 
-
         IconButton(
-            onClick = { /* acción cuando se hace clic */ },
+            onClick = { viewModel.onCancelClicked() },
             modifier = Modifier.size(200.dp)
         ) {
             Box(
@@ -380,7 +373,7 @@ fun ServiceRQP() {
         }
 
         IconButton(
-            onClick = { /* acción cuando se hace clic */ },
+            onClick = { viewModel.onRegisterOrDonateClicked() },
             modifier = Modifier.size(200.dp)
         ) {
             Box(
@@ -414,3 +407,4 @@ fun ServiceRQP() {
         }
     }
 }
+

@@ -1,4 +1,4 @@
-package com.example.resqpet.screens
+package com.example.resqpet.ui.postlist.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -28,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -35,19 +36,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.resqpet.R
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.resqpet.screens.backgroundColor
+import com.example.resqpet.screens.primaryColor
+import com.example.resqpet.screens.secondaryColor
+import com.example.resqpet.ui.postlist.viewmodel.Post
+import com.example.resqpet.ui.postlist.viewmodel.PostViewModel
 
-
-@Preview
 @Composable
-fun PostFiltering(){
+fun PostFiltering() {
 
+    val viewModel: PostViewModel = viewModel()
+    val posts by viewModel.posts.observeAsState(emptyList())
     Column{
         Box(
             modifier = Modifier
@@ -77,15 +82,6 @@ fun PostFiltering(){
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                val posts = listOf(
-                    Post(painterResource(id = R.drawable.doggo6), "Loving Husky seeks warm home.", "Give him a chance! Together, you'll be the perfect team. Adopt and change a life."),
-                    Post(painterResource(id = R.drawable.doggo6), "Loving Husky seeks warm home.", "Give him a chance! Together, you'll be the perfect team. Adopt and change a life."),
-                    Post(painterResource(id = R.drawable.doggo6), "Loving Husky seeks warm home.", "Give him a chance! Together, you'll be the perfect team. Adopt and change a life."),
-                    Post(painterResource(id = R.drawable.doggo6), "Loving Husky seeks warm home.", "Give him a chance! Together, you'll be the perfect team. Adopt and change a life."),
-                    Post(painterResource(id = R.drawable.doggo6), "Loving Husky seeks warm home.", "Give him a chance! Together, you'll be the perfect team. Adopt and change a life."),
-                    Post(painterResource(id = R.drawable.doggo6), "Loving Husky seeks warm home.", "Give him a chance! Together, you'll be the perfect team. Adopt and change a life.")
-                )
-
                 LazyColumn(
                     modifier = Modifier
                         .clip(RoundedCornerShape(16.dp))
@@ -94,17 +90,15 @@ fun PostFiltering(){
                         .height(600.dp)
                         .align(Alignment.CenterHorizontally)
                 ) {
-                    itemsIndexed(items = posts) { _, posts ->
-                        PostCard(icon = posts.icon, title = posts.title, description = posts.description)
+                    itemsIndexed(items = posts) { _, post ->
+                        PostCard(
+                            post = post
+                        )
                     }
                 }
             }
-
         }
     }
-
-
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -129,7 +123,9 @@ fun SearchBar() {
             containerColor = backgroundColor
         ),
         label = { Text("Search", style = MaterialTheme.typography.titleSmall.copy(fontSize = 14.sp)) },
-        trailingIcon = { IconButton(onClick = { /* acción cuando se hace clic */ }, modifier = Modifier.size(40.dp)) { Icon(Icons.Filled.Search, contentDescription = null, tint = primaryColor) } },
+        trailingIcon = { IconButton(onClick = { /* acción cuando se hace clic */ }, modifier = Modifier.size(40.dp)) { Icon(
+            Icons.Filled.Search, contentDescription = null, tint = primaryColor
+        ) } },
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier
             .height(70.dp)
@@ -137,7 +133,9 @@ fun SearchBar() {
 }
 
 @Composable
-fun PostCard(icon: Painter, title: String, description: String) {
+fun PostCard(post: Post) {
+    val iconPainter = painterResource(id = post.iconResId)
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -147,19 +145,21 @@ fun PostCard(icon: Painter, title: String, description: String) {
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(icon, contentDescription = null, modifier = Modifier.size(60.dp))
+        Image(painter = iconPainter, contentDescription = null, modifier = Modifier.size(60.dp))
         Spacer(modifier = Modifier.width(16.dp))
         Column {
-            Text(text = title, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            Text(text = post.title, fontWeight = FontWeight.Bold, fontSize = 16.sp)
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = description, fontSize = 14.sp)
+            Text(text = post.description, fontSize = 14.sp)
         }
     }
 }
 
+
+
 @Composable
 fun FilterCheckbox(text: String) {
-    var check by remember { mutableStateOf(false)}
+    var check by remember { mutableStateOf(false) }
     Row(
         modifier = Modifier.padding(8.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -170,6 +170,3 @@ fun FilterCheckbox(text: String) {
 
     }
 }
-
-data class Post(val icon: Painter, val title: String, val description: String)
-
