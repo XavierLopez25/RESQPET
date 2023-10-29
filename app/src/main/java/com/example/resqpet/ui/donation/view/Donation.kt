@@ -46,26 +46,21 @@ import com.example.resqpet.R
 import com.example.resqpet.ui.donation.viewmodel.DonationViewModel
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
 
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
 @Composable
-fun Donation() {
+fun Donation(navController: NavController) {
 
     val viewModel: DonationViewModel = viewModel()
     val donationData by viewModel.donationData.observeAsState()
-
-    val colorBackground = Color(0xFFF4F2DE)
-    val secondaryColor = Color(0xFF2A5D71)
-    val colorChart = Color(0xFFA1CCD1)
-    val colorIcon = Color(0xFFE9B384)
-
     val contributorName by remember { mutableStateOf("") }
     val phoneNumber by remember { mutableStateOf("") }
     val address by remember { mutableStateOf("") }
-
     val donateMonetary by remember { mutableStateOf(false) }
     val donateMedicalResources by remember { mutableStateOf(false) }
     val donateFood by remember { mutableStateOf(false) }
@@ -75,13 +70,13 @@ fun Donation() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorBackground)
+            .background(colorResource(R.color.backgroundColor))
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(200.dp)
-                .background(colorChart)
+                .background(colorResource(R.color.secondaryColor))
                 .align(Alignment.TopStart)
         ) {
             Column(
@@ -92,21 +87,21 @@ fun Donation() {
                 horizontalAlignment = Alignment.Start
             ) {
                 Text(
-                    text = "Charity",
-                    color = colorBackground,
+                    text = stringResource(R.string.charity),
+                    color = colorResource(R.color.backgroundColor),
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.headlineLarge,
                     modifier = Modifier.padding(top = 5.dp, start = 25.dp)
                 )
                 Text(
-                    text = "Embrace Love, Adopt Joy:",
-                    color = secondaryColor,
+                    text = stringResource(R.string.embrace_love_adopt_joy),
+                    color = colorResource(R.color.primaryColor),
                     style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier.padding(top = 8.dp)
                 )
                 Text(
-                    text = "Be a Paw-sitive Change!",
-                    color = secondaryColor,
+                    text = stringResource(R.string.be_a_paw_sitive_change),
+                    color = colorResource(R.color.primaryColor),
                     style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier.padding(top = 3.dp)
                 )
@@ -128,7 +123,7 @@ fun Donation() {
                         .align(Alignment.BottomEnd)
                         .width(170.dp)
                         .height(170.dp)
-                        .background(colorChart, shape = RoundedCornerShape(16.dp))
+                        .background(colorResource(R.color.secondaryColor), shape = RoundedCornerShape(16.dp))
                         .padding(vertical = 10.dp, horizontal = 10.dp)
                 ) {
 
@@ -136,7 +131,7 @@ fun Donation() {
                         modifier = Modifier
                             .width(155.dp)
                             .height(155.dp)
-                            .background(colorBackground, shape = RoundedCornerShape(16.dp))
+                            .background(colorResource(R.color.backgroundColor), shape = RoundedCornerShape(16.dp))
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.doggo6),
@@ -170,7 +165,7 @@ fun Donation() {
                     .fillMaxWidth(0.99f)
                     .height(420.dp)
                     .clip(RoundedCornerShape(30.dp))
-                    .background(secondaryColor)
+                    .background(colorResource(R.color.primaryColor))
                     .padding(30.dp)
             ) {
 
@@ -184,7 +179,7 @@ fun Donation() {
                         Text(
                             text = "Contributor Name",
                             fontWeight = FontWeight.Bold,
-                            color = colorBackground,
+                            color = colorResource(R.color.backgroundColor),
                             style = MaterialTheme.typography.titleMedium,
                         )
                         donationData?.contributorName?.let {
@@ -193,30 +188,30 @@ fun Donation() {
                                 onValueChange = { newValue ->
                                     viewModel.donationData.value = donationData?.copy(contributorName = newValue)
                                 },
-                                label = { Text("Profile") },
+                                label = { Text(stringResource(R.string.profile)) },
                                 leadingIcon = {
                                     Icon(
                                         Icons.Default.Person,
                                         contentDescription = "Person Icon",
-                                        tint = colorIcon
+                                        tint = colorResource(R.color.iconColor)
                                     )
                                 },
                                 placeholder = { Text("Enter your name") },
                                 singleLine = true,
                                 colors = TextFieldDefaults.textFieldColors(
-                                    containerColor = colorBackground,
-                                    focusedIndicatorColor = colorBackground,
-                                    focusedLabelColor = colorBackground,
-                                    unfocusedLabelColor = colorBackground,
+                                    containerColor = colorResource(R.color.backgroundColor),
+                                    focusedIndicatorColor = colorResource(R.color.backgroundColor),
+                                    focusedLabelColor = colorResource(R.color.backgroundColor),
+                                    unfocusedLabelColor = colorResource(R.color.backgroundColor),
                                 )
                             )
                         }
                         Spacer(modifier = Modifier.height(20.dp))
 
                         Text(
-                            text = "What will you donate to charity?",
+                            text = stringResource(R.string.what_will_you_donate_to_charity),
                             fontWeight = FontWeight.Bold,
-                            color = colorBackground,
+                            color = colorResource(R.color.backgroundColor),
                             style = MaterialTheme.typography.titleMedium,
                         )
 
@@ -236,15 +231,15 @@ fun Donation() {
                                             viewModel.donationData.value = donationData!!.copy(donateMonetary = newValue)
                                         },
                                         colors = CheckboxDefaults.colors(
-                                            checkedColor = colorChart,
-                                            uncheckedColor = colorBackground
+                                            checkedColor = colorResource(R.color.secondaryColor),
+                                            uncheckedColor = colorResource(R.color.backgroundColor)
                                         )
                                     )
                                 }
                                 Text(
-                                    text = "Monetary",
+                                    text = stringResource(R.string.monetary),
                                     fontWeight = FontWeight.Bold,
-                                    color = colorBackground,
+                                    color = colorResource(R.color.backgroundColor),
                                     style = MaterialTheme.typography.titleSmall
                                 )
                             }
@@ -259,15 +254,15 @@ fun Donation() {
                                             viewModel.donationData.value = donationData!!.copy(donateMedicalResources = newValue)
                                         },
                                         colors = CheckboxDefaults.colors(
-                                            checkedColor = colorChart,
-                                            uncheckedColor = colorBackground
+                                            checkedColor = colorResource(R.color.secondaryColor),
+                                            uncheckedColor = colorResource(R.color.backgroundColor)
                                         )
                                     )
                                 }
                                 Text(
-                                    text = "Medical Resources",
+                                    text = stringResource(R.string.medical_resources),
                                     fontWeight = FontWeight.Bold,
-                                    color = colorBackground,
+                                    color = colorResource(R.color.backgroundColor),
                                     style = MaterialTheme.typography.titleSmall
                                 )
                             }
@@ -282,15 +277,15 @@ fun Donation() {
                                             viewModel.donationData.value = donationData!!.copy(donateFood = newValue)
                                         },
                                         colors = CheckboxDefaults.colors(
-                                            checkedColor = colorChart,
-                                            uncheckedColor = colorBackground
+                                            checkedColor = colorResource(R.color.secondaryColor),
+                                            uncheckedColor = colorResource(R.color.backgroundColor)
                                         )
                                     )
                                 }
                                 Text(
-                                    text = "Food",
+                                    text = stringResource(R.string.food),
                                     fontWeight = FontWeight.Bold,
-                                    color = colorBackground,
+                                    color = colorResource(R.color.backgroundColor),
                                     style = MaterialTheme.typography.titleSmall
                                 )
                             }
@@ -299,9 +294,9 @@ fun Donation() {
                         Spacer(modifier = Modifier.height(20.dp))
 
                         Text(
-                            text = "Do you belong to a foundation?",
+                            text = stringResource(R.string.do_you_belong_to_a_foundation),
                             fontWeight = FontWeight.Bold,
-                            color = colorBackground,
+                            color = colorResource(R.color.backgroundColor),
                             style = MaterialTheme.typography.titleMedium,
                         )
 
@@ -313,14 +308,14 @@ fun Donation() {
                                     checked = belongsToFoundation,
                                     onCheckedChange = { belongsToFoundation = it },
                                     colors = CheckboxDefaults.colors(
-                                        checkedColor = colorChart,
-                                        uncheckedColor = colorBackground
+                                        checkedColor = colorResource(R.color.secondaryColor),
+                                        uncheckedColor = colorResource(R.color.backgroundColor)
                                     )
                                 )
 
                             Text(
-                                text = "Yes",
-                                color = colorBackground,
+                                text = stringResource(R.string.yes),
+                                color = colorResource(R.color.backgroundColor),
                                 fontWeight = FontWeight.Bold,
                                 style = MaterialTheme.typography.titleSmall
                             )
@@ -330,9 +325,9 @@ fun Donation() {
 
                         if (belongsToFoundation) {
                             Text(
-                                text = "Foundation Phone Number",
+                                text = stringResource(R.string.foundation_phone_number),
                                 fontWeight = FontWeight.Bold,
-                                color = colorBackground,
+                                color = colorResource(R.color.backgroundColor),
                                 style = MaterialTheme.typography.titleMedium,
                             )
                             donationData?.let {
@@ -341,29 +336,29 @@ fun Donation() {
                                     onValueChange = {  newValue ->
                                         viewModel.donationData.value = donationData!!.copy(phoneNumber = newValue)
                                     },
-                                    label = { Text("Phone") },
+                                    label = { Text(stringResource(R.string.phone)) },
                                     leadingIcon = {
                                         Icon(
                                             Icons.Default.Phone,
                                             contentDescription = "Phone Icon",
-                                            tint = colorIcon
+                                            tint = colorResource(R.color.iconColor)
                                         )
                                     },
-                                    placeholder = { Text("Enter the foundation phone") },
+                                    placeholder = { Text(stringResource(R.string.enter_the_foundation_phone)) },
                                     singleLine = true,
                                     colors = TextFieldDefaults.textFieldColors(
-                                        containerColor = colorBackground,
-                                        focusedIndicatorColor = colorBackground,
-                                        focusedLabelColor = colorBackground,
-                                        unfocusedLabelColor = colorBackground,
+                                        containerColor = colorResource(R.color.backgroundColor),
+                                        focusedIndicatorColor = colorResource(R.color.backgroundColor),
+                                        focusedLabelColor = colorResource(R.color.backgroundColor),
+                                        unfocusedLabelColor = colorResource(R.color.backgroundColor),
                                     )
                                 )
                             }
                             Spacer(modifier = Modifier.height(20.dp))
                             Text(
-                                text = "Foundation Address",
+                                text = stringResource(R.string.foundation_address),
                                 fontWeight = FontWeight.Bold,
-                                color = colorBackground,
+                                color = colorResource(R.color.backgroundColor),
                                 style = MaterialTheme.typography.titleMedium,
                             )
                             donationData?.let {
@@ -372,29 +367,29 @@ fun Donation() {
                                     onValueChange = {  newValue ->
                                         viewModel.donationData.value = donationData!!.copy(address = newValue)
                                     },
-                                    label = { Text("Address") },
+                                    label = { Text(stringResource(R.string.address)) },
                                     leadingIcon = {
                                         Icon(
                                             Icons.Default.House,
                                             contentDescription = "House Icon",
-                                            tint = colorIcon
+                                            tint = colorResource(R.color.iconColor)
                                         )
                                     },
-                                    placeholder = { Text("Enter the foundation address") },
+                                    placeholder = { Text(stringResource(R.string.enter_the_foundation_address)) },
                                     singleLine = true,
                                     colors = TextFieldDefaults.textFieldColors(
-                                        containerColor = colorBackground,
-                                        focusedIndicatorColor = colorBackground,
-                                        focusedLabelColor = colorBackground,
-                                        unfocusedLabelColor = colorBackground,
+                                        containerColor = colorResource(R.color.backgroundColor),
+                                        focusedIndicatorColor = colorResource(R.color.backgroundColor),
+                                        focusedLabelColor = colorResource(R.color.backgroundColor),
+                                        unfocusedLabelColor = colorResource(R.color.backgroundColor),
                                     )
                                 )
                             }
                         } else {
                             Text(
-                                text = "Contributor Phone Number",
+                                text = stringResource(R.string.contributor_phone_number),
                                 fontWeight = FontWeight.Bold,
-                                color = colorBackground,
+                                color = colorResource(R.color.backgroundColor),
                                 style = MaterialTheme.typography.titleMedium,
                             )
                             donationData?.let {
@@ -403,29 +398,29 @@ fun Donation() {
                                     onValueChange = {  newValue ->
                                         viewModel.donationData.value = donationData!!.copy(phoneNumber = newValue)
                                     },
-                                    label = { Text("Phone") },
+                                    label = { Text(stringResource(R.string.phone)) },
                                     leadingIcon = {
                                         Icon(
                                             Icons.Default.Phone,
                                             contentDescription = "Phone Icon",
-                                            tint = colorIcon
+                                            tint = colorResource(R.color.iconColor)
                                         )
                                     },
-                                    placeholder = { Text("Enter your phone") },
+                                    placeholder = { Text(stringResource(R.string.enter_your_phone)) },
                                     singleLine = true,
                                     colors = TextFieldDefaults.textFieldColors(
-                                        containerColor = colorBackground,
-                                        focusedIndicatorColor = colorBackground,
-                                        focusedLabelColor = colorBackground,
-                                        unfocusedLabelColor = colorBackground,
+                                        containerColor = colorResource(R.color.backgroundColor),
+                                        focusedIndicatorColor = colorResource(R.color.backgroundColor),
+                                        focusedLabelColor = colorResource(R.color.backgroundColor),
+                                        unfocusedLabelColor = colorResource(R.color.backgroundColor),
                                     )
                                 )
                             }
                             Spacer(modifier = Modifier.height(20.dp))
                             Text(
-                                text = "Contributor Address",
+                                text = stringResource(R.string.contributor_address),
                                 fontWeight = FontWeight.Bold,
-                                color = colorBackground,
+                                color = colorResource(R.color.backgroundColor),
                                 style = MaterialTheme.typography.titleMedium,
                             )
                             donationData?.let {
@@ -434,21 +429,21 @@ fun Donation() {
                                     onValueChange = {  newValue ->
                                         viewModel.donationData.value = donationData!!.copy(address = newValue)
                                     },
-                                    label = { Text("Address") },
+                                    label = { Text(stringResource(R.string.address)) },
                                     leadingIcon = {
                                         Icon(
                                             Icons.Default.House,
                                             contentDescription = "House Icon",
-                                            tint = colorIcon
+                                            tint = colorResource(R.color.iconColor)
                                         )
                                     },
-                                    placeholder = { Text("Enter your address") },
+                                    placeholder = { Text(stringResource(R.string.enter_your_address)) },
                                     singleLine = true,
                                     colors = TextFieldDefaults.textFieldColors(
-                                        containerColor = colorBackground,
-                                        focusedIndicatorColor = colorBackground,
-                                        focusedLabelColor = colorBackground,
-                                        unfocusedLabelColor = colorBackground,
+                                        containerColor = colorResource(R.color.backgroundColor),
+                                        focusedIndicatorColor = colorResource(R.color.backgroundColor),
+                                        focusedLabelColor = colorResource(R.color.backgroundColor),
+                                        unfocusedLabelColor = colorResource(R.color.backgroundColor),
                                     )
                                 )
                             }
@@ -487,8 +482,8 @@ fun Donation() {
                         .offset((-35).dp, (35).dp)
                 ) {
                     Text(
-                        text = "Cancel",
-                        color = colorBackground,
+                        text = stringResource(R.string.cancel),
+                        color = colorResource(R.color.backgroundColor),
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.headlineSmall
                     )
@@ -519,8 +514,8 @@ fun Donation() {
                 ) {
 
                     Text(
-                        text = "Donate",
-                        color = colorBackground,
+                        text = stringResource(R.string.donate),
+                        color = colorResource(R.color.backgroundColor),
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.headlineSmall
 

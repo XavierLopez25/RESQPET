@@ -43,15 +43,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.resqpet.R
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavController
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ServiceRQP() {
-    val colorBackground = Color(0xFFF4F2DE)
-    val secondaryColor = Color(0xFF2A5D71)
-    val colorChart = Color(0xFFA1CCD1)
-    val colorIcon = Color(0xFFE9B384)
+fun ServiceRQP(navController: NavController) {
 
     val viewModel: ServiceRQPViewModel = viewModel()
     val foundation by viewModel.foundationInfo.collectAsState()
@@ -59,13 +58,13 @@ fun ServiceRQP() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorBackground)
+            .background(colorResource(R.color.backgroundColor))
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(200.dp)
-                .background(colorChart)
+                .background(colorResource(R.color.secondaryColor))
                 .align(Alignment.TopStart)
         ) {
             Column(
@@ -76,29 +75,29 @@ fun ServiceRQP() {
                 horizontalAlignment = Alignment.Start
             ) {
                 Text(
-                    text = "Health and ",
-                    color = colorBackground,
+                    text = stringResource(R.string.health_and),
+                    color = colorResource(R.color.backgroundColor),
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier.padding(start = 5.dp)
                 )
                 Text(
-                    text = "Care",
-                    color = colorBackground,
+                    text = stringResource(R.string.care),
+                    color = colorResource(R.color.backgroundColor),
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier.padding(start = 45.dp)
                 )
                 Text(
-                    text = "healthy paws",
-                    color = secondaryColor,
+                    text = stringResource(R.string.healthy_paws),
+                    color = colorResource(R.color.primaryColor),
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier.padding(top = 10.dp, start = 30.dp)
                 )
                 Text(
-                    text = "happy hearts",
-                    color = secondaryColor,
+                    text = stringResource(R.string.happy_hearts),
+                    color = colorResource(R.color.primaryColor),
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier.padding(start = 30.dp)
@@ -121,7 +120,7 @@ fun ServiceRQP() {
                         .align(Alignment.BottomEnd)
                         .width(170.dp)
                         .height(170.dp)
-                        .background(colorChart, shape = RoundedCornerShape(16.dp))
+                        .background(colorResource(R.color.secondaryColor), shape = RoundedCornerShape(16.dp))
                         .padding(vertical = 10.dp, horizontal = 10.dp)
                 ) {
 
@@ -129,7 +128,7 @@ fun ServiceRQP() {
                         modifier = Modifier
                             .width(155.dp)
                             .height(155.dp)
-                            .background(colorBackground, shape = RoundedCornerShape(16.dp))
+                            .background(colorResource(R.color.backgroundColor), shape = RoundedCornerShape(16.dp))
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.catto4),
@@ -155,7 +154,8 @@ fun ServiceRQP() {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .align(Alignment.BottomEnd).offset((0).dp, (-60).dp)
+                .align(Alignment.BottomEnd)
+                .offset((0).dp, (-60).dp)
                 .padding(30.dp)
         ) {
             Box(
@@ -163,7 +163,7 @@ fun ServiceRQP() {
                     .fillMaxWidth(0.99f)
                     .height(420.dp)
                     .clip(RoundedCornerShape(30.dp))
-                    .background(secondaryColor)
+                    .background(colorResource(R.color.primaryColor))
                     .padding(30.dp)
             ) {
 
@@ -175,9 +175,9 @@ fun ServiceRQP() {
                     item {
 
                         Text(
-                            text = "Foundation Name",
+                            text = stringResource(R.string.foundation_name1),
                             fontWeight = FontWeight.Bold,
-                            color = colorBackground,
+                            color = colorResource(R.color.backgroundColor),
                             style = MaterialTheme.typography.titleMedium,
                         )
                         Spacer(modifier = Modifier.height(10.dp))
@@ -188,16 +188,16 @@ fun ServiceRQP() {
                                 Icon(
                                     Icons.Default.Person,
                                     contentDescription = "Person Icon",
-                                    tint = colorIcon
+                                    tint = colorResource(R.color.iconColor)
                                 )
                             },
                             enabled = false,
                             singleLine = true,
                             colors = TextFieldDefaults.textFieldColors(
-                                containerColor = colorBackground,
-                                focusedIndicatorColor = colorBackground,
-                                focusedLabelColor = colorBackground,
-                                unfocusedLabelColor = colorBackground,
+                                containerColor = colorResource(R.color.backgroundColor),
+                                focusedIndicatorColor = colorResource(R.color.backgroundColor),
+                                focusedLabelColor = colorResource(R.color.backgroundColor),
+                                unfocusedLabelColor = colorResource(R.color.backgroundColor),
 
                             )
                         )
@@ -205,9 +205,9 @@ fun ServiceRQP() {
                         Spacer(modifier = Modifier.height(10.dp))
 
                         Text(
-                            text = "Time of the event",
+                            text = stringResource(R.string.time_of_the_event1),
                             fontWeight = FontWeight.Bold,
-                            color = colorBackground,
+                            color = colorResource(R.color.backgroundColor),
                             style = MaterialTheme.typography.titleMedium,
                         )
                         Spacer(modifier = Modifier.height(10.dp))
@@ -218,25 +218,25 @@ fun ServiceRQP() {
                                 Icon(
                                     Icons.Default.CalendarMonth,
                                     contentDescription = "Time Icon",
-                                    tint = colorIcon
+                                    tint = colorResource(R.color.iconColor)
                                 )
                             },
                             enabled = false,
                             singleLine = true,
                             colors = TextFieldDefaults.textFieldColors(
-                                containerColor = colorBackground,
-                                focusedIndicatorColor = colorBackground,
-                                focusedLabelColor = colorBackground,
-                                unfocusedLabelColor = colorBackground,
+                                containerColor = colorResource(R.color.backgroundColor),
+                                focusedIndicatorColor = colorResource(R.color.backgroundColor),
+                                focusedLabelColor = colorResource(R.color.backgroundColor),
+                                unfocusedLabelColor = colorResource(R.color.backgroundColor),
                             )
                         )
 
                         Spacer(modifier = Modifier.height(10.dp))
 
                         Text(
-                            text = "Foundation Address",
+                            text = stringResource(R.string.foundation_address1),
                             fontWeight = FontWeight.Bold,
-                            color = colorBackground,
+                            color = colorResource(R.color.backgroundColor),
                             style = MaterialTheme.typography.titleMedium,
                         )
                         Spacer(modifier = Modifier.height(10.dp))
@@ -247,25 +247,25 @@ fun ServiceRQP() {
                                 Icon(
                                     Icons.Default.House,
                                     contentDescription = "Address Icon",
-                                    tint = colorIcon
+                                    tint = colorResource(R.color.iconColor)
                                 )
                             },
                             enabled = false,
                             singleLine = true,
                             colors = TextFieldDefaults.textFieldColors(
-                                containerColor = colorBackground,
-                                focusedIndicatorColor = colorBackground,
-                                focusedLabelColor = colorBackground,
-                                unfocusedLabelColor = colorBackground,
+                                containerColor = colorResource(R.color.backgroundColor),
+                                focusedIndicatorColor = colorResource(R.color.backgroundColor),
+                                focusedLabelColor = colorResource(R.color.backgroundColor),
+                                unfocusedLabelColor = colorResource(R.color.backgroundColor),
                             )
                         )
 
                         Spacer(modifier = Modifier.height(10.dp))
 
                         Text(
-                            text = "Minimum Size",
+                            text = stringResource(R.string.minimum_size1),
                             fontWeight = FontWeight.Bold,
-                            color = colorBackground,
+                            color = colorResource(R.color.backgroundColor),
                             style = MaterialTheme.typography.titleMedium,
                         )
 
@@ -280,15 +280,15 @@ fun ServiceRQP() {
                                 checked = foundation.small,
                                 onCheckedChange = {},
                                     colors = CheckboxDefaults.colors(
-                                        checkedColor = colorChart,
-                                        uncheckedColor = colorBackground
+                                        checkedColor = colorResource(R.color.secondaryColor),
+                                        uncheckedColor = colorResource(R.color.backgroundColor)
                                     ),
                                     enabled = false
                                 )
                                 Text(
-                                    text = "Small",
+                                    text = stringResource(R.string.small),
                                     fontWeight = FontWeight.Bold,
-                                    color = colorBackground,
+                                    color = colorResource(R.color.backgroundColor),
                                     style = MaterialTheme.typography.titleSmall
                                 )
                             }
@@ -300,15 +300,15 @@ fun ServiceRQP() {
                                     checked = foundation.medium,
                                     onCheckedChange = {},
                                     colors = CheckboxDefaults.colors(
-                                        checkedColor = colorChart,
-                                        uncheckedColor = colorBackground
+                                        checkedColor = colorResource(R.color.secondaryColor),
+                                        uncheckedColor = colorResource(R.color.backgroundColor)
                                     ),
                                     enabled = false
                                 )
                                 Text(
-                                    text = "Medium",
+                                    text = stringResource(R.string.medium),
                                     fontWeight = FontWeight.Bold,
-                                    color = colorBackground,
+                                    color = colorResource(R.color.backgroundColor),
                                     style = MaterialTheme.typography.titleSmall
                                 )
                             }
@@ -320,15 +320,15 @@ fun ServiceRQP() {
                                     checked = foundation.big    ,
                                     onCheckedChange = {},
                                     colors = CheckboxDefaults.colors(
-                                        checkedColor = colorChart,
-                                        uncheckedColor = colorBackground
+                                        checkedColor = colorResource(R.color.secondaryColor),
+                                        uncheckedColor = colorResource(R.color.backgroundColor)
                                     ),
                                     enabled = false
                                 )
                                 Text(
-                                    text = "Big",
+                                    text = stringResource(R.string.big),
                                     fontWeight = FontWeight.Bold,
-                                    color = colorBackground,
+                                    color = colorResource(R.color.backgroundColor),
                                     style = MaterialTheme.typography.titleSmall
                                 )
                             }
@@ -363,8 +363,8 @@ fun ServiceRQP() {
                         .offset((-35).dp, (35).dp)
                 ) {
                     Text(
-                        text = "Cancel",
-                        color = colorBackground,
+                        text = stringResource(R.string.cancel2),
+                        color = colorResource(R.color.backgroundColor),
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.headlineSmall
                     )
@@ -395,8 +395,8 @@ fun ServiceRQP() {
                 ) {
 
                     Text(
-                        text = "Go!",
-                        color = colorBackground,
+                        text = stringResource(R.string.go),
+                        color = colorResource(R.color.backgroundColor),
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.headlineSmall
 

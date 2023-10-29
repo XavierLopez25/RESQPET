@@ -21,34 +21,34 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.resqpet.R
 import com.example.resqpet.ui.start.viewmodel.ResqpetViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.example.resqpet.navigation.NavigationState
 
 @Composable
-fun MainMenu() {
+fun MainMenu(navController: NavController) {
 
     val viewModel: ResqpetViewModel = viewModel()
-
-    val colorBackground = Color(0xFFA1CCD1)
-    val colorButtons = Color(0xFFF4F2DE)
-    val colorText = Color(0xFF2A5D71)
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorBackground),
+            .background(colorResource(R.color.secondaryColor)),
 
         ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(370.dp)
-                .background(colorButtons)
+                .background(colorResource(R.color.backgroundColor))
                 .align(Alignment.TopCenter)
         ){
 
@@ -73,8 +73,8 @@ fun MainMenu() {
             Spacer(modifier = Modifier.height(150.dp))
 
             Text(
-                text = "WHERE SECOND CHANCES BEGIN",
-                color = colorText,
+                text = stringResource(R.string.where_second_chances_begin),
+                color = colorResource(R.color.primaryColor),
                 style = MaterialTheme.typography.titleMedium,
             )
 
@@ -82,7 +82,7 @@ fun MainMenu() {
 
             Text(
                 text = "RESQPET",
-                color = colorText,
+                color = colorResource(R.color.primaryColor),
                 fontSize = 30.sp,
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold
@@ -91,8 +91,8 @@ fun MainMenu() {
             Spacer(modifier = Modifier.height(15.dp))
 
             Text(
-                text = "FINDING HOPE, FINDING HOME",
-                color = colorText,
+                text = stringResource(R.string.finding_hope_finding_home),
+                color = colorResource(R.color.primaryColor),
                 style = MaterialTheme.typography.titleMedium,
             )
 
@@ -117,8 +117,10 @@ fun MainMenu() {
                 )}
             // Botón Register
             Button(
-                onClick = { viewModel.onRegisterClicked() },
-                colors = ButtonDefaults.buttonColors(colorButtons),
+                onClick = {
+                    viewModel.onRegisterClicked()
+                    navController.navigate(NavigationState.Register.route) },
+                colors = ButtonDefaults.buttonColors(colorResource(R.color.backgroundColor)),
                 modifier = Modifier
                     .fillMaxWidth(0.5f)
                     .padding(10.dp)
@@ -126,20 +128,22 @@ fun MainMenu() {
                 shape = RoundedCornerShape(16.dp)
 
             ) {
-                Text(text = "Register", color = colorText, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                Text(text = "Register", color = colorResource(R.color.primaryColor), fontWeight = FontWeight.Bold, fontSize = 15.sp)
 
             }
 
             Button(
-                onClick = { viewModel.onLoginClicked() },
-                colors = ButtonDefaults.buttonColors(colorButtons),
+                onClick = {
+                    viewModel.onLoginClicked()
+                    navController.navigate(NavigationState.Login.route) },
+                colors = ButtonDefaults.buttonColors(colorResource(R.color.backgroundColor)),
                 modifier = Modifier
                     .fillMaxWidth(0.5f)
                     .padding(10.dp)
                     .height(60.dp),
                 shape = RoundedCornerShape(16.dp)
             ) {
-                Text(text = "Login", color = colorText, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                Text(text = "Login", color = colorResource(R.color.primaryColor), fontWeight = FontWeight.Bold, fontSize = 15.sp)
             }
 
             Spacer(modifier = Modifier.height(100.dp))

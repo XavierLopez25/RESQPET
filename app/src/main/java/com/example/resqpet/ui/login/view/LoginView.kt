@@ -33,18 +33,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.resqpet.R
+import com.example.resqpet.navigation.NavigationState
 import com.example.resqpet.ui.login.viewmodel.LoginViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginResQPet() {
+fun LoginResQPet(navController: NavController) {
 
     val loginViewModel: LoginViewModel = viewModel()
 
@@ -52,15 +57,10 @@ fun LoginResQPet() {
     val password by loginViewModel.password.collectAsState()
     val passwordVisible by loginViewModel.isPasswordVisible.collectAsState()
 
-    val colorBackground = Color(0xFFF4F2DE)
-    val colorChartText = Color(0xFF2A5D71)
-    val colorButton = Color(0xFFA1CCD1)
-    val colorIcon = Color(0xFFE9B384)
-
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorBackground),
+            .background(colorResource(R.color.backgroundColor)),
 
         ) {
         Box(
@@ -68,6 +68,13 @@ fun LoginResQPet() {
                 .fillMaxWidth()
                 .height(400.dp)
         ) {
+
+            IconButton(onClick = { navController.navigate(NavigationState.Home.route) }, modifier = Modifier.size(65.dp)) {
+                Image(
+                    painter = painterResource(id = R.drawable.backbutton1),
+                    contentDescription = "Descripción de la imagen",
+                )
+            }
 
             Image(
                 painter = painterResource(id = R.drawable.bgdeco1),
@@ -101,7 +108,7 @@ fun LoginResQPet() {
                     .fillMaxWidth(0.99f)
                     .height(360.dp)
                     .clip(RoundedCornerShape(30.dp))
-                    .background(colorChartText)
+                    .background(colorResource(R.color.primaryColor))
                     .padding(30.dp)
             ) {
                 Column(
@@ -110,9 +117,9 @@ fun LoginResQPet() {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Hello!",
+                        text = stringResource(R.string.hello),
                         fontWeight = FontWeight.Bold,
-                        color = colorBackground,
+                        color = colorResource(R.color.backgroundColor),
                         style = MaterialTheme.typography.headlineLarge,
                         modifier = Modifier.padding(top = 8.dp)
                     )
@@ -120,8 +127,8 @@ fun LoginResQPet() {
                     Spacer(modifier = Modifier.height(1.dp))
 
                     Text(
-                        text = "Sign in to your account",
-                        color = colorBackground,
+                        text = stringResource(R.string.sign_in_to_your_account),
+                        color = colorResource(R.color.backgroundColor),
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(top = 8.dp)
                     )
@@ -131,15 +138,15 @@ fun LoginResQPet() {
                     OutlinedTextField(
                         value = email,
                         onValueChange = { newEmail -> loginViewModel.setEmail(newEmail) },
-                        label = { Text("Email") },
-                        leadingIcon = { Icon(Icons.Default.Email, contentDescription = "Email Icon", tint = colorIcon) },
-                        placeholder = { Text("Enter your email") },
+                        label = { Text(stringResource(R.string.email)) },
+                        leadingIcon = { Icon(Icons.Default.Email, contentDescription = "Email Icon", tint = colorResource(R.color.iconColor)) },
+                        placeholder = { Text(stringResource(R.string.enter_your_email)) },
                         singleLine = true,
                         colors = TextFieldDefaults.textFieldColors(
-                            containerColor = colorBackground,
-                            focusedIndicatorColor = colorBackground,
-                            focusedLabelColor = colorBackground,
-                            unfocusedLabelColor = colorBackground,
+                            containerColor = colorResource(R.color.backgroundColor),
+                            focusedIndicatorColor = colorResource(R.color.backgroundColor),
+                            focusedLabelColor = colorResource(R.color.backgroundColor),
+                            unfocusedLabelColor = colorResource(R.color.backgroundColor),
                         )
                     )
 
@@ -148,20 +155,20 @@ fun LoginResQPet() {
                     OutlinedTextField(
                         value = password,
                         onValueChange = { newPassword -> loginViewModel.setPassword(newPassword) },
-                        label = { Text("Password") },
+                        label = { Text(stringResource(R.string.password) )},
                         trailingIcon = {
                             val image = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
                             IconButton(onClick = { loginViewModel.togglePasswordVisibility() }) { // Notifica al ViewModel el cambio
-                                Icon(image, contentDescription = "Toggle password visibility", tint = colorIcon) // Asume que 'colorIcon' está definido en algún lugar
+                                Icon(image, contentDescription = "Toggle password visibility", tint = colorResource(R.color.iconColor)) // Asume que 'colorResource(R.color.iconColor)' está definido en algún lugar
                             }
                         },
-                        placeholder = { Text("Enter your password") },
+                        placeholder = { Text(stringResource(R.string.enter_your_password)) },
                         singleLine = true,
                         colors = TextFieldDefaults.textFieldColors(
-                            containerColor = colorBackground,
-                            focusedIndicatorColor = colorBackground,
-                            focusedLabelColor = colorBackground,
-                            unfocusedLabelColor = colorBackground,
+                            containerColor = colorResource(R.color.backgroundColor),
+                            focusedIndicatorColor = colorResource(R.color.backgroundColor),
+                            focusedLabelColor = colorResource(R.color.backgroundColor),
+                            unfocusedLabelColor = colorResource(R.color.backgroundColor),
                         ),
                         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
                     )
@@ -170,16 +177,17 @@ fun LoginResQPet() {
                     Button(
                         onClick = {
                             loginViewModel.onLoginClicked()
+                            navController.navigate(NavigationState.MainMenu.route)
                         },
                         modifier = Modifier
                             .fillMaxWidth(0.7f)
                             .height(50.dp),
-                        colors = ButtonDefaults.buttonColors(colorButton),
+                        colors = ButtonDefaults.buttonColors(colorResource(R.color.secondaryColor)),
                     ) {
                         Text(
-                            text = "Login",
+                            text = stringResource(R.string.login),
                             fontWeight = FontWeight.Bold,
-                            color = colorBackground,
+                            color = colorResource(R.color.backgroundColor),
                             style = MaterialTheme.typography.titleMedium
                         )
                     }

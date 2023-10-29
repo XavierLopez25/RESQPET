@@ -36,20 +36,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.resqpet.screens.backgroundColor
-import com.example.resqpet.screens.primaryColor
-import com.example.resqpet.screens.secondaryColor
+import androidx.navigation.NavController
+import com.example.resqpet.R
 import com.example.resqpet.ui.postlist.viewmodel.Post
 import com.example.resqpet.ui.postlist.viewmodel.PostViewModel
 
 @Composable
-fun PostFiltering() {
+fun PostFiltering(navController: NavController) {
 
     val viewModel: PostViewModel = viewModel()
     val posts by viewModel.posts.observeAsState(emptyList())
@@ -57,7 +58,7 @@ fun PostFiltering() {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(color = secondaryColor)
+                .background(color = colorResource(R.color.secondaryColor))
                 .align(Alignment.CenterHorizontally)
                 .height(100.dp)
                 .padding(top = 15.dp, start = 60.dp)
@@ -68,12 +69,18 @@ fun PostFiltering() {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(backgroundColor)
+                .background(colorResource(R.color.backgroundColor))
                 .height(5000.dp)
         ) {
             Column {
-                Box(modifier = Modifier.fillMaxWidth().background(primaryColor).align(Alignment.CenterHorizontally)) {
-                    LazyRow (modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).clip(RoundedCornerShape(16.dp))) {
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .background(colorResource(R.color.primaryColor))
+                    .align(Alignment.CenterHorizontally)) {
+                    LazyRow (modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .clip(RoundedCornerShape(16.dp))) {
                         itemsIndexed(items = listOf("Adoption", "Charity", "Health & Care", "Events")) { _, item ->
                             FilterCheckbox(item)
                         }
@@ -85,7 +92,7 @@ fun PostFiltering() {
                 LazyColumn(
                     modifier = Modifier
                         .clip(RoundedCornerShape(16.dp))
-                        .background(primaryColor)
+                        .background(colorResource(R.color.primaryColor))
                         .width(350.dp)
                         .height(600.dp)
                         .align(Alignment.CenterHorizontally)
@@ -112,19 +119,19 @@ fun SearchBar() {
         onValueChange = { text = it },
         textStyle = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp),
         colors = TextFieldDefaults.textFieldColors(
-            textColor = primaryColor,
-            cursorColor = primaryColor,
-            focusedLabelColor = primaryColor,
-            unfocusedLabelColor = primaryColor,
-            focusedLeadingIconColor = primaryColor,
-            unfocusedLeadingIconColor = primaryColor,
-            focusedIndicatorColor = primaryColor,
-            unfocusedIndicatorColor = primaryColor,
-            containerColor = backgroundColor
+            textColor = colorResource(R.color.primaryColor),
+            cursorColor = colorResource(R.color.primaryColor),
+            focusedLabelColor = colorResource(R.color.primaryColor),
+            unfocusedLabelColor = colorResource(R.color.primaryColor),
+            focusedLeadingIconColor = colorResource(R.color.primaryColor),
+            unfocusedLeadingIconColor = colorResource(R.color.primaryColor),
+            focusedIndicatorColor = colorResource(R.color.primaryColor),
+            unfocusedIndicatorColor = colorResource(R.color.primaryColor),
+            containerColor = colorResource(R.color.backgroundColor)
         ),
-        label = { Text("Search", style = MaterialTheme.typography.titleSmall.copy(fontSize = 14.sp)) },
+        label = { Text(stringResource(R.string.search), style = MaterialTheme.typography.titleSmall.copy(fontSize = 14.sp)) },
         trailingIcon = { IconButton(onClick = { /* acción cuando se hace clic */ }, modifier = Modifier.size(40.dp)) { Icon(
-            Icons.Filled.Search, contentDescription = null, tint = primaryColor
+            Icons.Filled.Search, contentDescription = null, tint = colorResource(R.color.primaryColor)
         ) } },
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier
@@ -164,8 +171,8 @@ fun FilterCheckbox(text: String) {
         modifier = Modifier.padding(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = text,fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge, fontSize = 15.sp, color = secondaryColor)
-        Checkbox(checked = check, onCheckedChange = { check = it }, colors = CheckboxDefaults.colors(uncheckedColor = secondaryColor, checkedColor = secondaryColor))
+        Text(text = text,fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge, fontSize = 15.sp, color = colorResource(R.color.secondaryColor))
+        Checkbox(checked = check, onCheckedChange = { check = it }, colors = CheckboxDefaults.colors(uncheckedColor = colorResource(R.color.secondaryColor), checkedColor = colorResource(R.color.secondaryColor)))
         Spacer(modifier = Modifier.width(8.dp))
 
     }

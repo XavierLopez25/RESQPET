@@ -24,12 +24,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocalHospital
 import androidx.compose.material.icons.filled.ManageAccounts
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -38,39 +36,41 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.resqpet.R
+import com.example.resqpet.navigation.NavigationState
 import com.example.resqpet.ui.mainmenu.viewmodel.CardItem
 import com.example.resqpet.ui.mainmenu.viewmodel.MainMenuViewModel
 
-val primaryColor = Color(0xFF2A5D71)
-val backgroundColor = Color(0xFFF4F2DE)
-val secondaryColor = Color(0xFFA1CCD1)
-val textColor = Color.White
-
-@Preview
 @Composable
-fun MainMenuResQPet() {
+fun MainMenuResQPet(navController: NavController) {
+
 
     val viewModel: MainMenuViewModel = viewModel()
     val posts = viewModel.posts.observeAsState(initial = emptyList())
+
+    LaunchedEffect(key1 = "fetchPosts") {
+        viewModel.fetchPosts()
+    }
 
     var selectedItem by remember { mutableIntStateOf(0) }
     listOf("Home", "Search", "Add", "Health", "Profile")
@@ -81,7 +81,7 @@ fun MainMenuResQPet() {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = backgroundColor)
+                .background(color = colorResource(R.color.backgroundColor))
                 .weight(0.5f)
         ) {
             Column(
@@ -112,8 +112,8 @@ fun MainMenuResQPet() {
                         .height(100.dp)
                 ) {
                     Text(
-                        text = "Hello!",
-                        color = primaryColor,
+                        text = stringResource(R.string.hello1),
+                        color = colorResource(R.color.primaryColor),
                         fontSize = 50.sp,
                         style = MaterialTheme.typography.displayLarge,
                         fontWeight = FontWeight.Bold
@@ -130,15 +130,15 @@ fun MainMenuResQPet() {
                 }
 
                 Text(
-                    text = "Whisker you looking for? Tail us",
-                    color = primaryColor,
+                    text = stringResource(R.string.whisker_you_looking_for_tail_us),
+                    color = colorResource(R.color.primaryColor),
                     fontSize = 14.sp,
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "and find your purrfect match here!",
-                    color = primaryColor,
+                    text = stringResource(R.string.and_find_your_purrfect_match_here),
+                    color = colorResource(R.color.primaryColor),
                     fontSize = 14.sp,
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold
@@ -146,7 +146,9 @@ fun MainMenuResQPet() {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                val cardItems =  listOf(CardItem("Adopt", R.drawable.heart), CardItem("Events", R.drawable.shelter1), CardItem("Charity", R.drawable.shelter2))
+                val cardItems =  listOf(CardItem(stringResource(R.string.adopt1), R.drawable.heart, null, NavigationState.Adopt.route), CardItem(
+                    stringResource(R.string.events), R.drawable.shelter1, null, NavigationState.Event.route), CardItem(
+                    stringResource(R.string.donate1), R.drawable.shelter2, null, NavigationState.Donate.route))
 
                 LazyRow {
                     itemsIndexed(items = cardItems) { _, item ->
@@ -157,10 +159,10 @@ fun MainMenuResQPet() {
                                     width = 200.dp,
                                     height = 100.dp
                                 )
-                                .clickable { /* Handle click */ },
+                                .clickable { item.route?.let { navController.navigate(it) } },
                             shape = RoundedCornerShape(12.dp),
                             colors = CardDefaults.cardColors(
-                                containerColor = primaryColor
+                                containerColor = colorResource(R.color.primaryColor)
                             ),
                         ) {
                             Box(contentAlignment = Alignment.Center) {
@@ -168,7 +170,7 @@ fun MainMenuResQPet() {
 
                                 Text(
                                     text = item.title,
-                                    color = textColor,
+                                    color = colorResource(R.color.textColor),
                                     fontSize = 16.sp,
                                     modifier = Modifier
                                         .align(Alignment.CenterStart)
@@ -190,16 +192,16 @@ fun MainMenuResQPet() {
             }
         }
 
-        PostsBar(Modifier.weight(0.5f), posts)
+        PostsBar(Modifier.weight(0.5f), posts, navController)
     }
 
 }
 
 @Composable
-fun PostsBar(modifier: Modifier = Modifier, posts: State<List<CardItem>>) {
+fun PostsBar(modifier: Modifier = Modifier, posts: State<List<CardItem>>, navController: NavController) {
     Box(
         modifier = modifier
-            .background(primaryColor)
+            .background(colorResource(R.color.primaryColor))
             .fillMaxWidth(),
         contentAlignment = Alignment.BottomEnd
 
@@ -210,16 +212,16 @@ fun PostsBar(modifier: Modifier = Modifier, posts: State<List<CardItem>>) {
                 modifier = Modifier.fillMaxWidth()
 
             ) {
-                Text(text = "Latest Posts", color = textColor, fontSize = 16.sp)
+                Text(text = stringResource(R.string.latest_posts), color = colorResource(R.color.textColor), fontSize = 16.sp)
                 Button(
                     modifier = Modifier
                         .padding(1.dp),
-                    onClick = { /* Handle Save Action */ },
+                    onClick = { navController.navigate(NavigationState.Posts.route) },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFFA1CCD1)
                     )
                 ) {
-                    Text(text = " See all posts -> ", color = Color(0xFFF4F2DE), fontSize = 20.sp)
+                    Text(text = stringResource(R.string.see_all_posts), color = Color(0xFFF4F2DE), fontSize = 20.sp)
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
@@ -231,7 +233,7 @@ fun PostsBar(modifier: Modifier = Modifier, posts: State<List<CardItem>>) {
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
                 itemsIndexed(items = posts.value) { _, item  ->
-                    PostCard(postItem = item)
+                    PostCard(postItem = item, navController)
                 }
             }
         }
@@ -243,7 +245,7 @@ fun PostsBar(modifier: Modifier = Modifier, posts: State<List<CardItem>>) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(secondaryColor)
+            .background(colorResource(R.color.secondaryColor))
             .padding(8.dp)
             .height(40.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -252,41 +254,51 @@ fun PostsBar(modifier: Modifier = Modifier, posts: State<List<CardItem>>) {
         Icon(
             imageVector = Icons.Default.Home,
             contentDescription = "Home Icon",
-            tint = primaryColor,
+            tint = colorResource(R.color.primaryColor),
+            modifier = Modifier.clickable { navController.navigate(NavigationState.Home.route) }
         )
         Icon(
             imageVector = Icons.Default.Search,
             contentDescription = "Search Icon",
-            tint = primaryColor
+            tint = colorResource(R.color.primaryColor),
+            modifier = Modifier.clickable { navController.navigate(NavigationState.Search.route) }
         )
         Icon(
             imageVector = Icons.Default.Add,
             contentDescription = "Add Icon",
-            tint = primaryColor
+            tint = colorResource(R.color.primaryColor)
         )
         Icon(
             imageVector = Icons.Default.LocalHospital,
             contentDescription = "Health Icon",
-            tint = primaryColor
+            tint = colorResource(R.color.primaryColor),
+            modifier = Modifier.clickable { navController.navigate(NavigationState.Health.route) }
         )
         Icon(
             imageVector = Icons.Default.ManageAccounts,
             contentDescription = "Profile Icon",
-            tint = primaryColor
+            tint = colorResource(R.color.primaryColor),
+            modifier = Modifier.clickable { navController.navigate(NavigationState.Profile.route) }
         )
     }
 }
 
 @Composable
-fun PostCard(postItem: CardItem) {
+fun PostCard(postItem: CardItem, navController: NavController) {
     Card(
         modifier = Modifier
             .padding(8.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable {
+                postItem.animalId?.let {
+                    val route = "postDetail/$it"
+                    navController.navigate(route)
+                }
+            },
         elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(
-            containerColor = secondaryColor),
+            containerColor = colorResource(R.color.secondaryColor)),
 
         ) {
         Column {
@@ -294,7 +306,7 @@ fun PostCard(postItem: CardItem) {
                 text = postItem.title,
                 modifier = Modifier.padding(8.dp),
                 style = MaterialTheme.typography.labelLarge,
-                color = textColor,
+                color = colorResource(R.color.textColor),
                 textAlign = TextAlign.Center
 
             )

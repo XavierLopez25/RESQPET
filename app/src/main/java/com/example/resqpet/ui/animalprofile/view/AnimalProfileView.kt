@@ -25,8 +25,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -34,34 +34,35 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.resqpet.R
+import com.example.resqpet.navigation.NavigationState
 import com.example.resqpet.ui.animalprofile.viewmodel.AnimalProfileViewModel
-import com.example.resqpet.ui.mainmenu.view.backgroundColor
-import com.example.resqpet.ui.mainmenu.view.primaryColor
-import com.example.resqpet.ui.mainmenu.view.secondaryColor
+import com.example.resqpet.ui.mainmenu.viewmodel.MainMenuViewModel
 
 @Composable
-fun AnimalProfile() {
+fun AnimalProfile(animalId: Int, navController: NavController) {
 
-    val viewModel: AnimalProfileViewModel = viewModel()
+    val viewModel_secondary: MainMenuViewModel = viewModel()
 
-    val animalList by viewModel.animals.observeAsState(initial = emptyList())
-
-    val animal = animalList.firstOrNull()
-        ?:
-        return
+    val animal = viewModel_secondary.posts.value?.firstOrNull { it.animalId == animalId }
+    LaunchedEffect(key1 = animalId){
+        viewModel_secondary.fetchPosts()
+    }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(backgroundColor)
+            .background(colorResource(R.color.backgroundColor))
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -71,22 +72,28 @@ fun AnimalProfile() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp)
-                    .background(secondaryColor)
+                    .background(colorResource(R.color.secondaryColor))
             ) {
-                IconButton(onClick = { /* acción cuando se hace clic */ }, modifier = Modifier.size(65.dp)) {
+                IconButton(onClick = { navController.navigate(NavigationState.MainMenu.route) }, modifier = Modifier.size(
+                    dimensionResource(id = R.dimen.icon_button_size))) {
                     Image(
                         painter = painterResource(id = R.drawable.backbutton2),
                         contentDescription = "Descripción de la imagen",
                     )
                 }
 
-                Text("Hi! I'm ${animal.name}", fontWeight = FontWeight.Bold, fontSize = 23.sp, modifier = Modifier
-                    .align(Alignment.CenterStart)
-                    .offset(x = 20.dp, y = 20.dp), style = MaterialTheme.typography.titleLarge, color = Color.White)
+                if (animal != null) {
+                    Text(
+                         stringResource(R.string.hi_i_m) + "${animal.name}", fontWeight = FontWeight.Bold, fontSize = 23.sp, modifier = Modifier
+                            .align(Alignment.CenterStart)
+                            .offset(x = dimensionResource(id = R.dimen.icon_button_size), y = dimensionResource(id = R.dimen.icon_button_size)), style = MaterialTheme.typography.titleLarge, color = colorResource(R.color.textColor))
+                }
 
-                Text("${animal.breed}", modifier = Modifier
-                    .align(Alignment.CenterStart)
-                    .offset(x = 80.dp, y = 60.dp), style = MaterialTheme.typography.labelLarge, color = Color.White)
+                if (animal != null) {
+                    Text("${animal.breed}", modifier = Modifier
+                        .align(Alignment.CenterStart)
+                        .offset(x = dimensionResource(id = R.dimen.breed_text_offset_x), y = dimensionResource(id = R.dimen.breed_text_offset_y)), style = MaterialTheme.typography.labelLarge, color = colorResource(R.color.textColor))
+                }
 
                 Box(
                     modifier = Modifier
@@ -103,25 +110,33 @@ fun AnimalProfile() {
                     Box(
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
-                            .width(170.dp)
-                            .height(170.dp)
-                            .background(secondaryColor, shape = RoundedCornerShape(16.dp))
-                            .padding(vertical = 10.dp, horizontal = 10.dp)
+                            .width(dimensionResource(id = R.dimen.inner_image_box_width))
+                            .height(dimensionResource(id = R.dimen.inner_image_box_height))
+                            .background(
+                                colorResource(R.color.secondaryColor),
+                                shape = RoundedCornerShape(dimensionResource(id = R.dimen.rounded_corner))
+                            )
+                            .padding(vertical = dimensionResource(id = R.dimen.image_box_padding_vertical), horizontal = dimensionResource(id = R.dimen.image_box_padding_horizontal))
                     ) {
                         // Box with the dog image
                         Box(
                             modifier = Modifier
-                                .width(155.dp)
-                                .height(155.dp)
-                                .background(backgroundColor, shape = RoundedCornerShape(16.dp))
+                                .width(dimensionResource(id = R.dimen.dog_image_size))
+                                .height(dimensionResource(id = R.dimen.dog_image_size))
+                                .background(
+                                    colorResource(R.color.backgroundColor),
+                                    shape = RoundedCornerShape(dimensionResource(id = R.dimen.rounded_corner))
+                                )
                         ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.doggo5),
-                                contentDescription = "Doberman",
-                                modifier = Modifier
-                                    .align(Alignment.CenterEnd)
-                                    .size(200.dp)
-                            )
+                            if (animal != null) {
+                                Image(
+                                    painter = painterResource(id = animal.imageResId),
+                                    contentDescription = "Doberman",
+                                    modifier = Modifier
+                                        .align(Alignment.CenterEnd)
+                                        .size(dimensionResource(id = R.dimen.title_text_size))
+                                )
+                            }
                         }
                     }
                 }
@@ -132,7 +147,7 @@ fun AnimalProfile() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState(), enabled = true)
-                    .padding(top = 80.dp),
+                    .padding(top = dimensionResource(id = R.dimen.column_padding_top)),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -140,23 +155,33 @@ fun AnimalProfile() {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    ProfileInfoCard(title = "Description", content = "${animal.description}\nAge: ${animal.age}\nSex: ${animal.sex}")
-                    ProfileInfoCard(title = "Personality", content = animal.personality)
+                    if (animal != null) {
+                        ProfileInfoCard(title = stringResource(R.string.description), content = "${animal.description}\n" + stringResource(
+                                                    R.string.age) + "${animal.age}\n" + stringResource(
+                                                                                R.string.sex) + "${animal.sex}")
+                    }
+                    if (animal != null) {
+                        animal.personality?.let { ProfileInfoCard(title = stringResource(R.string.personality), content = it) }
+                    }
                 }
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    ProfileInfoCard(title = "Contact Info", content = animal.contactInfo)
-                    HealthConditionsCard(animal.health.isVaccinated, animal.health.isCastrated)
+                    if (animal != null) {
+                        animal.contactInfo?.let { ProfileInfoCard(title = stringResource(R.string.contact_info), content = it) }
+                    }
+                    if (animal != null) {
+                        animal.health?.let { HealthConditionsCard(it.isVaccinated, animal.health.isCastrated) }
+                    }
                 }
             }
 
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 16.dp)
+                    .padding(bottom = dimensionResource(id = R.dimen.bottom_box_padding_bottom))
                     .graphicsLayer { translationY = -190f },
                 contentAlignment = Alignment.Center
             ) {
@@ -169,7 +194,7 @@ fun AnimalProfile() {
                     )
                 }
 
-                Text(text = "Adopt", style = MaterialTheme.typography.titleLarge, fontSize = 50.sp, color = Color.White, modifier = Modifier.offset(y = 155.dp))
+                Text(text = stringResource(R.string.adopt), style = MaterialTheme.typography.titleLarge, fontSize = 50.sp, color = colorResource(R.color.textColor), modifier = Modifier.offset(y = 155.dp))
             }
         }
     }
@@ -179,11 +204,11 @@ fun AnimalProfile() {
 fun ProfileInfoCard(title: String, content: String) {
     Card(
         modifier = Modifier
-            .width(200.dp)
-            .height(200.dp)
-            .padding(8.dp),
-        elevation = CardDefaults.cardElevation(8.dp),
-        colors = CardDefaults.cardColors(containerColor = (primaryColor))
+            .width(dimensionResource(id = R.dimen.profile_info_card_width))
+            .height(dimensionResource(id = R.dimen.profile_info_card_height))
+            .padding(dimensionResource(id = R.dimen.profile_info_card_padding)),
+        elevation = CardDefaults.cardElevation(dimensionResource(id = R.dimen.card_elevation)),
+        colors = CardDefaults.cardColors(containerColor = (colorResource(R.color.primaryColor)))
     ) {
         Column(
             modifier = Modifier
@@ -192,9 +217,9 @@ fun ProfileInfoCard(title: String, content: String) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = title, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium, fontSize = 20.sp, color = Color.White)
-            Spacer(modifier = Modifier.height(15.dp))
-            Text(text = content, textAlign = TextAlign.Center, fontSize = 12.sp, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium, color = Color.White)
+            Text(text = title, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium, fontSize = 20.sp, color = colorResource(R.color.textColor))
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.text_spacer_height)))
+            Text(text = content, textAlign = TextAlign.Center, fontSize = 12.sp, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium, color = colorResource(R.color.textColor))
         }
     }
 }
@@ -206,16 +231,16 @@ fun HealthConditionsCard(vaccinatedState: Boolean, castratedState: Boolean) {
 
     Card(
         modifier = Modifier
-            .width(200.dp)
-            .height(200.dp)
-            .padding(8.dp),
-        elevation = CardDefaults.cardElevation(8.dp),
-        colors = CardDefaults.cardColors(containerColor = (primaryColor))
+            .width(dimensionResource(id = R.dimen.profile_info_card_width))
+            .height(dimensionResource(id = R.dimen.profile_info_card_height))
+            .padding(dimensionResource(id = R.dimen.profile_info_card_padding)),
+        elevation = CardDefaults.cardElevation(dimensionResource(id = R.dimen.card_elevation)),
+        colors = CardDefaults.cardColors(containerColor = (colorResource(R.color.primaryColor)))
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(8.dp)
+                .padding(dimensionResource(id = R.dimen.checkbox_row_spacer_width))
                 .verticalScroll(rememberScrollState(), enabled = true),
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
@@ -223,24 +248,18 @@ fun HealthConditionsCard(vaccinatedState: Boolean, castratedState: Boolean) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Start
             ) {
-                Checkbox(checked = vaccinated, onCheckedChange = { vaccinated = it }, colors = CheckboxDefaults.colors(uncheckedColor = Color.White, checkedColor = secondaryColor), enabled = false)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "Vaccinated",fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge, fontSize = 15.sp, modifier = Modifier.padding(top = 12.dp), color = Color.White)
+                Checkbox(checked = vaccinated, onCheckedChange = { vaccinated = it }, colors = CheckboxDefaults.colors(uncheckedColor = colorResource(R.color.textColor), checkedColor = colorResource(R.color.secondaryColor)), enabled = false)
+                Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.checkbox_row_spacer_width)))
+                Text(text = "Vaccinated",fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge, fontSize = 15.sp, modifier = Modifier.padding(top = 12.dp), color = colorResource(R.color.textColor))
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Start
             ) {
-                Checkbox(checked = castrated, onCheckedChange = { castrated = it }, colors = CheckboxDefaults.colors(uncheckedColor = Color.White, checkedColor = secondaryColor), enabled = false)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "Castrated",fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge, fontSize = 15.sp, modifier = Modifier.padding(top = 12.dp), color = Color.White)
+                Checkbox(checked = castrated, onCheckedChange = { castrated = it }, colors = CheckboxDefaults.colors(uncheckedColor = colorResource(R.color.textColor), checkedColor = colorResource(R.color.secondaryColor)), enabled = false)
+                Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.checkbox_row_spacer_width)))
+                Text(text = "Castrated",fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge, fontSize = 15.sp, modifier = Modifier.padding(top = 12.dp), color = colorResource(R.color.textColor))
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewAnimalProfile() {
-    AnimalProfile()
 }

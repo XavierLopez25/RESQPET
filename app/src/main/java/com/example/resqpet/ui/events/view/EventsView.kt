@@ -19,7 +19,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.House
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -35,30 +34,26 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.resqpet.R
 import com.example.resqpet.ui.events.viewmodel.MainEventViewModel
 
-val primaryColor = Color(0xFF2A5D71)
-val backgroundColor = Color(0xFFF4F2DE)
-val secondaryColor = Color(0xFFA1CCD1)
-val textColor = Color.White
-
-@Preview
 @Composable
-fun MainEvent() {
+fun MainEvent(navController: NavController) {
 
     val viewModel: MainEventViewModel = viewModel()
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(backgroundColor)
+            .background(colorResource(R.color.backgroundColor))
     ) {
         Column {
             Box(
@@ -100,11 +95,11 @@ fun MainEvent() {
 
         Button(
             onClick = {viewModel.onAssistClicked()},
-            colors = ButtonDefaults.buttonColors(containerColor = secondaryColor),
+            colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.secondaryColor)),
             modifier = Modifier.offset(x = (150).dp, y = (690).dp)
 
         ) {
-            Text("Assist", color = Color.White, style =  MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.assist), color = Color.White, style =  MaterialTheme.typography.titleMedium)
         }
     }
 }
@@ -112,10 +107,7 @@ fun MainEvent() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CardDesign() {
-
-    val colorBackground = Color(0xFFF4F2DE)
-    val colorIcon = Color(0xFFE9B384)
-
+    
     val viewModel: MainEventViewModel = viewModel()
     val eventsInfo by viewModel.eventsInfo.collectAsState()
 
@@ -123,12 +115,12 @@ fun CardDesign() {
         modifier = Modifier
             .width(350.dp)
             .height(425.dp)
-            .background(color = primaryColor, shape = RoundedCornerShape(16.dp))
+            .background(color = colorResource(R.color.primaryColor), shape = RoundedCornerShape(16.dp))
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Text("Annual Dog Race!", fontSize = 35.sp, color = Color.White, style =  MaterialTheme.typography.displayLarge)
+        Text(stringResource(R.string.annual_dog_race), fontSize = 35.sp, color = Color.White, style =  MaterialTheme.typography.displayLarge)
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
@@ -139,9 +131,9 @@ fun CardDesign() {
 
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(
-                    text = "Foundation Name",
+                    text = stringResource(R.string.foundation_name),
                     fontWeight = FontWeight.Bold,
-                    color = colorBackground,
+                    color = colorResource(R.color.backgroundColor),
                     style = MaterialTheme.typography.titleMedium,
                 )
                 Spacer(modifier = Modifier.height(10.dp))
@@ -152,25 +144,25 @@ fun CardDesign() {
                         Icon(
                             Icons.Default.Person,
                             contentDescription = "Person Icon",
-                            tint = colorIcon
+                            tint = colorResource(R.color.iconColor)
                         )
                     },
                     enabled = false,
                     singleLine = true,
                     colors = TextFieldDefaults.textFieldColors(
-                        containerColor = colorBackground,
-                        focusedIndicatorColor = colorBackground,
-                        focusedLabelColor = colorBackground,
-                        unfocusedLabelColor = colorBackground,
+                        containerColor = colorResource(R.color.backgroundColor),
+                        focusedIndicatorColor = colorResource(R.color.backgroundColor),
+                        focusedLabelColor = colorResource(R.color.backgroundColor),
+                        unfocusedLabelColor = colorResource(R.color.backgroundColor),
 
                         )
                 )
 
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(
-                    text = "Time of the Event",
+                    text = stringResource(R.string.time_of_the_event),
                     fontWeight = FontWeight.Bold,
-                    color = colorBackground,
+                    color = colorResource(R.color.backgroundColor),
                     style = MaterialTheme.typography.titleMedium,
                 )
                 Spacer(modifier = Modifier.height(10.dp))
@@ -181,16 +173,16 @@ fun CardDesign() {
                         Icon(
                             Icons.Default.CalendarMonth,
                             contentDescription = "Time Icon",
-                            tint = colorIcon
+                            tint = colorResource(R.color.iconColor)
                         )
                     },
                     enabled = false,
                     singleLine = true,
                     colors = TextFieldDefaults.textFieldColors(
-                        containerColor = colorBackground,
-                        focusedIndicatorColor = colorBackground,
-                        focusedLabelColor = colorBackground,
-                        unfocusedLabelColor = colorBackground,
+                        containerColor = colorResource(R.color.backgroundColor),
+                        focusedIndicatorColor = colorResource(R.color.backgroundColor),
+                        focusedLabelColor = colorResource(R.color.backgroundColor),
+                        unfocusedLabelColor = colorResource(R.color.backgroundColor),
 
                         )
                 )
@@ -198,9 +190,9 @@ fun CardDesign() {
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Text(
-                    text = "Minimum Age",
+                    text = stringResource(R.string.minimum_age),
                     fontWeight = FontWeight.Bold,
-                    color = colorBackground,
+                    color = colorResource(R.color.backgroundColor),
                     style = MaterialTheme.typography.titleMedium,
                 )
                 Spacer(modifier = Modifier.height(10.dp))
@@ -211,16 +203,16 @@ fun CardDesign() {
                         Icon(
                             Icons.Default.Check,
                             contentDescription = "Check Icon",
-                            tint = colorIcon
+                            tint = colorResource(R.color.iconColor)
                         )
                     },
                     enabled = false,
                     singleLine = true,
                     colors = TextFieldDefaults.textFieldColors(
-                        containerColor = colorBackground,
-                        focusedIndicatorColor = colorBackground,
-                        focusedLabelColor = colorBackground,
-                        unfocusedLabelColor = colorBackground,
+                        containerColor = colorResource(R.color.backgroundColor),
+                        focusedIndicatorColor = colorResource(R.color.backgroundColor),
+                        focusedLabelColor = colorResource(R.color.backgroundColor),
+                        unfocusedLabelColor = colorResource(R.color.backgroundColor),
 
                         )
                 )
@@ -228,9 +220,9 @@ fun CardDesign() {
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Text(
-                    text = "Minimum Size",
+                    text = stringResource(R.string.minimum_size),
                     fontWeight = FontWeight.Bold,
-                    color = colorBackground,
+                    color = colorResource(R.color.backgroundColor),
                     style = MaterialTheme.typography.titleMedium,
                 )
                 Spacer(modifier = Modifier.height(10.dp))
@@ -241,16 +233,16 @@ fun CardDesign() {
                         Icon(
                             Icons.Default.Check,
                             contentDescription = "Check Icon",
-                            tint = colorIcon
+                            tint = colorResource(R.color.iconColor)
                         )
                     },
                     enabled = false,
                     singleLine = true,
                     colors = TextFieldDefaults.textFieldColors(
-                        containerColor = colorBackground,
-                        focusedIndicatorColor = colorBackground,
-                        focusedLabelColor = colorBackground,
-                        unfocusedLabelColor = colorBackground,
+                        containerColor = colorResource(R.color.backgroundColor),
+                        focusedIndicatorColor = colorResource(R.color.backgroundColor),
+                        focusedLabelColor = colorResource(R.color.backgroundColor),
+                        unfocusedLabelColor = colorResource(R.color.backgroundColor),
 
                         )
                 )
@@ -258,9 +250,9 @@ fun CardDesign() {
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Text(
-                    text = "Address of the Event",
+                    text = stringResource(R.string.address_of_the_event),
                     fontWeight = FontWeight.Bold,
-                    color = colorBackground,
+                    color = colorResource(R.color.backgroundColor),
                     style = MaterialTheme.typography.titleMedium,
                 )
                 Spacer(modifier = Modifier.height(10.dp))
@@ -271,16 +263,16 @@ fun CardDesign() {
                         Icon(
                             Icons.Default.Home,
                             contentDescription = "Home Icon",
-                            tint = colorIcon
+                            tint = colorResource(R.color.iconColor)
                         )
                     },
                     enabled = false,
                     singleLine = true,
                     colors = TextFieldDefaults.textFieldColors(
-                        containerColor = colorBackground,
-                        focusedIndicatorColor = colorBackground,
-                        focusedLabelColor = colorBackground,
-                        unfocusedLabelColor = colorBackground,
+                        containerColor = colorResource(R.color.backgroundColor),
+                        focusedIndicatorColor = colorResource(R.color.backgroundColor),
+                        focusedLabelColor = colorResource(R.color.backgroundColor),
+                        unfocusedLabelColor = colorResource(R.color.backgroundColor),
 
                         )
                 )

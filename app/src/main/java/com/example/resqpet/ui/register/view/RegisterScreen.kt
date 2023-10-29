@@ -30,33 +30,28 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.resqpet.R
-import com.example.resqpet.ui.mainmenu.view.primaryColor
+import com.example.resqpet.navigation.NavigationState
 import com.example.resqpet.ui.register.viewmodel.RegisterViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterResQPet() {
+fun RegisterResQPet(navController: NavController) {
 
     val viewModel: RegisterViewModel = viewModel()
-    val colorBackground = Color(0xFFF4F2DE)
-    val colorChartText = Color(0xFF2A5D71)
-    val colorButton = Color(0xFFA1CCD1)
-    val colorIcon = Color(0xFFE9B384)
+
 
     // Observar los StateFlows como estados en Compose
     val username by viewModel.username.collectAsState()
@@ -67,7 +62,7 @@ fun RegisterResQPet() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorBackground),
+            .background(colorResource(R.color.backgroundColor)),
 
         ) {
         Box(
@@ -75,6 +70,13 @@ fun RegisterResQPet() {
                 .fillMaxWidth()
                 .height(400.dp)
         ) {
+
+            IconButton(onClick = { navController.navigate(NavigationState.Home.route) }, modifier = Modifier.size(65.dp)) {
+                Image(
+                    painter = painterResource(id = R.drawable.backbutton1),
+                    contentDescription = "Descripción de la imagen",
+                )
+            }
 
             Image(
                 painter = painterResource(id = R.drawable.bgdeco1),
@@ -111,7 +113,7 @@ fun RegisterResQPet() {
                     .fillMaxWidth(0.99f)
                     .height(420.dp)
                     .clip(RoundedCornerShape(30.dp))
-                    .background(colorChartText)
+                    .background(colorResource(R.color.primaryColor))
                     .padding(30.dp)
             ) {
                 Column(
@@ -120,9 +122,9 @@ fun RegisterResQPet() {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Welcome!",
+                        text = stringResource(R.string.welcome),
                         fontWeight = FontWeight.Bold,
-                        color = colorBackground,
+                        color = colorResource(R.color.backgroundColor),
                         style = MaterialTheme.typography.headlineLarge,
                         modifier = Modifier.padding(top = 2.dp)
                     )
@@ -130,8 +132,8 @@ fun RegisterResQPet() {
                     Spacer(modifier = Modifier.height(1.dp))
 
                     Text(
-                        text = "Create a new account",
-                        color = colorBackground,
+                        text = stringResource(R.string.create_a_new_account),
+                        color = colorResource(R.color.backgroundColor),
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(top = 2.dp)
                     )
@@ -141,22 +143,22 @@ fun RegisterResQPet() {
                     OutlinedTextField(
                         value = username,
                         onValueChange = {  newValue -> viewModel.setUsername(newValue)},
-                        label = { Text("Username") },
+                        label = { Text(stringResource(R.string.username)) },
                         leadingIcon = {
                             Icon(
                                 Icons.Default.Person,
                                 contentDescription = "User Icon",
-                                tint = colorIcon
+                                tint = colorResource(R.color.iconColor)
                             )
                         },
-                        placeholder = { Text("Enter your username") },
+                        placeholder = { Text(stringResource(R.string.enter_your_username)) },
                         singleLine = true,
                         colors = TextFieldDefaults.textFieldColors(
-                            containerColor = colorBackground,
-                            focusedIndicatorColor = colorBackground,
-                            focusedLabelColor = colorBackground,
-                            unfocusedLabelColor = colorBackground,
-                            textColor = primaryColor
+                            containerColor = colorResource(R.color.backgroundColor),
+                            focusedIndicatorColor = colorResource(R.color.backgroundColor),
+                            focusedLabelColor = colorResource(R.color.backgroundColor),
+                            unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                            textColor = colorResource(R.color.primaryColor)
                         )
                     )
 
@@ -165,22 +167,22 @@ fun RegisterResQPet() {
                     OutlinedTextField(
                         value = email,
                         onValueChange = {  newValue -> viewModel.setEmail(newValue) },
-                        label = { Text("Email") },
+                        label = { Text(stringResource(R.string.email)) },
                         leadingIcon = {
                             Icon(
                                 Icons.Default.Email,
                                 contentDescription = "Email Icon",
-                                tint = colorIcon
+                                tint = colorResource(R.color.iconColor)
                             )
                         },
-                        placeholder = { Text("Enter your email") },
+                        placeholder = { Text(stringResource(R.string.enter_your_email)) },
                         singleLine = true,
                         colors = TextFieldDefaults.textFieldColors(
-                            containerColor = colorBackground,
-                            focusedIndicatorColor = colorBackground,
-                            focusedLabelColor = colorBackground,
-                            unfocusedLabelColor = colorBackground,
-                            textColor = primaryColor
+                            containerColor = colorResource(R.color.backgroundColor),
+                            focusedIndicatorColor = colorResource(R.color.backgroundColor),
+                            focusedLabelColor = colorResource(R.color.backgroundColor),
+                            unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                            textColor = colorResource(R.color.primaryColor)
 
                         )
                     )
@@ -189,7 +191,7 @@ fun RegisterResQPet() {
                     OutlinedTextField(
                         value = password,
                         onValueChange = {  newValue -> viewModel.setPassword(newValue)},
-                        label = { Text("Password") },
+                        label = { Text(stringResource(R.string.password)) },
                         trailingIcon = {
                             val image =
                                 if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
@@ -197,18 +199,18 @@ fun RegisterResQPet() {
                                 Icon(
                                     image,
                                     contentDescription = "Toggle password visibility",
-                                    tint = colorIcon
+                                    tint = colorResource(R.color.iconColor)
                                 )
                             }
                         },
-                        placeholder = { Text("Enter your password") },
+                        placeholder = { Text(stringResource(R.string.enter_your_password)) },
                         singleLine = true,
                         colors = TextFieldDefaults.textFieldColors(
-                            containerColor = colorBackground,
-                            focusedIndicatorColor = colorBackground,
-                            focusedLabelColor = colorBackground,
-                            unfocusedLabelColor = colorBackground,
-                            textColor = primaryColor
+                            containerColor = colorResource(R.color.backgroundColor),
+                            focusedIndicatorColor = colorResource(R.color.backgroundColor),
+                            focusedLabelColor = colorResource(R.color.backgroundColor),
+                            unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                            textColor = colorResource(R.color.primaryColor)
 
                         ),
                         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
@@ -216,16 +218,18 @@ fun RegisterResQPet() {
                     Spacer(modifier = Modifier.height(20.dp))
 
                     Button(
-                        onClick = {viewModel.onRegisterClicked(username, email, password)},
+                        onClick = {
+                            viewModel.onRegisterClicked(username, email, password)
+                            navController.navigate(NavigationState.MainMenu.route)},
                         modifier = Modifier
                             .fillMaxWidth(0.7f)
                             .height(50.dp),
-                        colors = ButtonDefaults.buttonColors(colorButton),
+                        colors = ButtonDefaults.buttonColors(colorResource(R.color.secondaryColor)),
                     ) {
                         Text(
-                            text = "Login",
+                            text = stringResource(R.string.register),
                             fontWeight = FontWeight.Bold,
-                            color = colorBackground,
+                            color = colorResource(R.color.backgroundColor),
                             style = MaterialTheme.typography.titleMedium
                         )
                     }

@@ -27,27 +27,29 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.resqpet.R
 import com.example.resqpet.ui.petlist.viewmodel.Pet
 import com.example.resqpet.ui.petlist.viewmodel.PetListViewModel
 
+
 @Composable
-fun PetList() {
+fun PetList(navController: NavController) {
 
 
     val viewModel: PetListViewModel = viewModel()
     val pets = viewModel.pets
-    val colorBackground = Color(0xFFF4F2DE)
-    val colorText = Color(0xFF2A5D71)
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorBackground),
+            .background(colorResource(R.color.backgroundColor)),
 
         ) {
         Box(
@@ -62,7 +64,8 @@ fun PetList() {
                 modifier = Modifier
                     .size(80.dp)
                     .padding(top = 0.dp, start = 0.dp)
-                    .align(Alignment.TopStart).offset((1).dp, (10).dp)
+                    .align(Alignment.TopStart)
+                    .offset((1).dp, (10).dp)
             )
             IconButton(
                 onClick = { /* acción cuando se hace clic */ },
@@ -86,17 +89,17 @@ fun PetList() {
                 Spacer(modifier = Modifier.height(100.dp))
 
                 Text(
-                    text = "Welcome!",
+                    text = stringResource(R.string.welcome1),
                     fontWeight = FontWeight.Bold,
-                    color = colorText,
+                    color = colorResource(R.color.primaryColor),
                     style = MaterialTheme.typography.headlineMedium,
                 )
 
                 Spacer(modifier = Modifier.height(1.dp))
 
                 Text(
-                    text = "Rescue a Heart, Adopt a Friend",
-                    color = colorText,
+                    text = stringResource(R.string.rescue_a_heart_adopt_a_friend),
+                    color = colorResource(R.color.primaryColor),
                     style = MaterialTheme.typography.titleMedium,
                 )
                 Spacer(modifier = Modifier.height(10.dp))

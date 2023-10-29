@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Dimensions for AnimalProfile -->
+    <dimen name="animal_profile_box_height">200dp</dimen>
+    <dimen name="icon_button_size">65dp</dimen>
+    <dimen name="text_offset">20dp</dimen>
+    <dimen name="breed_text_offset_x">80dp</dimen>
+    <dimen name="breed_text_offset_y">60dp</dimen>
+    <dimen name="image_box_width">185dp</dimen>
+    <dimen name="image_box_height">185dp</dimen>
+    <dimen name="inner_image_box_width">170dp</dimen>
+    <dimen name="inner_image_box_height">170dp</dimen>
+    <dimen name="image_box_padding_vertical">10dp</dimen>
+    <dimen name="image_box_padding_horizontal">10dp</dimen>
+    <dimen name="dog_image_size">155dp</dimen>
+    <dimen name="actual_dog_image_size">200dp</dimen>
+    <dimen name="column_padding_top">80dp</dimen>
+    <dimen name="profile_info_card_width">200dp</dimen>
+    <dimen name="profile_info_card_height">200dp</dimen>
+    <dimen name="profile_info_card_padding">8dp</dimen>
+    <dimen name="text_spacer_height">15dp</dimen>
+    <dimen name="checkbox_row_spacer_width">8dp</dimen>
+    <dimen name="adopt_button_size">400dp</dimen>
+    <dimen name="adopt_button_offset_y">125dp</dimen>
+    <dimen name="adopt_text_offset_y">155dp</dimen>
+    <dimen name="bottom_box_padding_bottom">16dp</dimen>
+
+    <!-- Rounded corner dimensions -->
+    <dimen name="rounded_corner">16dp</dimen>
+
+    <!-- This dimension is for the card elevation and can be shared among other components if needed -->
+    <dimen name="card_elevation">8dp</dimen>
+
+    <!-- Text sizes -->
+    <dimen name="animal_name_text_size">23sp</dimen>
+    <dimen name="title_text_size">20sp</dimen>
+    <dimen name="content_text_size">12sp</dimen>
+    <dimen name="adopt_text_size">50sp</dimen>
+    <dimen name="checkbox_text_size">15sp</dimen>
+
+</resources>

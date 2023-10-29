@@ -19,7 +19,7 @@ class PostViewModel : ViewModel() {
         // Use resource IDs directly here
         val posts = listOf(
             Post(
-                 R.drawable.doggo6,
+                R.drawable.doggo6,
                 "Loving Husky seeks warm home.",
                 "Give him a chance! Together, you'll be the perfect team. Adopt and change a life."
             ),
@@ -54,4 +54,3 @@ class PostViewModel : ViewModel() {
 
     }
 }
-

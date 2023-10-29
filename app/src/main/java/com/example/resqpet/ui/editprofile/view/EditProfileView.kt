@@ -23,7 +23,6 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
@@ -41,24 +40,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.resqpet.R
 import com.example.resqpet.ui.editprofile.viewmodel.EditProfileViewModel
-import com.example.resqpet.ui.mainmenu.view.primaryColor
-
 val colorIcon = Color(0xFFE9B384)
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditProfileScreen() {
+fun EditProfileScreen(navController: NavController) {
 
     val viewModel: EditProfileViewModel = viewModel()
     val profileData by viewModel.profileData
@@ -70,7 +70,7 @@ fun EditProfileScreen() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF4F2DE))
+            .background(colorResource(R.color.backgroundColor))
     ) {
         Column(
             modifier = Modifier
@@ -83,7 +83,7 @@ fun EditProfileScreen() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(120.dp)
-                    .background(Color(0xFFA1CCD1)),
+                    .background(colorResource(R.color.secondaryColor)),
                 contentAlignment = Alignment.TopStart,
             ) {
                 Row(
@@ -96,10 +96,10 @@ fun EditProfileScreen() {
                         contentDescription = null
                     )
                     Text(
-                        text = "Edit Profile",
+                        text = stringResource(R.string.edit_profile),
                         fontFamily = FontFamily.SansSerif,
                         fontSize = 20.sp,
-                        color = Color(0xFFF4F2DE)
+                        color = colorResource(R.color.backgroundColor)
                     )
                     Spacer(modifier = Modifier.width(24.dp))
                 }
@@ -121,12 +121,12 @@ fun EditProfileScreen() {
                     OutlinedTextField(
                         value = profileData.name,
                         onValueChange = { newValue -> viewModel.onNameChanged(newValue)},
-                        label = { Text("Full Name") },
+                        label = { Text(stringResource(R.string.full_name)) },
                         colors = TextFieldDefaults.textFieldColors(
-                            containerColor = Color(0xFFF4F2DE),
-                            focusedIndicatorColor = Color(0xFFA1CCD1),
-                            focusedLabelColor = Color(0xFFFFFFFF),
-                            textColor = primaryColor
+                            containerColor = colorResource(R.color.backgroundColor),
+                            focusedIndicatorColor = colorResource(R.color.secondaryColor),
+                            focusedLabelColor = colorResource(R.color.textColor),
+                            textColor = colorResource(R.color.primaryColor)
                         ),
                         trailingIcon =  { Icon(Icons.Filled.Person, contentDescription = null, tint = colorIcon) }
                     )
@@ -136,11 +136,11 @@ fun EditProfileScreen() {
                     OutlinedTextField(
                         value = "",
                         onValueChange = { newValue -> viewModel.onEmailChanged(newValue) },
-                        label = { Text("Contact Email") },
+                        label = { Text(stringResource(R.string.contact_email)) },
                         colors = TextFieldDefaults.textFieldColors(
-                            containerColor = Color(0xFFF4F2DE),
-                            focusedIndicatorColor = Color(0xFFA1CCD1),
-                            focusedLabelColor = Color(0xFFFFFFFF)
+                            containerColor = colorResource(R.color.backgroundColor),
+                            focusedIndicatorColor = colorResource(R.color.secondaryColor),
+                            focusedLabelColor = colorResource(R.color.textColor)
                         ),
                         trailingIcon =  { Icon(Icons.Filled.Email, contentDescription = null, tint = colorIcon) }
                     )
@@ -150,11 +150,11 @@ fun EditProfileScreen() {
                     OutlinedTextField(
                         value = "",
                         onValueChange = { newValue -> viewModel.onPwdChanged(newValue) },
-                        label = { Text("Password") },
+                        label = { Text(stringResource(R.string.password1)) },
                         colors = TextFieldDefaults.textFieldColors(
-                            containerColor = Color(0xFFF4F2DE),
-                            focusedIndicatorColor = Color(0xFFA1CCD1),
-                            focusedLabelColor = Color(0xFFFFFFFF)
+                            containerColor = colorResource(R.color.backgroundColor),
+                            focusedIndicatorColor = colorResource(R.color.secondaryColor),
+                            focusedLabelColor = colorResource(R.color.textColor)
                         ),
                         trailingIcon = {
                             val image = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
@@ -162,7 +162,7 @@ fun EditProfileScreen() {
                                 Icon(image, contentDescription = "Toggle password visibility", tint = colorIcon) // Asume que 'colorIcon' está definido en algún lugar
                             }
                         },
-                        placeholder = { Text("Enter your password") },
+                        placeholder = { Text(stringResource(R.string.enter_your_password1)) },
                         singleLine = true,
                         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
 
@@ -175,11 +175,11 @@ fun EditProfileScreen() {
                     OutlinedTextField(
                         value = "",
                         onValueChange = { newValue -> viewModel.onPhoneChanged(newValue) },
-                        label = { Text("Phone Number") },
+                        label = { Text(stringResource(R.string.phone_number1)) },
                         colors = TextFieldDefaults.textFieldColors(
-                            containerColor = Color(0xFFF4F2DE),
-                            focusedIndicatorColor = Color(0xFFA1CCD1),
-                            focusedLabelColor = Color(0xFFFFFFFF)
+                            containerColor = colorResource(R.color.backgroundColor),
+                            focusedIndicatorColor = colorResource(R.color.secondaryColor),
+                            focusedLabelColor = colorResource(R.color.textColor)
                         ),
                         trailingIcon =  { Icon(Icons.Filled.Phone, contentDescription = null, tint = colorIcon) }
                     )
@@ -189,11 +189,11 @@ fun EditProfileScreen() {
                     OutlinedTextField(
                         value = "",
                         onValueChange = { newValue -> viewModel.onAddressChanged(newValue) },
-                        label = { Text("Address") },
+                        label = { Text(stringResource(R.string.address1)) },
                         colors = TextFieldDefaults.textFieldColors(
-                            containerColor = Color(0xFFF4F2DE),
-                            focusedIndicatorColor = Color(0xFFA1CCD1),
-                            focusedLabelColor = Color(0xFFFFFFFF)
+                            containerColor = colorResource(R.color.backgroundColor),
+                            focusedIndicatorColor = colorResource(R.color.secondaryColor),
+                            focusedLabelColor = colorResource(R.color.textColor)
                         ),
                         trailingIcon =  { Icon(Icons.Filled.Home, contentDescription = null, tint = colorIcon) }
                     )
@@ -209,10 +209,10 @@ fun EditProfileScreen() {
                                 .padding(15.dp),
                             onClick = { viewModel.discardChanges() },
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFFA1CCD1)
+                                containerColor = colorResource(R.color.secondaryColor)
                             )
                         ) {
-                            Text(text = "Cancel", color = Color(0xFFF4F2DE), fontSize = 20.sp)
+                            Text(text = stringResource(R.string.cancel1), color = colorResource(R.color.backgroundColor), fontSize = 20.sp)
                         }
 
                         Button(
@@ -220,10 +220,10 @@ fun EditProfileScreen() {
                                 .padding(15.dp),
                             onClick = { viewModel.saveProfile() },
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFFA1CCD1)
+                                containerColor = colorResource(R.color.secondaryColor)
                             )
                         ) {
-                            Text(text = "Save", color = Color(0xFFF4F2DE), fontSize = 20.sp)
+                            Text(text = stringResource(R.string.save1), color = colorResource(R.color.backgroundColor), fontSize = 20.sp)
                         }
                     }
                 }
@@ -264,9 +264,4 @@ fun ProfilePhotoWithEditButton() {
             )
         }
     }
-}
-@Preview
-@Composable
-fun PreviewEditProfileScreen() {
-    EditProfileScreen()
 }
