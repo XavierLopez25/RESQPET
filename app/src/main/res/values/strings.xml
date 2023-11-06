@@ -53,7 +53,6 @@
     <string name="cancel1">Cancel</string>
     <string name="save1">Save</string>
     <string name="assist">Assist</string>
-    <string name="annual_dog_race">Annual Dog Race!</string>
     <string name="foundation_name">Foundation Name</string>
     <string name="time_of_the_event">Time of the Event</string>
     <string name="minimum_age">Minimum Age</string>
@@ -83,4 +82,7 @@
     <string name="welcome1">Welcome!</string>
     <string name="rescue_a_heart_adopt_a_friend">Rescue a Heart, Adopt a Friend</string>
     <string name="search">Search</string>
+    <string name="healthC_description">Event Description</string>
+    <string name="date_of_event">Date</string>
+    <string name="event_place">Place</string>
 </resources>

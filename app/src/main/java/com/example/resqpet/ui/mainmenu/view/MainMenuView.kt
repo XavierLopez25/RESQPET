@@ -1,5 +1,9 @@
 package com.example.resqpet.ui.mainmenu.view
 
+import android.content.Context
+import android.content.ContextWrapper
+import android.net.Uri
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,6 +28,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DisabledByDefault
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocalHospital
 import androidx.compose.material.icons.filled.ManageAccounts
@@ -47,35 +52,49 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.rememberImagePainter
 import com.example.resqpet.R
 import com.example.resqpet.navigation.NavigationState
+import com.example.resqpet.ui.createpost.viewmodel.CreatePostViewModel
+import com.example.resqpet.ui.createpost.viewmodel.Post
 import com.example.resqpet.ui.mainmenu.viewmodel.CardItem
 import com.example.resqpet.ui.mainmenu.viewmodel.MainMenuViewModel
 
 @Composable
-fun MainMenuResQPet(navController: NavController) {
+fun MainMenuResQPet(navController: NavController, postsViewModel: CreatePostViewModel) {
 
+    val viewModel: CreatePostViewModel = postsViewModel
 
-    val viewModel: MainMenuViewModel = viewModel()
-    val posts = viewModel.posts.observeAsState(initial = emptyList())
+    val posts = viewModel._posts.observeAsState(initial = emptyList())
+
+    val latestId = posts.value.maxByOrNull { it.id }?.id
 
     LaunchedEffect(key1 = "fetchPosts") {
         viewModel.fetchPosts()
     }
 
-    var selectedItem by remember { mutableIntStateOf(0) }
-    listOf("Home", "Search", "Add", "Health", "Profile")
+    LaunchedEffect(key1 = posts.value) {
+        println("Posts inside LaunchedEffect: ${posts.value}")
+    }
+
 
     viewModel.fetchPosts()
+    println(viewModel.fetchPosts())
 
     Column (modifier = Modifier.fillMaxSize()){
         Box(
@@ -147,7 +166,7 @@ fun MainMenuResQPet(navController: NavController) {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 val cardItems =  listOf(CardItem(stringResource(R.string.adopt1), R.drawable.heart, null, NavigationState.Adopt.route), CardItem(
-                    stringResource(R.string.events), R.drawable.shelter1, null, NavigationState.Event.route), CardItem(
+                    stringResource(R.string.events), R.drawable.shelter1, null, "eventInfo/${latestId}"), CardItem(
                     stringResource(R.string.donate1), R.drawable.shelter2, null, NavigationState.Donate.route))
 
                 LazyRow {
@@ -198,7 +217,8 @@ fun MainMenuResQPet(navController: NavController) {
 }
 
 @Composable
-fun PostsBar(modifier: Modifier = Modifier, posts: State<List<CardItem>>, navController: NavController) {
+fun PostsBar(modifier: Modifier = Modifier, posts: State<List<Post>>, navController: NavController) {
+
     Box(
         modifier = modifier
             .background(colorResource(R.color.primaryColor))
@@ -266,7 +286,9 @@ fun PostsBar(modifier: Modifier = Modifier, posts: State<List<CardItem>>, navCon
         Icon(
             imageVector = Icons.Default.Add,
             contentDescription = "Add Icon",
-            tint = colorResource(R.color.primaryColor)
+            tint = colorResource(R.color.primaryColor),
+            modifier = Modifier.clickable { navController.navigate(NavigationState.AddPost.route) }
+
         )
         Icon(
             imageVector = Icons.Default.LocalHospital,
@@ -284,14 +306,31 @@ fun PostsBar(modifier: Modifier = Modifier, posts: State<List<CardItem>>, navCon
 }
 
 @Composable
-fun PostCard(postItem: CardItem, navController: NavController) {
+fun PostCard(postItem: Post /*CardItem*/, navController: NavController) {
+
+    var route = ""
+
+    val imagePainter = if (postItem.image != null) {
+        rememberImagePainter(data = postItem.image)
+    } else {
+        painterResource(id = R.drawable.noimageuploaded)
+    }
+
+    val cardText: String = if(postItem.category == "adoption") postItem.postAdopt?.postTitle.toString() else if ((postItem.category == "event") || (postItem.category == "health_care")) postItem.postEvent?.postTitle.toString() else "Post Not Found"
+
     Card(
         modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth()
             .clickable {
-                postItem.animalId?.let {
-                    val route = "postDetail/$it"
+                postItem.id.let {
+
+                    when(postItem.category){
+                        "adoption" -> route = "animalProfile/$it"
+                        "event" -> route = "eventInfo/$it"
+                        "health_care" -> route = "health_care/$it"
+                    }
+
                     navController.navigate(route)
                 }
             },
@@ -300,18 +339,31 @@ fun PostCard(postItem: CardItem, navController: NavController) {
         colors = CardDefaults.cardColors(
             containerColor = colorResource(R.color.secondaryColor)),
 
-        ) {
+        )
+
+    {
+
         Column {
             Text(
-                text = postItem.title,
-                modifier = Modifier.padding(8.dp),
+                text = cardText,
                 style = MaterialTheme.typography.labelLarge,
                 color = colorResource(R.color.textColor),
-                textAlign = TextAlign.Center
-
+                textAlign = TextAlign.Center,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold
             )
+
+            Text(
+                text = postItem.category,
+                style = MaterialTheme.typography.labelLarge,
+                color = colorResource(R.color.textColor),
+                textAlign = TextAlign.Center,
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Bold
+            )
+
             Image(
-                painter = painterResource(id = postItem.imageResId),
+                painter = imagePainter,
                 contentDescription = "Content image",
                 modifier = Modifier
                     .fillMaxWidth()

@@ -44,19 +44,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.rememberImagePainter
 import com.example.resqpet.R
 import com.example.resqpet.navigation.NavigationState
 import com.example.resqpet.ui.animalprofile.viewmodel.AnimalProfileViewModel
+import com.example.resqpet.ui.animalprofile.viewmodel.HealthInfo
+import com.example.resqpet.ui.createpost.viewmodel.CreatePostViewModel
 import com.example.resqpet.ui.mainmenu.viewmodel.MainMenuViewModel
 
 @Composable
-fun AnimalProfile(animalId: Int, navController: NavController) {
+fun AnimalProfile(animalId: Int, navController: NavController, postsViewModel: CreatePostViewModel) {
 
-    val viewModel_secondary: MainMenuViewModel = viewModel()
+    val viewModel: CreatePostViewModel = postsViewModel
 
-    val animal = viewModel_secondary.posts.value?.firstOrNull { it.animalId == animalId }
+    val animal = viewModel.posts.value?.firstOrNull { it.id == animalId  && it.category == "adoption"}
     LaunchedEffect(key1 = animalId){
-        viewModel_secondary.fetchPosts()
+        viewModel.fetchPosts()
     }
 
     Box(
@@ -84,15 +87,21 @@ fun AnimalProfile(animalId: Int, navController: NavController) {
 
                 if (animal != null) {
                     Text(
-                         stringResource(R.string.hi_i_m) + "${animal.name}", fontWeight = FontWeight.Bold, fontSize = 23.sp, modifier = Modifier
+                         stringResource(R.string.hi_i_m) + animal.postAdopt!!.petsName, fontWeight = FontWeight.Bold, fontSize = 23.sp, modifier = Modifier
                             .align(Alignment.CenterStart)
-                            .offset(x = dimensionResource(id = R.dimen.icon_button_size), y = dimensionResource(id = R.dimen.icon_button_size)), style = MaterialTheme.typography.titleLarge, color = colorResource(R.color.textColor))
+                            .offset(
+                                x = dimensionResource(id = R.dimen.text_offset),
+                                y = dimensionResource(id = R.dimen.text_offset)
+                            ), style = MaterialTheme.typography.titleLarge, color = colorResource(R.color.textColor))
                 }
 
                 if (animal != null) {
-                    Text("${animal.breed}", modifier = Modifier
+                    Text(animal.postAdopt!!.breed, modifier = Modifier
                         .align(Alignment.CenterStart)
-                        .offset(x = dimensionResource(id = R.dimen.breed_text_offset_x), y = dimensionResource(id = R.dimen.breed_text_offset_y)), style = MaterialTheme.typography.labelLarge, color = colorResource(R.color.textColor))
+                        .offset(
+                            x = dimensionResource(id = R.dimen.breed_text_offset_x),
+                            y = dimensionResource(id = R.dimen.breed_text_offset_y)
+                        ), style = MaterialTheme.typography.labelLarge, color = colorResource(R.color.textColor))
                 }
 
                 Box(
@@ -116,7 +125,10 @@ fun AnimalProfile(animalId: Int, navController: NavController) {
                                 colorResource(R.color.secondaryColor),
                                 shape = RoundedCornerShape(dimensionResource(id = R.dimen.rounded_corner))
                             )
-                            .padding(vertical = dimensionResource(id = R.dimen.image_box_padding_vertical), horizontal = dimensionResource(id = R.dimen.image_box_padding_horizontal))
+                            .padding(
+                                vertical = dimensionResource(id = R.dimen.image_box_padding_vertical),
+                                horizontal = dimensionResource(id = R.dimen.image_box_padding_horizontal)
+                            )
                     ) {
                         // Box with the dog image
                         Box(
@@ -128,13 +140,21 @@ fun AnimalProfile(animalId: Int, navController: NavController) {
                                     shape = RoundedCornerShape(dimensionResource(id = R.dimen.rounded_corner))
                                 )
                         ) {
-                            if (animal != null) {
+                            if (animal?.image != null) {
                                 Image(
-                                    painter = painterResource(id = animal.imageResId),
-                                    contentDescription = "Doberman",
+                                    painter = rememberImagePainter(data = animal.image),
+                                    contentDescription = "Image",
                                     modifier = Modifier
                                         .align(Alignment.CenterEnd)
-                                        .size(dimensionResource(id = R.dimen.title_text_size))
+                                        .size(dimensionResource(id = R.dimen.animal_profile_box_height))
+                                )
+                            } else{
+                                Image(
+                                    painter = painterResource(id = R.drawable.noimageuploaded),
+                                    contentDescription = "Image",
+                                    modifier = Modifier
+                                        .align(Alignment.CenterEnd)
+                                        .size(dimensionResource(id = R.dimen.animal_profile_box_height))
                                 )
                             }
                         }
@@ -156,12 +176,13 @@ fun AnimalProfile(animalId: Int, navController: NavController) {
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     if (animal != null) {
-                        ProfileInfoCard(title = stringResource(R.string.description), content = "${animal.description}\n" + stringResource(
-                                                    R.string.age) + "${animal.age}\n" + stringResource(
-                                                                                R.string.sex) + "${animal.sex}")
+                        ProfileInfoCard(title = stringResource(R.string.description), content = "${animal.postAdopt!!.postDescription}\n" + stringResource(
+                                                    R.string.age) + "${animal.postAdopt!!.age}\n" + stringResource(
+                                                                                R.string.sex) + if(animal.postAdopt!!.male) "Male" else "Female"
+                        )
                     }
                     if (animal != null) {
-                        animal.personality?.let { ProfileInfoCard(title = stringResource(R.string.personality), content = it) }
+                        animal.postAdopt!!.petPersonality.let { ProfileInfoCard(title = stringResource(R.string.personality), content = it) }
                     }
                 }
 
@@ -170,10 +191,13 @@ fun AnimalProfile(animalId: Int, navController: NavController) {
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     if (animal != null) {
-                        animal.contactInfo?.let { ProfileInfoCard(title = stringResource(R.string.contact_info), content = it) }
+                        animal.postAdopt!!.contactInfo?.let { ProfileInfoCard(title = stringResource(R.string.contact_info), content = it) }
                     }
                     if (animal != null) {
-                        animal.health?.let { HealthConditionsCard(it.isVaccinated, animal.health.isCastrated) }
+                        HealthInfo(
+                            animal.postAdopt!!.petVaccinated,
+                            animal.postAdopt!!.petCastrated
+                        ).let { HealthConditionsCard(it.isVaccinated, it.isCastrated) }
                     }
                 }
             }

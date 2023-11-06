@@ -1,7 +1,18 @@
+@file:Suppress("DEPRECATION")
+
 package com.example.resqpet.ui.createpost.view
 
+import android.graphics.Bitmap
+import android.net.Uri
+import android.content.ContentValues
+import android.provider.MediaStore
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.launch
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,18 +28,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AssignmentTurnedIn
 import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Contacts
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Group
-import androidx.compose.material.icons.filled.House
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Pets
-import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,6 +49,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,24 +65,77 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.resqpet.R
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.resqpet.ui.createpost.viewmodel.CreatePostViewModel
+import java.io.ByteArrayOutputStream
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreatePost() {
+fun CreatePost(navController: NavController, postsViewModel: CreatePostViewModel) {
 
-    val viewModel: CreatePostViewModel = viewModel()
+
+
+    val viewModel: CreatePostViewModel = postsViewModel
+
+    LaunchedEffect(key1 = navController.currentBackStackEntry) {
+        viewModel.resetFields()
+    }
 
     val postDataAdopt by viewModel.postAdoption.observeAsState()
 
     val postDataEventHC by viewModel.postEventHC.observeAsState()
+    
+    val context = LocalContext.current
+
+    val pickImageLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
+        // Save the Uri in your ViewModel
+        viewModel.saveImageUri(uri)
+    }
+
+
+
+    val takePictureLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.TakePicturePreview()) { bitmap: Bitmap? ->
+        if (bitmap != null) {
+            println("Success: Bitmap received.")
+
+            // Convert Bitmap to Uri and save it in your ViewModel
+            val uri = bitmap.let { imageBitmap ->
+                val values = ContentValues().apply {
+                    // Ensure unique file name
+                    put(MediaStore.Images.Media.DISPLAY_NAME, "Title_${System.currentTimeMillis()}.jpg")
+                    put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+                }
+
+                val contentResolver = context.contentResolver
+                val imageUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+
+                imageUri?.let {
+                    contentResolver.openOutputStream(it)?.use { outputStream ->
+                        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                    }
+                }
+                imageUri
+            }
+            viewModel.saveImageUri(uri)
+        } else {
+            println("Error: Bitmap is null.")
+        }
+    }
+
+
+
 
     // Estado para mantener la categoría seleccionada
     var selectedCategory by remember { mutableStateOf("none") }
+
+
 
     Box(
         modifier = Modifier
@@ -154,7 +218,22 @@ fun CreatePost() {
                                 shape = RoundedCornerShape(16.dp)
                             )
                     ) {
-                        // Imagen para agregar en el post
+                        Column(modifier = Modifier.align(Alignment.Center)){
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            // To open gallery
+                            Button(onClick = { pickImageLauncher.launch("image/*") }) {
+                                Text("Select from Gallery")
+                            }
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            // To take a picture
+                            Button(onClick = { takePictureLauncher.launch() }) {
+                                Text("Take a Picture")
+                            }
+                        }
                     }
                 }
             }
@@ -163,7 +242,8 @@ fun CreatePost() {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .align(Alignment.BottomEnd).offset((0).dp, (-60).dp)
+                .align(Alignment.BottomEnd)
+                .offset((0).dp, (-60).dp)
                 .padding(30.dp)
         ) {
             Box(
@@ -268,7 +348,7 @@ fun CreatePost() {
 
                                 postDataAdopt?.postTitle?.let {
                                     OutlinedTextField(
-                                        value = it,
+                                        value = postDataAdopt?.postTitle ?: "",
                                         onValueChange = { newValue ->
                                             viewModel.postAdoption.value =
                                                 postDataAdopt?.copy(postTitle = newValue)
@@ -288,6 +368,8 @@ fun CreatePost() {
                                             focusedIndicatorColor = colorResource(R.color.backgroundColor),
                                             focusedLabelColor = colorResource(R.color.backgroundColor),
                                             unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                                            textColor = colorResource(R.color.primaryColor).copy(alpha = 1f)
+
                                         )
                                     )
                                 }
@@ -300,9 +382,9 @@ fun CreatePost() {
                                     style = MaterialTheme.typography.titleSmall
                                 )
 
-                                postDataAdopt?.postTitle?.let {
+                                postDataAdopt?.petsName?.let {
                                     OutlinedTextField(
-                                        value = it,
+                                        value = postDataAdopt?.petsName ?: "",
                                         onValueChange = { newValue ->
                                             viewModel.postAdoption.value =
                                                 postDataAdopt?.copy(petsName = newValue)
@@ -322,6 +404,8 @@ fun CreatePost() {
                                             focusedIndicatorColor = colorResource(R.color.backgroundColor),
                                             focusedLabelColor = colorResource(R.color.backgroundColor),
                                             unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                                            textColor = colorResource(R.color.primaryColor).copy(alpha = 1f)
+
                                         )
                                     )
                                 }
@@ -343,7 +427,7 @@ fun CreatePost() {
                                     ) {
                                         postDataAdopt?.male?.let {
                                             Checkbox(
-                                                checked = it,
+                                                checked = postDataAdopt?.male ?: false,
                                                 onCheckedChange = { newValue ->
                                                     viewModel.postAdoption.value =
                                                         postDataAdopt!!.copy(male = newValue)
@@ -367,7 +451,7 @@ fun CreatePost() {
                                     ) {
                                         postDataAdopt?.female?.let {
                                             Checkbox(
-                                                checked = it,
+                                                checked = postDataAdopt?.female ?: false,
                                                 onCheckedChange = { newValue ->
                                                     viewModel.postAdoption.value =
                                                         postDataAdopt!!.copy(female = newValue)
@@ -395,7 +479,7 @@ fun CreatePost() {
 
                                 postDataAdopt?.breed?.let {
                                     OutlinedTextField(
-                                        value = it,
+                                        value = postDataAdopt?.breed ?: "",
                                         onValueChange = { newValue ->
                                             viewModel.postAdoption.value =
                                                 postDataAdopt?.copy(breed = newValue)
@@ -415,6 +499,8 @@ fun CreatePost() {
                                             focusedIndicatorColor = colorResource(R.color.backgroundColor),
                                             focusedLabelColor = colorResource(R.color.backgroundColor),
                                             unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                                            textColor = colorResource(R.color.primaryColor).copy(alpha = 1f)
+
                                         )
                                     )
                                 }
@@ -429,7 +515,7 @@ fun CreatePost() {
 
                                 postDataAdopt?.age?.let {
                                     OutlinedTextField(
-                                        value = it,
+                                        value = postDataAdopt?.age ?: "",
                                         onValueChange = { newValue ->
                                             viewModel.postAdoption.value =
                                                 postDataAdopt?.copy(age = newValue)
@@ -449,6 +535,8 @@ fun CreatePost() {
                                             focusedIndicatorColor = colorResource(R.color.backgroundColor),
                                             focusedLabelColor = colorResource(R.color.backgroundColor),
                                             unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                                            textColor = colorResource(R.color.primaryColor).copy(alpha = 1f)
+
                                         )
                                     )
                                 }
@@ -463,7 +551,7 @@ fun CreatePost() {
 
                                 postDataAdopt?.postDescription?.let {
                                     OutlinedTextField(
-                                        value = it,
+                                        value = postDataAdopt?.postDescription ?: "",
                                         onValueChange = { newValue ->
                                             viewModel.postAdoption.value =
                                                 postDataAdopt?.copy(postDescription = newValue)
@@ -483,6 +571,8 @@ fun CreatePost() {
                                             focusedIndicatorColor = colorResource(R.color.backgroundColor),
                                             focusedLabelColor = colorResource(R.color.backgroundColor),
                                             unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                                            textColor = colorResource(R.color.primaryColor).copy(alpha = 1f)
+
                                         )
                                     )
                                 }
@@ -497,7 +587,7 @@ fun CreatePost() {
 
                                 postDataAdopt?.petPersonality?.let {
                                     OutlinedTextField(
-                                        value = it,
+                                        value = postDataAdopt?.petPersonality ?: "",
                                         onValueChange = { newValue ->
                                             viewModel.postAdoption.value =
                                                 postDataAdopt?.copy(petPersonality = newValue)
@@ -517,6 +607,8 @@ fun CreatePost() {
                                             focusedIndicatorColor = colorResource(R.color.backgroundColor),
                                             focusedLabelColor = colorResource(R.color.backgroundColor),
                                             unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                                            textColor = colorResource(R.color.primaryColor).copy(alpha = 1f)
+
                                         )
                                     )
                                 }
@@ -531,7 +623,7 @@ fun CreatePost() {
 
                                 postDataAdopt?.contactInfo?.let {
                                     OutlinedTextField(
-                                        value = it,
+                                        value = postDataAdopt?.contactInfo ?: "",
                                         onValueChange = { newValue ->
                                             viewModel.postAdoption.value =
                                                 postDataAdopt?.copy(contactInfo = newValue)
@@ -551,6 +643,8 @@ fun CreatePost() {
                                             focusedIndicatorColor = colorResource(R.color.backgroundColor),
                                             focusedLabelColor = colorResource(R.color.backgroundColor),
                                             unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                                            textColor = colorResource(R.color.primaryColor).copy(alpha = 1f)
+
                                         )
                                     )
                                 }
@@ -572,7 +666,7 @@ fun CreatePost() {
                                     ) {
                                         postDataAdopt?.petCastrated?.let {
                                             Checkbox(
-                                                checked = it,
+                                                checked = postDataAdopt?.petCastrated ?: false,
                                                 onCheckedChange = { newValue ->
                                                     viewModel.postAdoption.value =
                                                         postDataAdopt!!.copy(petCastrated = newValue)
@@ -596,7 +690,7 @@ fun CreatePost() {
                                     ) {
                                         postDataAdopt?.petVaccinated?.let {
                                             Checkbox(
-                                                checked = it,
+                                                checked = postDataAdopt?.petVaccinated ?: false,
                                                 onCheckedChange = { newValue ->
                                                     viewModel.postAdoption.value =
                                                         postDataAdopt!!.copy(petVaccinated = newValue)
@@ -630,7 +724,7 @@ fun CreatePost() {
 
                                 postDataEventHC?.postTitle?.let {
                                     OutlinedTextField(
-                                        value = it,
+                                        value = postDataEventHC?.postTitle ?: "",
                                         onValueChange = { newValue ->
                                             viewModel.postEventHC.value =
                                                 postDataEventHC?.copy(postTitle = newValue)
@@ -650,6 +744,8 @@ fun CreatePost() {
                                             focusedIndicatorColor = colorResource(R.color.backgroundColor),
                                             focusedLabelColor = colorResource(R.color.backgroundColor),
                                             unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                                            textColor = colorResource(R.color.primaryColor).copy(alpha = 1f)
+
                                         )
                                     )
                                 }
@@ -662,9 +758,9 @@ fun CreatePost() {
                                     style = MaterialTheme.typography.titleSmall
                                 )
 
-                                postDataEventHC?.postTitle?.let {
+                                postDataEventHC?.foundationName?.let {
                                     OutlinedTextField(
-                                        value = it,
+                                        value = postDataEventHC?.foundationName ?: "",
                                         onValueChange = { newValue ->
                                             viewModel.postEventHC.value =
                                                 postDataEventHC?.copy(foundationName = newValue)
@@ -684,6 +780,8 @@ fun CreatePost() {
                                             focusedIndicatorColor = colorResource(R.color.backgroundColor),
                                             focusedLabelColor = colorResource(R.color.backgroundColor),
                                             unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                                            textColor = colorResource(R.color.primaryColor).copy(alpha = 1f)
+
                                         )
                                     )
                                 }
@@ -696,9 +794,9 @@ fun CreatePost() {
                                     style = MaterialTheme.typography.titleSmall
                                 )
 
-                                postDataEventHC?.postTitle?.let {
+                                postDataEventHC?.postDescription?.let {
                                     OutlinedTextField(
-                                        value = it,
+                                        value = postDataEventHC?.postDescription ?: "",
                                         onValueChange = { newValue ->
                                             viewModel.postEventHC.value =
                                                 postDataEventHC?.copy(postDescription = newValue)
@@ -718,9 +816,86 @@ fun CreatePost() {
                                             focusedIndicatorColor = colorResource(R.color.backgroundColor),
                                             focusedLabelColor = colorResource(R.color.backgroundColor),
                                             unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                                            textColor = colorResource(R.color.primaryColor).copy(alpha = 1f)
+
                                         )
                                     )
                                 }
+
+                                Spacer(modifier = Modifier.height(20.dp))
+
+                                Text(
+                                    text = "Minimumm Age",
+                                    fontWeight = FontWeight.Bold,
+                                    color = colorResource(R.color.backgroundColor),
+                                    style = MaterialTheme.typography.titleSmall
+                                )
+
+                                postDataEventHC?.minAge?.let {
+                                    OutlinedTextField(
+                                        value = postDataEventHC?.minAge ?: "",
+                                        onValueChange = { newValue ->
+                                            viewModel.postEventHC.value =
+                                                postDataEventHC?.copy(minAge = newValue)
+                                        },
+                                        label = { Text(stringResource(R.string.profile)) },
+                                        leadingIcon = {
+                                            Icon(
+                                                Icons.Default.AssignmentTurnedIn,
+                                                contentDescription = "Contacts Icon",
+                                                tint = colorResource(R.color.iconColor)
+                                            )
+                                        },
+                                        placeholder = { Text("Enter minimum age") },
+                                        singleLine = true,
+                                        colors = TextFieldDefaults.textFieldColors(
+                                            containerColor = colorResource(R.color.backgroundColor),
+                                            focusedIndicatorColor = colorResource(R.color.backgroundColor),
+                                            focusedLabelColor = colorResource(R.color.backgroundColor),
+                                            unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                                            textColor = colorResource(R.color.primaryColor).copy(alpha = 1f)
+
+                                        )
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.height(20.dp))
+
+                                Text(
+                                    text = "Minimumm Size",
+                                    fontWeight = FontWeight.Bold,
+                                    color = colorResource(R.color.backgroundColor),
+                                    style = MaterialTheme.typography.titleSmall
+                                )
+
+                                postDataEventHC?.minSize?.let {
+                                    OutlinedTextField(
+                                        value = postDataEventHC?.minSize ?: "",
+                                        onValueChange = { newValue ->
+                                            viewModel.postEventHC.value =
+                                                postDataEventHC?.copy(minSize = newValue)
+                                        },
+                                        label = { Text(stringResource(R.string.profile)) },
+                                        leadingIcon = {
+                                            Icon(
+                                                Icons.Default.AssignmentTurnedIn,
+                                                contentDescription = "Contacts Icon",
+                                                tint = colorResource(R.color.iconColor)
+                                            )
+                                        },
+                                        placeholder = { Text("Enter your size") },
+                                        singleLine = true,
+                                        colors = TextFieldDefaults.textFieldColors(
+                                            containerColor = colorResource(R.color.backgroundColor),
+                                            focusedIndicatorColor = colorResource(R.color.backgroundColor),
+                                            focusedLabelColor = colorResource(R.color.backgroundColor),
+                                            unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                                            textColor = colorResource(R.color.primaryColor).copy(alpha = 1f)
+
+                                        )
+                                    )
+                                }
+
                                 Spacer(modifier = Modifier.height(20.dp))
 
                                 Text(
@@ -730,9 +905,9 @@ fun CreatePost() {
                                     style = MaterialTheme.typography.titleSmall
                                 )
 
-                                postDataEventHC?.postTitle?.let {
+                                postDataEventHC?.eventTime?.let {
                                     OutlinedTextField(
-                                        value = it,
+                                        value = postDataEventHC?.eventTime ?: "",
                                         onValueChange = { newValue ->
                                             viewModel.postEventHC.value =
                                                 postDataEventHC?.copy(eventTime = newValue)
@@ -752,6 +927,8 @@ fun CreatePost() {
                                             focusedIndicatorColor = colorResource(R.color.backgroundColor),
                                             focusedLabelColor = colorResource(R.color.backgroundColor),
                                             unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                                            textColor = colorResource(R.color.primaryColor).copy(alpha = 1f)
+
                                         )
                                     )
                                 }
@@ -764,9 +941,9 @@ fun CreatePost() {
                                     style = MaterialTheme.typography.titleSmall
                                 )
 
-                                postDataEventHC?.postTitle?.let {
+                                postDataEventHC?.eventDate?.let {
                                     OutlinedTextField(
-                                        value = it,
+                                        value = postDataEventHC?.eventDate ?: "",
                                         onValueChange = { newValue ->
                                             viewModel.postEventHC.value =
                                                 postDataEventHC?.copy(eventDate = newValue)
@@ -786,6 +963,8 @@ fun CreatePost() {
                                             focusedIndicatorColor = colorResource(R.color.backgroundColor),
                                             focusedLabelColor = colorResource(R.color.backgroundColor),
                                             unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                                            textColor = colorResource(R.color.primaryColor).copy(alpha = 1f)
+
                                         )
                                     )
                                 }
@@ -798,9 +977,9 @@ fun CreatePost() {
                                     style = MaterialTheme.typography.titleSmall
                                 )
 
-                                postDataEventHC?.postTitle?.let {
+                                postDataEventHC?.eventPlace?.let {
                                     OutlinedTextField(
-                                        value = it,
+                                        value = postDataEventHC?.eventPlace ?: "",
                                         onValueChange = { newValue ->
                                             viewModel.postEventHC.value =
                                                 postDataEventHC?.copy(eventPlace = newValue)
@@ -820,6 +999,8 @@ fun CreatePost() {
                                             focusedIndicatorColor = colorResource(R.color.backgroundColor),
                                             focusedLabelColor = colorResource(R.color.backgroundColor),
                                             unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                                            textColor = colorResource(R.color.primaryColor).copy(alpha = 1f)
+
                                         )
                                     )
                                 }
@@ -832,9 +1013,9 @@ fun CreatePost() {
                                     style = MaterialTheme.typography.titleSmall
                                 )
 
-                                postDataEventHC?.postTitle?.let {
+                                postDataEventHC?.foundationContactInfo?.let {
                                     OutlinedTextField(
-                                        value = it,
+                                        value = postDataEventHC?.foundationContactInfo ?: "",
                                         onValueChange = { newValue ->
                                             viewModel.postEventHC.value =
                                                 postDataEventHC?.copy(foundationContactInfo = newValue)
@@ -854,6 +1035,8 @@ fun CreatePost() {
                                             focusedIndicatorColor = colorResource(R.color.backgroundColor),
                                             focusedLabelColor = colorResource(R.color.backgroundColor),
                                             unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                                            textColor = colorResource(R.color.primaryColor).copy(alpha = 1f)
+
                                         )
                                     )
                                 }
@@ -866,73 +1049,29 @@ fun CreatePost() {
             }
         }
 
-        IconButton(
-            onClick = { viewModel.cancelDonation() },
-            modifier = Modifier.size(200.dp)
-                .offset((1).dp, (65).dp)
-        ) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .size(200.dp)
-                    .offset((0).dp, (530).dp)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.cancelbutton),
-                    contentDescription = "cancel"
-                )
-
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .size(200.dp)
-                        .offset((-35).dp, (35).dp)
-                ) {
-                    Text(
-                        text = stringResource(R.string.cancel),
-                        color = colorResource(R.color.backgroundColor),
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineSmall
-                    )
-                }
-            }
+        IconButton(onClick = { viewModel.resetFields()
+                             }, modifier = Modifier
+            .size(250.dp)
+            .offset(x = (-100).dp, y = 650.dp)) {
+            Image(
+                painter = painterResource(id = R.drawable.adoptbutton),
+                contentDescription = "Descripción de la imagen",
+            )
         }
+        Text(text = stringResource(R.string.cancel), style = MaterialTheme.typography.titleLarge, fontSize = 25.sp, color = colorResource(R.color.primaryColor), modifier = Modifier.offset(x = 10.dp, y = 780.dp))
 
-        IconButton(
-            onClick = { viewModel.submitDonation() },
-            modifier = Modifier.size(200.dp).offset((20).dp, (65).dp)
-        ) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .offset((180).dp, (500).dp)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.donatebutton),
-                    contentDescription = "donation"
-                )
-
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .offset((-35).dp, (-15).dp)
-                ) {
-
-                    Text(
-                        text = "Post",
-                        color = colorResource(R.color.backgroundColor),
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineSmall
-
-                    )
-
-                }
-            }
+        IconButton(onClick = { viewModel.createNewPostWithImage(selectedCategory, postDataAdopt, postDataEventHC)
+                             }, modifier = Modifier
+            .size(250.dp)
+            .offset(x = 250.dp, y = 650.dp)) {
+            Image(
+                painter = painterResource(id = R.drawable.adoptbutton),
+                contentDescription = "Descripción de la imagen",
+            )
         }
+        Text(text = stringResource(R.string.adopt), style = MaterialTheme.typography.titleLarge, fontSize = 25.sp, color = colorResource(R.color.primaryColor), modifier = Modifier.offset(x = 320.dp, y = 780.dp))
+
+
 
     }
 }

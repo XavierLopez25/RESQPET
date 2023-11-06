@@ -18,6 +18,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.House
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Checkbox
@@ -30,6 +32,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.resqpet.ui.health.viewmodel.ServiceRQPViewModel
@@ -45,15 +48,31 @@ import com.example.resqpet.R
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.resqpet.ui.createpost.viewmodel.CreatePostViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ServiceRQP(navController: NavController) {
+fun ServiceRQP(healthCId: Int, navController: NavController, postsViewModel: CreatePostViewModel) {
 
-    val viewModel: ServiceRQPViewModel = viewModel()
-    val foundation by viewModel.foundationInfo.collectAsState()
+    val viewModel: CreatePostViewModel = postsViewModel
+
+    val healthCPost = viewModel.posts.value?.firstOrNull { it.id == healthCId  && it.category == "health_care"}
+    LaunchedEffect(key1 = healthCId){
+        viewModel.fetchPosts()
+    }
+
+    var checkedSmall = false
+    var checkedMedium = false
+    var checkedBig= false
+
+    when(healthCPost!!.postEvent!!.minSize){
+        "Small" -> checkedSmall = true
+        "Medium" -> checkedMedium = true
+        "Big" -> checkedBig = true
+    }
 
     Box(
         modifier = Modifier
@@ -167,12 +186,16 @@ fun ServiceRQP(navController: NavController) {
                     .padding(30.dp)
             ) {
 
+
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     item {
+
+                        Text(healthCPost.postEvent!!.postTitle, fontSize = 35.sp, color = Color.White, style =  MaterialTheme.typography.displayLarge)
+
 
                         Text(
                             text = stringResource(R.string.foundation_name1),
@@ -182,7 +205,7 @@ fun ServiceRQP(navController: NavController) {
                         )
                         Spacer(modifier = Modifier.height(10.dp))
                         OutlinedTextField(
-                            value = foundation.name,
+                            value = healthCPost.postEvent!!.foundationName,
                             onValueChange = {},
                             leadingIcon = {
                                 Icon(
@@ -198,6 +221,8 @@ fun ServiceRQP(navController: NavController) {
                                 focusedIndicatorColor = colorResource(R.color.backgroundColor),
                                 focusedLabelColor = colorResource(R.color.backgroundColor),
                                 unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                                disabledTextColor = colorResource(R.color.primaryColor).copy(alpha = 1f)
+
 
                             )
                         )
@@ -205,19 +230,19 @@ fun ServiceRQP(navController: NavController) {
                         Spacer(modifier = Modifier.height(10.dp))
 
                         Text(
-                            text = stringResource(R.string.time_of_the_event1),
+                            text = stringResource(R.string.healthC_description),
                             fontWeight = FontWeight.Bold,
                             color = colorResource(R.color.backgroundColor),
                             style = MaterialTheme.typography.titleMedium,
                         )
                         Spacer(modifier = Modifier.height(10.dp))
                         OutlinedTextField(
-                            value = foundation.eventTime,
+                            value = healthCPost.postEvent!!.postDescription,
                             onValueChange = {},
                             leadingIcon = {
                                 Icon(
-                                    Icons.Default.CalendarMonth,
-                                    contentDescription = "Time Icon",
+                                    Icons.Default.Description,
+                                    contentDescription = "Person Icon",
                                     tint = colorResource(R.color.iconColor)
                                 )
                             },
@@ -228,36 +253,10 @@ fun ServiceRQP(navController: NavController) {
                                 focusedIndicatorColor = colorResource(R.color.backgroundColor),
                                 focusedLabelColor = colorResource(R.color.backgroundColor),
                                 unfocusedLabelColor = colorResource(R.color.backgroundColor),
-                            )
-                        )
+                                disabledTextColor = colorResource(R.color.primaryColor).copy(alpha = 1f)
 
-                        Spacer(modifier = Modifier.height(10.dp))
 
-                        Text(
-                            text = stringResource(R.string.foundation_address1),
-                            fontWeight = FontWeight.Bold,
-                            color = colorResource(R.color.backgroundColor),
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                        Spacer(modifier = Modifier.height(10.dp))
-                        OutlinedTextField(
-                            value = foundation.address,
-                            onValueChange = {},
-                            leadingIcon = {
-                                Icon(
-                                    Icons.Default.House,
-                                    contentDescription = "Address Icon",
-                                    tint = colorResource(R.color.iconColor)
                                 )
-                            },
-                            enabled = false,
-                            singleLine = true,
-                            colors = TextFieldDefaults.textFieldColors(
-                                containerColor = colorResource(R.color.backgroundColor),
-                                focusedIndicatorColor = colorResource(R.color.backgroundColor),
-                                focusedLabelColor = colorResource(R.color.backgroundColor),
-                                unfocusedLabelColor = colorResource(R.color.backgroundColor),
-                            )
                         )
 
                         Spacer(modifier = Modifier.height(10.dp))
@@ -277,8 +276,8 @@ fun ServiceRQP(navController: NavController) {
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Checkbox(
-                                checked = foundation.small,
-                                onCheckedChange = {},
+                                    checked = checkedSmall,
+                                    onCheckedChange = {},
                                     colors = CheckboxDefaults.colors(
                                         checkedColor = colorResource(R.color.secondaryColor),
                                         uncheckedColor = colorResource(R.color.backgroundColor)
@@ -297,7 +296,7 @@ fun ServiceRQP(navController: NavController) {
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Checkbox(
-                                    checked = foundation.medium,
+                                    checked = checkedMedium,
                                     onCheckedChange = {},
                                     colors = CheckboxDefaults.colors(
                                         checkedColor = colorResource(R.color.secondaryColor),
@@ -317,7 +316,7 @@ fun ServiceRQP(navController: NavController) {
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Checkbox(
-                                    checked = foundation.big    ,
+                                    checked =  checkedBig    ,
                                     onCheckedChange = {},
                                     colors = CheckboxDefaults.colors(
                                         checkedColor = colorResource(R.color.secondaryColor),
@@ -334,13 +333,175 @@ fun ServiceRQP(navController: NavController) {
                             }
                         }
 
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Text(
+                            text = stringResource(R.string.minimum_age),
+                            fontWeight = FontWeight.Bold,
+                            color = colorResource(R.color.backgroundColor),
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
+                        OutlinedTextField(
+                            value = healthCPost.postEvent!!.minAge,
+                            onValueChange = {},
+                            leadingIcon = {
+                                Icon(
+                                    Icons.Default.Check,
+                                    contentDescription = "Check Icon",
+                                    tint = colorResource(R.color.iconColor)
+                                )
+                            },
+                            enabled = false,
+                            singleLine = true,
+                            colors = TextFieldDefaults.textFieldColors(
+                                containerColor = colorResource(R.color.backgroundColor),
+                                focusedIndicatorColor = colorResource(R.color.backgroundColor),
+                                focusedLabelColor = colorResource(R.color.backgroundColor),
+                                unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                                disabledTextColor = colorResource(R.color.primaryColor).copy(alpha = 1f)
+
+
+                                )
+                        )
+
+                        Text(
+                            text = stringResource(R.string.time_of_the_event1),
+                            fontWeight = FontWeight.Bold,
+                            color = colorResource(R.color.backgroundColor),
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
+                        OutlinedTextField(
+                            value = healthCPost.postEvent!!.eventTime,
+                            onValueChange = {},
+                            leadingIcon = {
+                                Icon(
+                                    Icons.Default.CalendarMonth,
+                                    contentDescription = "Time Icon",
+                                    tint = colorResource(R.color.iconColor)
+                                )
+                            },
+                            enabled = false,
+                            singleLine = true,
+                            colors = TextFieldDefaults.textFieldColors(
+                                containerColor = colorResource(R.color.backgroundColor),
+                                focusedIndicatorColor = colorResource(R.color.backgroundColor),
+                                focusedLabelColor = colorResource(R.color.backgroundColor),
+                                unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                                disabledTextColor = colorResource(R.color.primaryColor).copy(alpha = 1f)
+
+
+                            )
+                        )
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+
+                        Text(
+                            text = stringResource(R.string.date_of_event),
+                            fontWeight = FontWeight.Bold,
+                            color = colorResource(R.color.backgroundColor),
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
+                        OutlinedTextField(
+                            value = healthCPost.postEvent!!.eventDate,
+                            onValueChange = {},
+                            leadingIcon = {
+                                Icon(
+                                    Icons.Default.CalendarMonth,
+                                    contentDescription = "Time Icon",
+                                    tint = colorResource(R.color.iconColor)
+                                )
+                            },
+                            enabled = false,
+                            singleLine = true,
+                            colors = TextFieldDefaults.textFieldColors(
+                                containerColor = colorResource(R.color.backgroundColor),
+                                focusedIndicatorColor = colorResource(R.color.backgroundColor),
+                                focusedLabelColor = colorResource(R.color.backgroundColor),
+                                unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                                disabledTextColor = colorResource(R.color.primaryColor).copy(alpha = 1f)
+
+
+                            )
+                        )
+
+
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Text(
+                            text = stringResource(R.string.event_place),
+                            fontWeight = FontWeight.Bold,
+                            color = colorResource(R.color.backgroundColor),
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
+                        OutlinedTextField(
+                            value = healthCPost.postEvent!!.eventTime,
+                            onValueChange = {},
+                            leadingIcon = {
+                                Icon(
+                                    Icons.Default.CalendarMonth,
+                                    contentDescription = "Time Icon",
+                                    tint = colorResource(R.color.iconColor)
+                                )
+                            },
+                            enabled = false,
+                            singleLine = true,
+                            colors = TextFieldDefaults.textFieldColors(
+                                containerColor = colorResource(R.color.backgroundColor),
+                                focusedIndicatorColor = colorResource(R.color.backgroundColor),
+                                focusedLabelColor = colorResource(R.color.backgroundColor),
+                                unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                                disabledTextColor = colorResource(R.color.primaryColor).copy(alpha = 1f)
+
+
+                                )
+                        )
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+
+                        Text(
+                            text = stringResource(R.string.contact_info),
+                            fontWeight = FontWeight.Bold,
+                            color = colorResource(R.color.backgroundColor),
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
+                        OutlinedTextField(
+                            value = healthCPost.postEvent!!.foundationContactInfo,
+                            onValueChange = {},
+                            leadingIcon = {
+                                Icon(
+                                    Icons.Default.House,
+                                    contentDescription = "Address Icon",
+                                    tint = colorResource(R.color.iconColor)
+                                )
+                            },
+                            enabled = false,
+                            singleLine = true,
+                            colors = TextFieldDefaults.textFieldColors(
+                                containerColor = colorResource(R.color.backgroundColor),
+                                focusedIndicatorColor = colorResource(R.color.backgroundColor),
+                                focusedLabelColor = colorResource(R.color.backgroundColor),
+                                unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                                disabledTextColor = colorResource(R.color.primaryColor).copy(alpha = 1f)
+
+
+                            )
+                        )
+
                     }
                 }
             }
         }
 
         IconButton(
-            onClick = { viewModel.onCancelClicked() },
+            onClick = { /*viewModel.onCancelClicked()*/ },
             modifier = Modifier.size(200.dp)
         ) {
             Box(
@@ -373,7 +534,7 @@ fun ServiceRQP(navController: NavController) {
         }
 
         IconButton(
-            onClick = { viewModel.onRegisterOrDonateClicked() },
+            onClick = {  },
             modifier = Modifier.size(200.dp)
         ) {
             Box(

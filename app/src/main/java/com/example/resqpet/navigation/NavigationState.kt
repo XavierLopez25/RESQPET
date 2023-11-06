@@ -14,6 +14,15 @@ sealed class NavigationState(val route: String) {
     object Health: NavigationState("Health")
     object Profile: NavigationState("Profile")
     object Posts: NavigationState("Posts")
-    object PostDetail: NavigationState("postDetail/{postId}")
+    object animalProfileDetail: NavigationState("animalProfile/{postId}")
+
+    object eventDetail: NavigationState("eventInfo/{postId}")
+
+    object hcDetail: NavigationState("health_care/{postId}")
+
+
+
+    object AddPost: NavigationState("AddPost")
+
 
 }

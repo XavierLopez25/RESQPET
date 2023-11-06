@@ -29,8 +29,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,15 +39,23 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.resqpet.R
-import com.example.resqpet.ui.events.viewmodel.MainEventViewModel
+import com.example.resqpet.ui.createpost.viewmodel.CreatePostViewModel
+import com.example.resqpet.ui.createpost.viewmodel.Post
 
 @Composable
-fun MainEvent(navController: NavController) {
+fun MainEvent(eventId: Int, navController: NavController, postsViewModel: CreatePostViewModel) {
 
-    val viewModel: MainEventViewModel = viewModel()
+
+    val viewModel: CreatePostViewModel = postsViewModel
+
+    val eventPost = viewModel.posts.value?.firstOrNull { it.id == eventId  && it.category == "event"}
+    LaunchedEffect(key1 = eventId){
+        viewModel.fetchPosts()
+    }
+
+
 
     Box(
         modifier = Modifier
@@ -88,13 +95,13 @@ fun MainEvent(navController: NavController) {
                     .offset((0).dp, (-80).dp),
                 contentAlignment = Alignment.Center
             ) {
-                CardDesign()
+                CardDesign(eventPost)
             }
         }
 
 
         Button(
-            onClick = {viewModel.onAssistClicked()},
+            onClick = {/*viewModel.onAssistClicked()*/},
             colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.secondaryColor)),
             modifier = Modifier.offset(x = (150).dp, y = (690).dp)
 
@@ -106,10 +113,7 @@ fun MainEvent(navController: NavController) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CardDesign() {
-    
-    val viewModel: MainEventViewModel = viewModel()
-    val eventsInfo by viewModel.eventsInfo.collectAsState()
+fun CardDesign(eventPost: Post?) {
 
     Column(
         modifier = Modifier
@@ -120,7 +124,7 @@ fun CardDesign() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(stringResource(R.string.annual_dog_race), fontSize = 35.sp, color = Color.White, style =  MaterialTheme.typography.displayLarge)
+        Text(eventPost!!.postEvent!!.postTitle, fontSize = 35.sp, color = Color.White, style =  MaterialTheme.typography.displayLarge)
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
@@ -138,7 +142,7 @@ fun CardDesign() {
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 OutlinedTextField(
-                    value = eventsInfo.name,
+                    value = eventPost.postEvent!!.foundationName,
                     onValueChange = {},
                     leadingIcon = {
                         Icon(
@@ -154,6 +158,8 @@ fun CardDesign() {
                         focusedIndicatorColor = colorResource(R.color.backgroundColor),
                         focusedLabelColor = colorResource(R.color.backgroundColor),
                         unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                        disabledTextColor = colorResource(R.color.primaryColor).copy(alpha = 1f)
+
 
                         )
                 )
@@ -167,7 +173,7 @@ fun CardDesign() {
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 OutlinedTextField(
-                    value = eventsInfo.time,
+                    value = eventPost.postEvent!!.eventTime,
                     onValueChange = {},
                     leadingIcon = {
                         Icon(
@@ -183,6 +189,9 @@ fun CardDesign() {
                         focusedIndicatorColor = colorResource(R.color.backgroundColor),
                         focusedLabelColor = colorResource(R.color.backgroundColor),
                         unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                        disabledTextColor = colorResource(R.color.primaryColor
+).copy(alpha = 1f)
+
 
                         )
                 )
@@ -197,7 +206,7 @@ fun CardDesign() {
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 OutlinedTextField(
-                    value = eventsInfo.MinimumAge,
+                    value = eventPost.postEvent!!.minAge,
                     onValueChange = {},
                     leadingIcon = {
                         Icon(
@@ -213,6 +222,9 @@ fun CardDesign() {
                         focusedIndicatorColor = colorResource(R.color.backgroundColor),
                         focusedLabelColor = colorResource(R.color.backgroundColor),
                         unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                        disabledTextColor = colorResource(R.color.primaryColor
+).copy(alpha = 1f)
+
 
                         )
                 )
@@ -227,7 +239,7 @@ fun CardDesign() {
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 OutlinedTextField(
-                    value = eventsInfo.MinimumSize,
+                    value = eventPost.postEvent!!.minSize,
                     onValueChange = {},
                     leadingIcon = {
                         Icon(
@@ -243,8 +255,9 @@ fun CardDesign() {
                         focusedIndicatorColor = colorResource(R.color.backgroundColor),
                         focusedLabelColor = colorResource(R.color.backgroundColor),
                         unfocusedLabelColor = colorResource(R.color.backgroundColor),
-
-                        )
+                        disabledTextColor = colorResource(R.color.primaryColor
+).copy(alpha = 1f)
+                    )
                 )
 
                 Spacer(modifier = Modifier.height(10.dp))
@@ -257,7 +270,7 @@ fun CardDesign() {
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 OutlinedTextField(
-                    value = eventsInfo.address,
+                    value = eventPost.postEvent!!.eventPlace,
                     onValueChange = {},
                     leadingIcon = {
                         Icon(
@@ -273,7 +286,8 @@ fun CardDesign() {
                         focusedIndicatorColor = colorResource(R.color.backgroundColor),
                         focusedLabelColor = colorResource(R.color.backgroundColor),
                         unfocusedLabelColor = colorResource(R.color.backgroundColor),
-
+                        disabledTextColor = colorResource(R.color.primaryColor
+).copy(alpha = 1f)
                         )
                 )
 

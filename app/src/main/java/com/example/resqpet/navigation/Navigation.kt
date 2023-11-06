@@ -9,6 +9,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.resqpet.ui.animalprofile.view.AnimalProfile
+import com.example.resqpet.ui.createpost.view.CreatePost
+import com.example.resqpet.ui.createpost.viewmodel.CreatePostViewModel
 import com.example.resqpet.ui.donation.view.Donation
 import com.example.resqpet.ui.editprofile.view.EditProfileScreen
 import com.example.resqpet.ui.events.view.MainEvent
@@ -21,7 +23,7 @@ import com.example.resqpet.ui.register.view.RegisterResQPet
 import com.example.resqpet.ui.start.view.MainMenu
 
 @Composable
-fun Navigation(modifier: Modifier = Modifier) {
+fun Navigation(postsViewModel: CreatePostViewModel) {
 
     // Create a navigation controller to manage the navigation stack.
     val navController = rememberNavController()
@@ -29,7 +31,6 @@ fun Navigation(modifier: Modifier = Modifier) {
     NavHost(
         navController = navController,
         startDestination = NavigationState.Home.route,
-        modifier = modifier
     ) {
         // Define the composable destination for the Home route.
         composable(route = NavigationState.Home.route) {
@@ -45,15 +46,11 @@ fun Navigation(modifier: Modifier = Modifier) {
         }
 
         composable(route = NavigationState.MainMenu.route) {
-            MainMenuResQPet(navController)
+            MainMenuResQPet(navController, postsViewModel)
         }
 
         composable(route = NavigationState.Adopt.route) {
-            PetList(navController)
-        }
-
-        composable(route = NavigationState.Event.route) {
-            MainEvent(navController)
+            PetList(navController, postsViewModel)
         }
 
         composable(route = NavigationState.Donate.route) {
@@ -61,29 +58,46 @@ fun Navigation(modifier: Modifier = Modifier) {
         }
 
         composable(route = NavigationState.Posts.route) {
-            PostFiltering(navController)
+            PostFiltering(navController, postsViewModel)
         }
 
-        composable("postDetail/{postId}") { backStackEntry ->
+        composable("animalProfile/{postId}") { backStackEntry ->
             val postId = backStackEntry.arguments?.getString("postId")
             // Asegurarte de manejar el caso en el que animalId podría ser null
             println(postId)
             if(postId != null) {
-                AnimalProfile(animalId = postId.toInt(), navController)
+                AnimalProfile(animalId = postId.toInt(), navController, postsViewModel)
             }
-            // Posiblemente manejar un escenario de 'animalId' nulo mostrando una pantalla de error o una UI de respaldo
+        }
+
+        composable("eventInfo/{postId}") { backStackEntry ->
+            val postId = backStackEntry.arguments?.getString("postId")
+            // Asegurarte de manejar el caso en el que animalId podría ser null
+            println(postId)
+            if(postId != null) {
+                MainEvent(eventId = postId.toInt(), navController, postsViewModel)
+            }
+        }
+
+        composable("health_care/{postId}") { backStackEntry ->
+            val postId = backStackEntry.arguments?.getString("postId")
+            // Asegurarte de manejar el caso en el que animalId podría ser null
+            println(postId)
+            if(postId != null) {
+                ServiceRQP(healthCId = postId.toInt(), navController, postsViewModel)
+            }
         }
 
         composable(route = NavigationState.Search.route) {
-            PostFiltering(navController)
-        }
-
-        composable(route = NavigationState.Health.route) {
-            ServiceRQP(navController)
+            PostFiltering(navController, postsViewModel)
         }
 
         composable(route = NavigationState.Profile.route) {
             EditProfileScreen(navController)
+        }
+
+        composable(route = NavigationState.AddPost.route) {
+            CreatePost(navController, postsViewModel)
         }
 
     }

@@ -23,6 +23,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,17 +35,26 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.rememberImagePainter
 import com.example.resqpet.R
+import com.example.resqpet.ui.createpost.viewmodel.CreatePostViewModel
+import com.example.resqpet.ui.createpost.viewmodel.Post
 import com.example.resqpet.ui.petlist.viewmodel.Pet
 import com.example.resqpet.ui.petlist.viewmodel.PetListViewModel
 
 
 @Composable
-fun PetList(navController: NavController) {
+fun PetList(navController: NavController, postsViewModel: CreatePostViewModel) {
 
 
-    val viewModel: PetListViewModel = viewModel()
-    val pets = viewModel.pets
+    val viewModel: CreatePostViewModel = postsViewModel
+
+    //val viewModel: PetListViewModel = viewModel()
+    val adoptionPosts = viewModel.posts.value?.filter { it.category == "adoption" } ?: emptyList()
+    LaunchedEffect(key1 = Unit){
+        viewModel.fetchPosts()
+    }
+
 
     Box(
         modifier = Modifier
@@ -109,8 +119,8 @@ fun PetList(navController: NavController) {
                         .padding(top = 30.dp)
                         .fillMaxHeight()
                 ) {
-                    itemsIndexed(items = pets) { _, pets ->
-                        PetCard(pet = pets)
+                    itemsIndexed(items = adoptionPosts) { _, post ->
+                        PetCard(post = post)
                     }
                 }
 
@@ -121,7 +131,16 @@ fun PetList(navController: NavController) {
 }
 
 @Composable
-fun PetCard(pet: Pet, modifier: Modifier = Modifier) {
+fun PetCard(post: Post, modifier: Modifier = Modifier) {
+
+    val imagePainter = if (post.image != null) {
+        rememberImagePainter(data = post.image)
+    } else {
+        painterResource(id = R.drawable.noimageuploaded)
+    }
+
+    val petGender = if (post.postAdopt!!.male) "Male" else "Female"
+
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -135,8 +154,8 @@ fun PetCard(pet: Pet, modifier: Modifier = Modifier) {
             horizontalArrangement = Arrangement.Center
         ) {
             Image(
-                painter = painterResource(id = pet.imageResId),
-                contentDescription = pet.name,
+                painter = imagePainter,
+                contentDescription = post.postAdopt!!.petsName,
                 modifier = Modifier
                     .size(100.dp)
                     .clip(RoundedCornerShape(20.dp))
@@ -150,13 +169,13 @@ fun PetCard(pet: Pet, modifier: Modifier = Modifier) {
                 verticalArrangement = Arrangement.spacedBy(3.dp)
             ) {
                 Text(
-                    text = pet.name,
+                    text = post.postAdopt!!.petsName,
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFFF4F2DE)
                 )
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(text = "${pet.age}  |  ${pet.gender}  |  ${pet.breed}", color = Color(0xFFF4F2DE), style = MaterialTheme.typography.bodySmall)
+                Text(text = "${post.postAdopt!!.age} años |  $petGender  |  ${post.postAdopt!!.breed}", color = Color(0xFFF4F2DE), style = MaterialTheme.typography.bodySmall)
             }
         }
     }
