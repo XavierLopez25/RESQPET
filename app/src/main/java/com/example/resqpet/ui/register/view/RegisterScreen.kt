@@ -1,5 +1,6 @@
 package com.example.resqpet.ui.register.view
 
+import android.util.Patterns
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -12,7 +13,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Person
@@ -29,7 +32,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,6 +49,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.resqpet.R
 import com.example.resqpet.navigation.NavigationState
+import com.example.resqpet.ui.additionalfeatures.PlaceholderTransformation
 import com.example.resqpet.ui.register.viewmodel.RegisterViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,9 +61,44 @@ fun RegisterResQPet(navController: NavController) {
 
     // Observar los StateFlows como estados en Compose
     val username by viewModel.username.collectAsState()
+    val cname by viewModel.Cname.collectAsState()
     val email by viewModel.email.collectAsState()
     val password by viewModel.password.collectAsState()
+    val passwordConfirm by viewModel.passwordC.collectAsState()
     val passwordVisible by viewModel.passwordVisible.collectAsState()
+    val isEmailValid by viewModel.isEmailValid.collectAsState()
+    val passwordsMatch by viewModel.passwordsMatch.collectAsState()
+
+    val passwordsMatchState = remember(password, passwordConfirm) {
+        derivedStateOf { password == passwordConfirm || password.isEmpty() || passwordConfirm.isEmpty() }
+    }
+
+    val textFieldColors = if (isEmailValid && passwordsMatch) {
+            TextFieldDefaults.textFieldColors(
+                containerColor = colorResource(R.color.backgroundColor),
+                focusedIndicatorColor = colorResource(R.color.backgroundColor),
+                focusedLabelColor = colorResource(R.color.backgroundColor),
+                unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                textColor = colorResource(R.color.primaryColor),
+                cursorColor = colorResource(R.color.primaryColor)
+            )
+        } else {
+            TextFieldDefaults.textFieldColors(
+                containerColor = colorResource(R.color.backgroundColor),
+                focusedIndicatorColor = colorResource(id = R.color.errorColor),
+                unfocusedIndicatorColor = colorResource(id = R.color.errorColor),
+                cursorColor = colorResource(id = R.color.errorColor),
+                focusedSupportingTextColor = colorResource(id = R.color.errorColor),
+                unfocusedSupportingTextColor = colorResource(id = R.color.errorColor),
+                errorSupportingTextColor = colorResource(id = R.color.errorColor),
+                errorIndicatorColor = colorResource(id = R.color.errorColor),
+                textColor = colorResource(R.color.primaryColor)
+
+            )
+        }
+
+
+
 
     Box(
         modifier = Modifier
@@ -117,7 +158,7 @@ fun RegisterResQPet(navController: NavController) {
                     .padding(30.dp)
             ) {
                 Column(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -141,9 +182,9 @@ fun RegisterResQPet(navController: NavController) {
                     Spacer(modifier = Modifier.height(10.dp))
 
                     OutlinedTextField(
-                        value = username,
+                        value = cname,
                         onValueChange = {  newValue -> viewModel.setUsername(newValue)},
-                        label = { Text(stringResource(R.string.username)) },
+                        label = { Text(stringResource(R.string.enter_your_public_username)) },
                         leadingIcon = {
                             Icon(
                                 Icons.Default.Person,
@@ -158,15 +199,49 @@ fun RegisterResQPet(navController: NavController) {
                             focusedIndicatorColor = colorResource(R.color.backgroundColor),
                             focusedLabelColor = colorResource(R.color.backgroundColor),
                             unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                            cursorColor = colorResource(R.color.primaryColor),
                             textColor = colorResource(R.color.primaryColor)
-                        )
+                        ),
+                        visualTransformation = if (cname.isEmpty()) {
+                            PlaceholderTransformation("Enter the your public username")
+                        } else VisualTransformation.None
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+
+                    OutlinedTextField(
+                        value = username,
+                        onValueChange = {  newValue -> viewModel.setUsername(newValue)},
+                        label = { Text("Enter your complete name") },
+                        leadingIcon = {
+                            Icon(
+                                Icons.Default.Person,
+                                contentDescription = "User Icon",
+                                tint = colorResource(R.color.iconColor)
+                            )
+                        },
+                        placeholder = { Text(stringResource(R.string.enter_your_username)) },
+                        singleLine = true,
+                        colors = TextFieldDefaults.textFieldColors(
+                            containerColor = colorResource(R.color.backgroundColor),
+                            focusedIndicatorColor = colorResource(R.color.backgroundColor),
+                            focusedLabelColor = colorResource(R.color.backgroundColor),
+                            unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                            cursorColor = colorResource(R.color.primaryColor),
+                            textColor = colorResource(R.color.primaryColor)
+                        ),
+                        visualTransformation = if (username.isEmpty()) {
+                            PlaceholderTransformation("Enter the your username")
+                        } else VisualTransformation.None
                     )
 
                     Spacer(modifier = Modifier.height(10.dp))
 
                     OutlinedTextField(
                         value = email,
-                        onValueChange = {  newValue -> viewModel.setEmail(newValue) },
+                        onValueChange = {  newValue -> viewModel.setEmail(newValue)
+                            isEmailValid(email) },
                         label = { Text(stringResource(R.string.email)) },
                         leadingIcon = {
                             Icon(
@@ -177,21 +252,16 @@ fun RegisterResQPet(navController: NavController) {
                         },
                         placeholder = { Text(stringResource(R.string.enter_your_email)) },
                         singleLine = true,
-                        colors = TextFieldDefaults.textFieldColors(
-                            containerColor = colorResource(R.color.backgroundColor),
-                            focusedIndicatorColor = colorResource(R.color.backgroundColor),
-                            focusedLabelColor = colorResource(R.color.backgroundColor),
-                            unfocusedLabelColor = colorResource(R.color.backgroundColor),
-                            textColor = colorResource(R.color.primaryColor)
-
-                        )
-                    )
+                        colors = textFieldColors,
+                        visualTransformation = if (email.isEmpty()) {
+                            PlaceholderTransformation("Enter the your email")
+                        } else VisualTransformation.None)
 
                     Spacer(modifier = Modifier.height(10.dp))
                     OutlinedTextField(
                         value = password,
                         onValueChange = {  newValue -> viewModel.setPassword(newValue)},
-                        label = { Text(stringResource(R.string.password)) },
+                        label = { Text(stringResource(R.string.enter_your_password)) },
                         trailingIcon = {
                             val image =
                                 if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
@@ -205,21 +275,40 @@ fun RegisterResQPet(navController: NavController) {
                         },
                         placeholder = { Text(stringResource(R.string.enter_your_password)) },
                         singleLine = true,
-                        colors = TextFieldDefaults.textFieldColors(
-                            containerColor = colorResource(R.color.backgroundColor),
-                            focusedIndicatorColor = colorResource(R.color.backgroundColor),
-                            focusedLabelColor = colorResource(R.color.backgroundColor),
-                            unfocusedLabelColor = colorResource(R.color.backgroundColor),
-                            textColor = colorResource(R.color.primaryColor)
+                        colors = textFieldColors,
+                        visualTransformation = if (password.isEmpty()) {
+                            PlaceholderTransformation("Enter the your password")
+                        } else if(passwordVisible){ VisualTransformation.None }else PasswordVisualTransformation()                    )
 
-                        ),
-                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
-                    )
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    OutlinedTextField(
+                        value = passwordConfirm,
+                        onValueChange = {  newValue -> viewModel.setPasswordC(newValue)},
+                        label = { Text(stringResource(R.string.confirm_your_password)) },
+                        trailingIcon = {
+                            val image =
+                                if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
+                            IconButton(onClick = { viewModel.togglePasswordVisibility() }) {
+                                Icon(
+                                    image,
+                                    contentDescription = "Toggle password visibility",
+                                    tint = colorResource(R.color.iconColor)
+                                )
+                            }
+                        },
+                        placeholder = { Text(stringResource(R.string.confirm_your_password)) },
+                        singleLine = true,
+                        colors = textFieldColors,
+                        visualTransformation = if (passwordConfirm.isEmpty()) {
+                            PlaceholderTransformation("Verify your password")
+                        } else if(passwordVisible){ VisualTransformation.None }else PasswordVisualTransformation()                    )
+
                     Spacer(modifier = Modifier.height(20.dp))
 
                     Button(
                         onClick = {
-                            viewModel.onRegisterClicked(username, email, password)
+                            viewModel.onRegisterClicked(username, cname, email, password)
                             navController.navigate(NavigationState.MainMenu.route)},
                         modifier = Modifier
                             .fillMaxWidth(0.7f)
@@ -238,4 +327,8 @@ fun RegisterResQPet(navController: NavController) {
             }
         }
     }
+}
+
+fun isEmailValid(email: String): Boolean {
+    return if (email.isEmpty()) true else Patterns.EMAIL_ADDRESS.matcher(email).matches()
 }

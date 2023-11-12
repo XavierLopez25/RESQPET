@@ -45,6 +45,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.resqpet.R
 import com.example.resqpet.navigation.NavigationState
+import com.example.resqpet.ui.additionalfeatures.PlaceholderTransformation
 import com.example.resqpet.ui.login.viewmodel.LoginViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -147,7 +148,12 @@ fun LoginResQPet(navController: NavController) {
                             focusedIndicatorColor = colorResource(R.color.backgroundColor),
                             focusedLabelColor = colorResource(R.color.backgroundColor),
                             unfocusedLabelColor = colorResource(R.color.backgroundColor),
-                        )
+                            cursorColor = colorResource(R.color.primaryColor),
+                            textColor = colorResource(R.color.primaryColor)
+                        ),
+                        visualTransformation = if(email.isEmpty()){
+                            PlaceholderTransformation("Enter the your email")
+                        } else VisualTransformation.None
                     )
 
                     Spacer(modifier = Modifier.height(15.dp))
@@ -169,8 +175,12 @@ fun LoginResQPet(navController: NavController) {
                             focusedIndicatorColor = colorResource(R.color.backgroundColor),
                             focusedLabelColor = colorResource(R.color.backgroundColor),
                             unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                            cursorColor = colorResource(R.color.primaryColor),
+                            textColor = colorResource(R.color.primaryColor)
                         ),
-                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
+                        visualTransformation = if ( password.isEmpty()) {
+                            PlaceholderTransformation("Enter the your password")
+                        } else if(passwordVisible){ VisualTransformation.None }else PasswordVisualTransformation()
                     )
                     Spacer(modifier = Modifier.height(20.dp))
 

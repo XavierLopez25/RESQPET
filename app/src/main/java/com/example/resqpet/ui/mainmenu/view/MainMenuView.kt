@@ -1,9 +1,5 @@
 package com.example.resqpet.ui.mainmenu.view
 
-import android.content.Context
-import android.content.ContextWrapper
-import android.net.Uri
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -28,11 +24,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.DisabledByDefault
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocalHospital
 import androidx.compose.material.icons.filled.ManageAccounts
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -42,30 +38,22 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelStoreOwner
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.example.resqpet.R
@@ -73,7 +61,6 @@ import com.example.resqpet.navigation.NavigationState
 import com.example.resqpet.ui.createpost.viewmodel.CreatePostViewModel
 import com.example.resqpet.ui.createpost.viewmodel.Post
 import com.example.resqpet.ui.mainmenu.viewmodel.CardItem
-import com.example.resqpet.ui.mainmenu.viewmodel.MainMenuViewModel
 
 @Composable
 fun MainMenuResQPet(navController: NavController, postsViewModel: CreatePostViewModel) {
@@ -82,7 +69,9 @@ fun MainMenuResQPet(navController: NavController, postsViewModel: CreatePostView
 
     val posts = viewModel._posts.observeAsState(initial = emptyList())
 
-    val latestId = posts.value.maxByOrNull { it.id }?.id
+    val latestIdEvents = posts.value.filter { it.category == "event" }.maxByOrNull { it.id }?.id
+
+    val showDialog = remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = "fetchPosts") {
         viewModel.fetchPosts()
@@ -166,7 +155,7 @@ fun MainMenuResQPet(navController: NavController, postsViewModel: CreatePostView
                 Spacer(modifier = Modifier.height(16.dp))
 
                 val cardItems =  listOf(CardItem(stringResource(R.string.adopt1), R.drawable.heart, null, NavigationState.Adopt.route), CardItem(
-                    stringResource(R.string.events), R.drawable.shelter1, null, "eventInfo/${latestId}"), CardItem(
+                    stringResource(R.string.events), R.drawable.shelter1, null, "eventInfo/${latestIdEvents}"), CardItem(
                     stringResource(R.string.donate1), R.drawable.shelter2, null, NavigationState.Donate.route))
 
                 LazyRow {
@@ -178,12 +167,19 @@ fun MainMenuResQPet(navController: NavController, postsViewModel: CreatePostView
                                     width = 200.dp,
                                     height = 100.dp
                                 )
-                                .clickable { item.route?.let { navController.navigate(it) } },
+                                .clickable {
+                                    if (((item.route == "eventInfo/${latestIdEvents}" && latestIdEvents == null) || posts.value.isEmpty()) && item.route != NavigationState.Donate.route) {
+                                        showDialog.value = true
+                                    } else {
+                                        item.route?.let { navController.navigate(it) }
+                                    }
+                                },
                             shape = RoundedCornerShape(12.dp),
                             colors = CardDefaults.cardColors(
                                 containerColor = colorResource(R.color.primaryColor)
                             ),
                         ) {
+
                             Box(contentAlignment = Alignment.Center) {
                                 Spacer(modifier = Modifier.height(15.dp))
 
@@ -211,6 +207,10 @@ fun MainMenuResQPet(navController: NavController, postsViewModel: CreatePostView
             }
         }
 
+        if (showDialog.value) {
+            NoPostsDialog(showDialog = showDialog)
+        }
+
         PostsBar(Modifier.weight(0.5f), posts, navController)
     }
 
@@ -218,6 +218,8 @@ fun MainMenuResQPet(navController: NavController, postsViewModel: CreatePostView
 
 @Composable
 fun PostsBar(modifier: Modifier = Modifier, posts: State<List<Post>>, navController: NavController) {
+
+    val showDialog = remember { mutableStateOf(false) }
 
     Box(
         modifier = modifier
@@ -236,7 +238,13 @@ fun PostsBar(modifier: Modifier = Modifier, posts: State<List<Post>>, navControl
                 Button(
                     modifier = Modifier
                         .padding(1.dp),
-                    onClick = { navController.navigate(NavigationState.Posts.route) },
+                    onClick = {
+                        if (posts.value.isEmpty()) {
+                            showDialog.value = true
+                        }else{
+                            navController.navigate(NavigationState.Posts.route)
+                        }
+                              },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFFA1CCD1)
                     )
@@ -244,6 +252,7 @@ fun PostsBar(modifier: Modifier = Modifier, posts: State<List<Post>>, navControl
                     Text(text = stringResource(R.string.see_all_posts), color = Color(0xFFF4F2DE), fontSize = 20.sp)
                 }
             }
+
             Spacer(modifier = Modifier.height(8.dp))
 
 
@@ -281,7 +290,12 @@ fun PostsBar(modifier: Modifier = Modifier, posts: State<List<Post>>, navControl
             imageVector = Icons.Default.Search,
             contentDescription = "Search Icon",
             tint = colorResource(R.color.primaryColor),
-            modifier = Modifier.clickable { navController.navigate(NavigationState.Search.route) }
+            modifier = Modifier.clickable {
+                if (posts.value.isEmpty()) {
+                    showDialog.value = true
+                }else{
+                    navController.navigate(NavigationState.Search.route) }
+                }
         )
         Icon(
             imageVector = Icons.Default.Add,
@@ -290,18 +304,31 @@ fun PostsBar(modifier: Modifier = Modifier, posts: State<List<Post>>, navControl
             modifier = Modifier.clickable { navController.navigate(NavigationState.AddPost.route) }
 
         )
+
         Icon(
             imageVector = Icons.Default.LocalHospital,
             contentDescription = "Health Icon",
             tint = colorResource(R.color.primaryColor),
-            modifier = Modifier.clickable { navController.navigate(NavigationState.Health.route) }
+            modifier = Modifier.clickable {
+                val latestIdHealthC = posts.value.filter { it.category == "health_care" }.maxByOrNull { it.id }?.id
+                if (latestIdHealthC == null) {
+                    showDialog.value = true
+                } else {
+                    navController.navigate("hcDetail/${latestIdHealthC}")
+                }
+            }
         )
+
         Icon(
             imageVector = Icons.Default.ManageAccounts,
             contentDescription = "Profile Icon",
             tint = colorResource(R.color.primaryColor),
             modifier = Modifier.clickable { navController.navigate(NavigationState.Profile.route) }
         )
+
+        if (showDialog.value) {
+            NoPostsDialog(showDialog = showDialog)
+        }
     }
 }
 
@@ -325,11 +352,13 @@ fun PostCard(postItem: Post /*CardItem*/, navController: NavController) {
             .clickable {
                 postItem.id.let {
 
-                    when(postItem.category){
+                    when (postItem.category) {
                         "adoption" -> route = "animalProfile/$it"
                         "event" -> route = "eventInfo/$it"
                         "health_care" -> route = "health_care/$it"
                     }
+
+
 
                     navController.navigate(route)
                 }
@@ -373,3 +402,20 @@ fun PostCard(postItem: Post /*CardItem*/, navController: NavController) {
         }
     }
 }
+
+@Composable
+fun NoPostsDialog(showDialog: MutableState<Boolean>) {
+    if (showDialog.value) {
+        AlertDialog(
+            onDismissRequest = { showDialog.value = false },
+            title = { Text("No Posts") },
+            text = { Text("There are no posts yet.") },
+            confirmButton = {
+                Button(onClick = { showDialog.value = false }) {
+                    Text("OK")
+                }
+            }
+        )
+    }
+}
+

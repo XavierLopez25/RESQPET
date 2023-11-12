@@ -12,5 +12,6 @@
     <color name="secondaryColor">#A1CCD1</color>
     <color name="textColor">#FFFFFF</color>
     <color name="iconColor">#E9B384</color>
+    <color name="errorColor">#FF0000</color>
 </resources>
 

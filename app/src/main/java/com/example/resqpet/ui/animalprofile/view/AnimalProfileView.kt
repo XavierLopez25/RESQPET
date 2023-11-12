@@ -42,15 +42,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.example.resqpet.R
 import com.example.resqpet.navigation.NavigationState
-import com.example.resqpet.ui.animalprofile.viewmodel.AnimalProfileViewModel
 import com.example.resqpet.ui.animalprofile.viewmodel.HealthInfo
 import com.example.resqpet.ui.createpost.viewmodel.CreatePostViewModel
-import com.example.resqpet.ui.mainmenu.viewmodel.MainMenuViewModel
 
 @Composable
 fun AnimalProfile(animalId: Int, navController: NavController, postsViewModel: CreatePostViewModel) {
@@ -182,7 +179,7 @@ fun AnimalProfile(animalId: Int, navController: NavController, postsViewModel: C
                         )
                     }
                     if (animal != null) {
-                        animal.postAdopt!!.petPersonality.let { ProfileInfoCard(title = stringResource(R.string.personality), content = it) }
+                        ProfileInfoCard(title = stringResource(R.string.personality), content = animal.postAdopt!!.petPersonality)
                     }
                 }
 
@@ -191,7 +188,7 @@ fun AnimalProfile(animalId: Int, navController: NavController, postsViewModel: C
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     if (animal != null) {
-                        animal.postAdopt!!.contactInfo?.let { ProfileInfoCard(title = stringResource(R.string.contact_info), content = it) }
+                        animal.postAdopt!!.contactInfo.let { ProfileInfoCard(title = stringResource(R.string.contact_info), content = it) }
                     }
                     if (animal != null) {
                         HealthInfo(

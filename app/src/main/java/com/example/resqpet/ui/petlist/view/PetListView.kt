@@ -33,14 +33,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.example.resqpet.R
 import com.example.resqpet.ui.createpost.viewmodel.CreatePostViewModel
 import com.example.resqpet.ui.createpost.viewmodel.Post
-import com.example.resqpet.ui.petlist.viewmodel.Pet
-import com.example.resqpet.ui.petlist.viewmodel.PetListViewModel
 
 
 @Composable
@@ -49,7 +46,6 @@ fun PetList(navController: NavController, postsViewModel: CreatePostViewModel) {
 
     val viewModel: CreatePostViewModel = postsViewModel
 
-    //val viewModel: PetListViewModel = viewModel()
     val adoptionPosts = viewModel.posts.value?.filter { it.category == "adoption" } ?: emptyList()
     LaunchedEffect(key1 = Unit){
         viewModel.fetchPosts()

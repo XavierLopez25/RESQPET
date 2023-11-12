@@ -52,7 +52,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.resqpet.R
 import com.example.resqpet.ui.editprofile.viewmodel.EditProfileViewModel
-val colorIcon = Color(0xFFE9B384)
 
 
 
@@ -128,7 +127,7 @@ fun EditProfileScreen(navController: NavController) {
                             focusedLabelColor = colorResource(R.color.textColor),
                             textColor = colorResource(R.color.primaryColor)
                         ),
-                        trailingIcon =  { Icon(Icons.Filled.Person, contentDescription = null, tint = colorIcon) }
+                        trailingIcon =  { Icon(Icons.Filled.Person, contentDescription = null, tint = colorResource(R.color.iconColor)) }
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -142,7 +141,7 @@ fun EditProfileScreen(navController: NavController) {
                             focusedIndicatorColor = colorResource(R.color.secondaryColor),
                             focusedLabelColor = colorResource(R.color.textColor)
                         ),
-                        trailingIcon =  { Icon(Icons.Filled.Email, contentDescription = null, tint = colorIcon) }
+                        trailingIcon =  { Icon(Icons.Filled.Email, contentDescription = null, tint = colorResource(R.color.iconColor)) }
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -159,7 +158,7 @@ fun EditProfileScreen(navController: NavController) {
                         trailingIcon = {
                             val image = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
                             IconButton(onClick = { viewModel.togglePasswordVisibility() }) { // Notifica al ViewModel el cambio
-                                Icon(image, contentDescription = "Toggle password visibility", tint = colorIcon) // Asume que 'colorIcon' está definido en algún lugar
+                                Icon(image, contentDescription = "Toggle password visibility", tint = colorResource(R.color.iconColor)) // Asume que 'colorResource(R.color.iconColor)' está definido en algún lugar
                             }
                         },
                         placeholder = { Text(stringResource(R.string.enter_your_password1)) },
@@ -181,7 +180,7 @@ fun EditProfileScreen(navController: NavController) {
                             focusedIndicatorColor = colorResource(R.color.secondaryColor),
                             focusedLabelColor = colorResource(R.color.textColor)
                         ),
-                        trailingIcon =  { Icon(Icons.Filled.Phone, contentDescription = null, tint = colorIcon) }
+                        trailingIcon =  { Icon(Icons.Filled.Phone, contentDescription = null, tint = colorResource(R.color.iconColor)) }
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -195,7 +194,7 @@ fun EditProfileScreen(navController: NavController) {
                             focusedIndicatorColor = colorResource(R.color.secondaryColor),
                             focusedLabelColor = colorResource(R.color.textColor)
                         ),
-                        trailingIcon =  { Icon(Icons.Filled.Home, contentDescription = null, tint = colorIcon) }
+                        trailingIcon =  { Icon(Icons.Filled.Home, contentDescription = null, tint = colorResource(R.color.iconColor)) }
                     )
 
                     Spacer(modifier = Modifier.height(32.dp))

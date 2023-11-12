@@ -42,16 +42,13 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.example.resqpet.R
 import com.example.resqpet.ui.createpost.viewmodel.CreatePostViewModel
 import com.example.resqpet.ui.createpost.viewmodel.Post
-import com.example.resqpet.ui.postlist.viewmodel.PostViewModel
 
 @SuppressLint("RememberReturnType")
 @Composable
@@ -181,7 +178,7 @@ fun PostCard(post: Post) {
         painterResource(id = R.drawable.noimageuploaded)
     }
 
-    var postTitleC: String = if(post.category == "adoption"){
+    val postTitleC: String = if(post.category == "adoption"){
         post.postAdopt!!.postTitle
     } else if ((post.category == "event") || (post.category == "health_care")){
         post.postEvent!!.postTitle
@@ -189,7 +186,7 @@ fun PostCard(post: Post) {
         "Title Not Found"
     }
 
-    var postDescC: String = if(post.category == "adoption"){
+    val postDescC: String = if(post.category == "adoption"){
         post.postAdopt!!.postDescription
     } else if ((post.category == "event") || (post.category == "health_care")){
         post.postEvent!!.postDescription

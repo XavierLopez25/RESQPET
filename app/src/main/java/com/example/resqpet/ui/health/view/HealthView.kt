@@ -33,9 +33,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.resqpet.ui.health.viewmodel.ServiceRQPViewModel
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,7 +42,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.resqpet.R
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
@@ -66,12 +62,17 @@ fun ServiceRQP(healthCId: Int, navController: NavController, postsViewModel: Cre
 
     var checkedSmall = false
     var checkedMedium = false
-    var checkedBig= false
+    var checkedBig = false
 
     when(healthCPost!!.postEvent!!.minSize){
         "Small" -> checkedSmall = true
         "Medium" -> checkedMedium = true
         "Big" -> checkedBig = true
+        else -> {
+            checkedSmall = true
+            checkedMedium = true
+            checkedBig = true
+        }
     }
 
     Box(
@@ -316,7 +317,7 @@ fun ServiceRQP(healthCId: Int, navController: NavController, postsViewModel: Cre
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Checkbox(
-                                    checked =  checkedBig    ,
+                                    checked =  checkedBig,
                                     onCheckedChange = {},
                                     colors = CheckboxDefaults.colors(
                                         checkedColor = colorResource(R.color.secondaryColor),

@@ -85,4 +85,14 @@
     <string name="healthC_description">Event Description</string>
     <string name="date_of_event">Date</string>
     <string name="event_place">Place</string>
+    <string name="enter_your_public_username">Enter your public username</string>
+    <string name="confirm_your_password">Confirm your password</string>
+    <string name="post_title">Post Title</string>
+    <string name="pet_s_name">Pet\'s Name</string>
+    <string name="pet_s_age">Pet\'s Age</string>
+    <string name="post_description">Post Description</string>
+    <string name="pet_s_personality">Pet\'s Personality</string>
+    <string name="your_contact_info">Your contact info</string>
+    <string name="foundation_s_name">Foundation\'s Name</string>
+    <string name="foundation_s_contact_info">Foundation\'s Contact Info</string>
 </resources>
