@@ -19,14 +19,19 @@ import com.example.resqpet.ui.donation.view.Donation
 import com.example.resqpet.ui.login.view.LoginResQPet
 import com.example.resqpet.ui.start.view.MainMenu
 import com.example.resqpet.ui.editprofile.view.EditProfileScreen
+import com.example.resqpet.ui.login.viewmodel.LoginViewModel
 import com.example.resqpet.ui.mainmenu.view.MainMenuResQPet
 import com.example.resqpet.ui.petlist.view.PetList
 import com.example.resqpet.ui.register.view.RegisterResQPet
+import com.example.resqpet.ui.register.viewmodel.RegisterViewModel
 import com.example.resqpet.ui.theme.RESQPETTheme
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.ktx.initialize
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Firebase.initialize(this)
         setContent {
             RESQPETTheme {
                 // A surface container using the 'background' color from the theme
@@ -35,9 +40,11 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val sharedViewModel: CreatePostViewModel by viewModels()
+                    val signUpModel: RegisterViewModel by viewModels()
+                    val loginModel: LoginViewModel by viewModels()
 
 
-                    Navigation(sharedViewModel)
+                    Navigation(sharedViewModel, signUpModel, loginModel)
 
 
                 }

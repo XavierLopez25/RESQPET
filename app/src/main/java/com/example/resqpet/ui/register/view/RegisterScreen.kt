@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,13 +32,17 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -51,12 +56,13 @@ import com.example.resqpet.R
 import com.example.resqpet.navigation.NavigationState
 import com.example.resqpet.ui.additionalfeatures.PlaceholderTransformation
 import com.example.resqpet.ui.register.viewmodel.RegisterViewModel
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterResQPet(navController: NavController) {
+fun RegisterResQPet(navController: NavController, registerViewModel: RegisterViewModel) {
 
-    val viewModel: RegisterViewModel = viewModel()
+    val viewModel: RegisterViewModel = registerViewModel
 
 
     // Observar los StateFlows como estados en Compose
@@ -68,12 +74,12 @@ fun RegisterResQPet(navController: NavController) {
     val passwordVisible by viewModel.passwordVisible.collectAsState()
     val isEmailValid by viewModel.isEmailValid.collectAsState()
     val passwordsMatch by viewModel.passwordsMatch.collectAsState()
+    val isFormValid by viewModel.isFormValid.collectAsState()
+    val isPasswordLengthValid by viewModel.isPasswordLengthValid.collectAsState()
 
-    val passwordsMatchState = remember(password, passwordConfirm) {
-        derivedStateOf { password == passwordConfirm || password.isEmpty() || passwordConfirm.isEmpty() }
-    }
 
-    val textFieldColors = if (isEmailValid && passwordsMatch) {
+
+    val textFieldColors = if (isEmailValid && passwordsMatch && isPasswordLengthValid) {
             TextFieldDefaults.textFieldColors(
                 containerColor = colorResource(R.color.backgroundColor),
                 focusedIndicatorColor = colorResource(R.color.backgroundColor),
@@ -158,7 +164,9 @@ fun RegisterResQPet(navController: NavController) {
                     .padding(30.dp)
             ) {
                 Column(
-                    modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -183,7 +191,7 @@ fun RegisterResQPet(navController: NavController) {
 
                     OutlinedTextField(
                         value = cname,
-                        onValueChange = {  newValue -> viewModel.setUsername(newValue)},
+                        onValueChange = {  newValue -> viewModel.setCompleteName(newValue)},
                         label = { Text(stringResource(R.string.enter_your_public_username)) },
                         leadingIcon = {
                             Icon(
@@ -221,7 +229,7 @@ fun RegisterResQPet(navController: NavController) {
                                 tint = colorResource(R.color.iconColor)
                             )
                         },
-                        placeholder = { Text(stringResource(R.string.enter_your_username)) },
+                        placeholder = { Text("Enter your complete name") },
                         singleLine = true,
                         colors = TextFieldDefaults.textFieldColors(
                             containerColor = colorResource(R.color.backgroundColor),
@@ -302,18 +310,22 @@ fun RegisterResQPet(navController: NavController) {
                         colors = textFieldColors,
                         visualTransformation = if (passwordConfirm.isEmpty()) {
                             PlaceholderTransformation("Verify your password")
-                        } else if(passwordVisible){ VisualTransformation.None }else PasswordVisualTransformation()                    )
+                        } else if(passwordVisible){ VisualTransformation.None }else PasswordVisualTransformation())
 
                     Spacer(modifier = Modifier.height(20.dp))
 
                     Button(
                         onClick = {
-                            viewModel.onRegisterClicked(username, cname, email, password)
-                            navController.navigate(NavigationState.MainMenu.route)},
+                            if(isFormValid){
+                                viewModel.onRegisterClicked(username, cname, email, password)
+                                navController.navigate(NavigationState.MainMenu.route)
+                            }
+                        },
                         modifier = Modifier
                             .fillMaxWidth(0.7f)
                             .height(50.dp),
                         colors = ButtonDefaults.buttonColors(colorResource(R.color.secondaryColor)),
+                        enabled = isFormValid // Enable or disable the button based on form validation
                     ) {
                         Text(
                             text = stringResource(R.string.register),

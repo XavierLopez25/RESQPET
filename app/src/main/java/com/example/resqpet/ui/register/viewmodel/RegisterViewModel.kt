@@ -1,8 +1,12 @@
 package com.example.resqpet.ui.register.viewmodel
 
+import android.util.Log
 import android.util.Patterns
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuth.AuthStateListener
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,6 +24,10 @@ class RegisterViewModel(): ViewModel() {
     private val _passwordVisible = MutableStateFlow(false)
     private val _isEmailValid = MutableStateFlow(true)
     private val _passwordsMatch = MutableStateFlow(true)
+    private val _isFormValid = MutableStateFlow(false)
+    private val _isPasswordLengthValid = MutableStateFlow(true)
+
+
 
 
     // Exponer como StateFlow
@@ -31,39 +39,56 @@ class RegisterViewModel(): ViewModel() {
     val passwordVisible: StateFlow<Boolean> = _passwordVisible
     val isEmailValid: StateFlow<Boolean> = _isEmailValid.asStateFlow()
     val passwordsMatch: StateFlow<Boolean> = _passwordsMatch.asStateFlow()
+    val isFormValid: StateFlow<Boolean> = _isFormValid.asStateFlow()
+    val isPasswordLengthValid: StateFlow<Boolean> = _isPasswordLengthValid.asStateFlow()
 
 
+    private fun validateForm() {
+        _isFormValid.value = username.value.isNotBlank() &&
+                Cname.value.isNotBlank() &&
+                isEmailValid(email.value) &&
+                passwordsMatch.value &&
+                _isPasswordLengthValid.value
+    }
 
-    // Métodos para cambiar los valores
+    private var registrationProgress = mutableStateOf(false)
+
     fun setUsername(username: String) {
         _username.value = username
+        validateForm()
     }
 
     fun setCompleteName(Cname: String) {
         _cname.value = Cname
+        validateForm()
     }
 
     fun setEmail(email: String) {
         _email.value = email
         _isEmailValid.value = isEmailValid(email)
+        validateForm()
     }
 
     fun setPassword(password: String) {
         _password.value = password
         validatePasswords()
+        validateForm()
     }
 
     fun setPasswordC(passwordC: String) {
         _passwordC.value = passwordC
         validatePasswords()
+        validateForm()
     }
+
 
     private fun validatePasswords() {
         _passwordsMatch.value = password.value == passwordC.value
+        _isPasswordLengthValid.value = password.value.length >= 6 && passwordC.value.length >= 6
     }
 
     private fun isEmailValid(email: String): Boolean {
-        return Patterns.EMAIL_ADDRESS.matcher(email).matches() || email.isEmpty()
+        return email.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
     fun togglePasswordVisibility() {
@@ -72,13 +97,50 @@ class RegisterViewModel(): ViewModel() {
 
     fun onRegisterClicked(username: String, cname: String, email: String, password: String) {
         viewModelScope.launch {
-            registerUser(User(username, cname, email, password))
-            // Handle any post-registration logic here (e.g., updating the UI)
+            createUserInFirebase(User(username, cname, email, password))
+            resetFields()
         }
     }
 
-    fun registerUser(user: User) {
-        // Lógica para enviar datos del usuario a la API
+    private fun resetFields() {
+        _username.value = ""
+        _cname.value = ""
+        _email.value = ""
+        _password.value = ""
+        _passwordC.value = ""
+    }
+
+    private fun createUserInFirebase(user: User) {
+
+        registrationProgress.value = true
+
+        FirebaseAuth.getInstance().createUserWithEmailAndPassword(user.email, user.password)
+            .addOnCompleteListener {
+                Log.d("TESTING FIREBASE", "COMPLETED!")
+                Log.d("TESTING FIREBASE", "isSuccesful = ${it.isSuccessful}")
+                registrationProgress.value = false
+            }
+            .addOnFailureListener {
+                Log.d("TESTING FIREBASE", "FAILURE")
+                Log.d("TESTING FIREBASE", "Exception = ${it.message}")
+                Log.d("TESTING FIREBASE", "Exception = ${it.localizedMessage}")
+            }
+
+    }
+
+    fun logOut(){
+
+        val firebaseAuth = FirebaseAuth.getInstance()
+        firebaseAuth.signOut()
+        val authStateListener = AuthStateListener{
+            if(it.currentUser == null){
+                Log.d("TESTING LOGOUT", "LOGOUT SUCCESS!")
+            }else{
+                Log.d("TESTING LOGOUT", "LOGOUT FAILED :(")
+            }
+        }
+
+        firebaseAuth.addAuthStateListener(authStateListener)
     }
 
 }

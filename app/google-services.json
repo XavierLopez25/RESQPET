@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "153970271310",
+    "project_id": "resqpet-cb102",
+    "storage_bucket": "resqpet-cb102.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:153970271310:android:cd8a2ed42239f161df4f1f",
+        "android_client_info": {
+          "package_name": "com.example.resqpet"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDc-iaNrjr4A0jgypGn_1BDfDC4VXdqgE8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -50,13 +50,38 @@ import com.example.resqpet.ui.login.viewmodel.LoginViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginResQPet(navController: NavController) {
+fun LoginResQPet(navController: NavController, loginViewModel: LoginViewModel) {
 
-    val loginViewModel: LoginViewModel = viewModel()
+    val viewModel: LoginViewModel = loginViewModel
 
-    val email by loginViewModel.email.collectAsState()
-    val password by loginViewModel.password.collectAsState()
-    val passwordVisible by loginViewModel.isPasswordVisible.collectAsState()
+    val email by viewModel.email.collectAsState()
+    val password by viewModel.password.collectAsState()
+    val passwordVisible by viewModel.isPasswordVisible.collectAsState()
+    val areFieldsValid by viewModel.areFieldsValid.collectAsState()
+
+    val textFieldColors = if (areFieldsValid) {
+        TextFieldDefaults.textFieldColors(
+            containerColor = colorResource(R.color.backgroundColor),
+            focusedIndicatorColor = colorResource(R.color.backgroundColor),
+            focusedLabelColor = colorResource(R.color.backgroundColor),
+            unfocusedLabelColor = colorResource(R.color.backgroundColor),
+            textColor = colorResource(R.color.primaryColor),
+            cursorColor = colorResource(R.color.primaryColor)
+        )
+    } else {
+        TextFieldDefaults.textFieldColors(
+            containerColor = colorResource(R.color.backgroundColor),
+            focusedIndicatorColor = colorResource(id = R.color.errorColor),
+            unfocusedIndicatorColor = colorResource(id = R.color.errorColor),
+            cursorColor = colorResource(id = R.color.errorColor),
+            focusedSupportingTextColor = colorResource(id = R.color.errorColor),
+            unfocusedSupportingTextColor = colorResource(id = R.color.errorColor),
+            errorSupportingTextColor = colorResource(id = R.color.errorColor),
+            errorIndicatorColor = colorResource(id = R.color.errorColor),
+            textColor = colorResource(R.color.primaryColor)
+
+        )
+    }
 
     Box(
         modifier = Modifier
@@ -143,14 +168,7 @@ fun LoginResQPet(navController: NavController) {
                         leadingIcon = { Icon(Icons.Default.Email, contentDescription = "Email Icon", tint = colorResource(R.color.iconColor)) },
                         placeholder = { Text(stringResource(R.string.enter_your_email)) },
                         singleLine = true,
-                        colors = TextFieldDefaults.textFieldColors(
-                            containerColor = colorResource(R.color.backgroundColor),
-                            focusedIndicatorColor = colorResource(R.color.backgroundColor),
-                            focusedLabelColor = colorResource(R.color.backgroundColor),
-                            unfocusedLabelColor = colorResource(R.color.backgroundColor),
-                            cursorColor = colorResource(R.color.primaryColor),
-                            textColor = colorResource(R.color.primaryColor)
-                        ),
+                        colors = textFieldColors,
                         visualTransformation = if(email.isEmpty()){
                             PlaceholderTransformation("Enter the your email")
                         } else VisualTransformation.None
@@ -170,14 +188,7 @@ fun LoginResQPet(navController: NavController) {
                         },
                         placeholder = { Text(stringResource(R.string.enter_your_password)) },
                         singleLine = true,
-                        colors = TextFieldDefaults.textFieldColors(
-                            containerColor = colorResource(R.color.backgroundColor),
-                            focusedIndicatorColor = colorResource(R.color.backgroundColor),
-                            focusedLabelColor = colorResource(R.color.backgroundColor),
-                            unfocusedLabelColor = colorResource(R.color.backgroundColor),
-                            cursorColor = colorResource(R.color.primaryColor),
-                            textColor = colorResource(R.color.primaryColor)
-                        ),
+                        colors = textFieldColors,
                         visualTransformation = if ( password.isEmpty()) {
                             PlaceholderTransformation("Enter the your password")
                         } else if(passwordVisible){ VisualTransformation.None }else PasswordVisualTransformation()
@@ -201,7 +212,6 @@ fun LoginResQPet(navController: NavController) {
                             style = MaterialTheme.typography.titleMedium
                         )
                     }
-
                 }
             }
         }
