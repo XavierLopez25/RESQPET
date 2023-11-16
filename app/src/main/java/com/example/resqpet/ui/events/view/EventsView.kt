@@ -55,8 +55,6 @@ fun MainEvent(eventId: Int, navController: NavController, postsViewModel: Create
         viewModel.fetchPosts()
     }
 
-
-
     Box(
         modifier = Modifier
             .fillMaxSize()

@@ -38,11 +38,12 @@ import coil.compose.rememberImagePainter
 import com.example.resqpet.R
 import com.example.resqpet.ui.createpost.viewmodel.CreatePostViewModel
 import com.example.resqpet.ui.createpost.viewmodel.Post
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 
 @Composable
-fun PetList(navController: NavController, postsViewModel: CreatePostViewModel) {
-
+fun PetList(navController: NavController, postsViewModel: CreatePostViewModel, isRefreshing: Boolean, refreshData: () -> Unit) {
 
     val viewModel: CreatePostViewModel = postsViewModel
 
@@ -51,6 +52,11 @@ fun PetList(navController: NavController, postsViewModel: CreatePostViewModel) {
         viewModel.fetchPosts()
     }
 
+    SwipeRefresh(
+        state = rememberSwipeRefreshState(isRefreshing),
+        onRefresh = refreshData
+    )
+    {
 
     Box(
         modifier = Modifier
@@ -58,71 +64,74 @@ fun PetList(navController: NavController, postsViewModel: CreatePostViewModel) {
             .background(colorResource(R.color.backgroundColor)),
 
         ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
 
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.catbutton1),
-                contentDescription = "decoration",
+
+            Box(
                 modifier = Modifier
-                    .size(80.dp)
-                    .padding(top = 0.dp, start = 0.dp)
-                    .align(Alignment.TopStart)
-                    .offset((1).dp, (10).dp)
-            )
-            IconButton(
-                onClick = { /* acción cuando se hace clic */ },
-                modifier = Modifier.size(100.dp)
-            ){
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+
+            ) {
                 Image(
-                    painter = painterResource(id = R.drawable.backbutton1),
-                    contentDescription = "Regresar a principal",
+                    painter = painterResource(id = R.drawable.catbutton1),
+                    contentDescription = "decoration",
                     modifier = Modifier
                         .size(80.dp)
-                        .offset((280).dp, (0).dp)
+                        .padding(top = 0.dp, start = 0.dp)
+                        .align(Alignment.TopStart)
+                        .offset((1).dp, (10).dp)
                 )
-            }
-
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-
-                Spacer(modifier = Modifier.height(100.dp))
-
-                Text(
-                    text = stringResource(R.string.welcome1),
-                    fontWeight = FontWeight.Bold,
-                    color = colorResource(R.color.primaryColor),
-                    style = MaterialTheme.typography.headlineMedium,
-                )
-
-                Spacer(modifier = Modifier.height(1.dp))
-
-                Text(
-                    text = stringResource(R.string.rescue_a_heart_adopt_a_friend),
-                    color = colorResource(R.color.primaryColor),
-                    style = MaterialTheme.typography.titleMedium,
-                )
-                Spacer(modifier = Modifier.height(10.dp))
-
-                LazyColumn(
-                    modifier = Modifier
-                        .padding(top = 30.dp)
-                        .fillMaxHeight()
+                IconButton(
+                    onClick = { /* acción cuando se hace clic */ },
+                    modifier = Modifier.size(100.dp)
                 ) {
-                    itemsIndexed(items = adoptionPosts) { _, post ->
-                        PetCard(post = post)
-                    }
+                    Image(
+                        painter = painterResource(id = R.drawable.backbutton1),
+                        contentDescription = "Regresar a principal",
+                        modifier = Modifier
+                            .size(80.dp)
+                            .offset((280).dp, (0).dp)
+                    )
                 }
 
-            }
-        }
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
 
+                    Spacer(modifier = Modifier.height(100.dp))
+
+                    Text(
+                        text = stringResource(R.string.welcome1),
+                        fontWeight = FontWeight.Bold,
+                        color = colorResource(R.color.primaryColor),
+                        style = MaterialTheme.typography.headlineMedium,
+                    )
+
+                    Spacer(modifier = Modifier.height(1.dp))
+
+                    Text(
+                        text = stringResource(R.string.rescue_a_heart_adopt_a_friend),
+                        color = colorResource(R.color.primaryColor),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    LazyColumn(
+                        modifier = Modifier
+                            .padding(top = 30.dp)
+                            .fillMaxHeight()
+                    ) {
+                        itemsIndexed(items = adoptionPosts) { _, post ->
+                            PetCard(post = post)
+                        }
+                    }
+
+                }
+            }
+
+        }
     }
 }
 

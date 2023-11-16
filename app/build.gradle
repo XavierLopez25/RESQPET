@@ -2,6 +2,9 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'com.google.gms.google-services'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
 }
 
 android {
@@ -94,7 +97,20 @@ dependencies {
     implementation ('org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.1.1')
     implementation ('com.google.firebase:firebase-analytics')
 
+    //Firestore
+    implementation 'com.google.firebase:firebase-firestore:24.9.1'
 
+    //Hilt
+    implementation "com.google.dagger:hilt-android:2.44"
+    implementation 'com.google.dagger:hilt-android-gradle-plugin:2.44'
+    kapt "com.google.dagger:hilt-compiler:2.44"
+
+    def hilt_navigation = "1.0.0-alpha03"
+    implementation "androidx.hilt:hilt-navigation-compose:$hilt_navigation"
+
+    // Accompaniest Swipe Refresh
+    implementation "com.google.accompanist:accompanist-swiperefresh:0.18.0"
 
 
 }
+

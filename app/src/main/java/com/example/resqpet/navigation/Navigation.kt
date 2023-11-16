@@ -1,16 +1,16 @@
 package com.example.resqpet.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavType
+import androidx.compose.runtime.collectAsState
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.example.resqpet.ui.animalprofile.view.AnimalProfile
 import com.example.resqpet.ui.createpost.view.CreatePost
 import com.example.resqpet.ui.createpost.viewmodel.CreatePostViewModel
+import com.example.resqpet.ui.createpost.viewmodel.PostDetailViewModel
+import com.example.resqpet.ui.createpost.viewmodel.PostListState
+import com.example.resqpet.ui.createpost.viewmodel.PostListViewModel
 import com.example.resqpet.ui.donation.view.Donation
 import com.example.resqpet.ui.editprofile.view.EditProfileScreen
 import com.example.resqpet.ui.events.view.MainEvent
@@ -25,10 +25,11 @@ import com.example.resqpet.ui.register.viewmodel.RegisterViewModel
 import com.example.resqpet.ui.start.view.MainMenu
 
 @Composable
-fun Navigation(postsViewModel: CreatePostViewModel, registerViewModel: RegisterViewModel, loginViewModel: LoginViewModel) {
+fun Navigation(postsViewModel: CreatePostViewModel, registerViewModel: RegisterViewModel, loginViewModel: LoginViewModel, postDetailViewModel: PostDetailViewModel, postListViewModel: PostListViewModel, state: PostListState) {
 
     // Create a navigation controller to manage the navigation stack.
     val navController = rememberNavController()
+    val isRefreshing = postListViewModel.isRefreshing.collectAsState()
 
     NavHost(
         navController = navController,
@@ -48,11 +49,11 @@ fun Navigation(postsViewModel: CreatePostViewModel, registerViewModel: RegisterV
         }
 
         composable(route = NavigationState.MainMenu.route) {
-            MainMenuResQPet(navController, postsViewModel, registerViewModel, loginViewModel)
+            MainMenuResQPet(navController, postsViewModel, registerViewModel, loginViewModel, isRefreshing = isRefreshing.value, refreshData = postListViewModel::getPostList, state)
         }
 
         composable(route = NavigationState.Adopt.route) {
-            PetList(navController, postsViewModel)
+            PetList(navController, postsViewModel,  isRefreshing = isRefreshing.value, refreshData = postListViewModel::getPostList,)
         }
 
         composable(route = NavigationState.Donate.route) {
@@ -60,7 +61,7 @@ fun Navigation(postsViewModel: CreatePostViewModel, registerViewModel: RegisterV
         }
 
         composable(route = NavigationState.Posts.route) {
-            PostFiltering(navController, postsViewModel)
+            PostFiltering(navController, postsViewModel,  isRefreshing = isRefreshing.value, refreshData = postListViewModel::getPostList,)
         }
 
         composable("animalProfile/{postId}") { backStackEntry ->
@@ -87,16 +88,12 @@ fun Navigation(postsViewModel: CreatePostViewModel, registerViewModel: RegisterV
             }
         }
 
-        composable(route = NavigationState.Search.route) {
-            PostFiltering(navController, postsViewModel)
-        }
-
         composable(route = NavigationState.Profile.route) {
             EditProfileScreen(navController)
         }
 
         composable(route = NavigationState.AddPost.route) {
-            CreatePost(navController, postsViewModel)
+            CreatePost(navController, postsViewModel, postDetailViewModel)
         }
 
     }

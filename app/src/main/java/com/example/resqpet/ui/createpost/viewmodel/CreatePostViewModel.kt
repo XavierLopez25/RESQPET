@@ -16,7 +16,6 @@ class CreatePostViewModel: ViewModel(){
         println("ViewModel Cleared: $this")
     }
 
-
     var _posts = MutableLiveData<List<Post>>(mutableListOf())
     val posts: LiveData<List<Post>> get() = _posts
 
@@ -25,6 +24,14 @@ class CreatePostViewModel: ViewModel(){
     val selectedImageUri: LiveData<Uri> get() = _selectedImageUri
 
     private var postIdCounter = 0
+
+    fun getId(): Int{
+        return postIdCounter
+    }
+
+    fun getImageUri(): Uri?{
+        return selectedImageUri.value
+    }
 
     fun saveImageUri(uri: Uri?){
         _selectedImageUri.value = uri!!
@@ -62,8 +69,6 @@ class CreatePostViewModel: ViewModel(){
     fun fetchPosts(): LiveData<List<Post>> {
         return posts
     }
-
-
 
     val postData = MutableLiveData(Post(0, "", null, null, null))
 

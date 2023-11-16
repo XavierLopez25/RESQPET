@@ -1,5 +1,6 @@
 package com.example.resqpet.ui.mainmenu.view
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -35,7 +36,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -62,12 +62,15 @@ import com.example.resqpet.R
 import com.example.resqpet.navigation.NavigationState
 import com.example.resqpet.ui.createpost.viewmodel.CreatePostViewModel
 import com.example.resqpet.ui.createpost.viewmodel.Post
+import com.example.resqpet.ui.createpost.viewmodel.PostListState
 import com.example.resqpet.ui.login.viewmodel.LoginViewModel
 import com.example.resqpet.ui.mainmenu.viewmodel.CardItem
 import com.example.resqpet.ui.register.viewmodel.RegisterViewModel
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 @Composable
-fun MainMenuResQPet(navController: NavController, postsViewModel: CreatePostViewModel, registerViewModel: RegisterViewModel, loginViewModel: LoginViewModel) {
+fun MainMenuResQPet(navController: NavController, postsViewModel: CreatePostViewModel, registerViewModel: RegisterViewModel, loginViewModel: LoginViewModel, isRefreshing: Boolean, refreshData: () -> Unit, state: PostListState) {
 
     val viewModel: CreatePostViewModel = postsViewModel
     val signUpModel: RegisterViewModel = registerViewModel
@@ -87,11 +90,17 @@ fun MainMenuResQPet(navController: NavController, postsViewModel: CreatePostView
         println("Posts inside LaunchedEffect: ${posts.value}")
     }
 
-
     viewModel.fetchPosts()
     println(viewModel.fetchPosts())
 
-    Column (modifier = Modifier.fillMaxSize()){
+
+    SwipeRefresh(
+        state = rememberSwipeRefreshState(isRefreshing),
+        onRefresh = refreshData)
+    {
+
+    Column(modifier = Modifier.fillMaxSize()) {
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -119,7 +128,8 @@ fun MainMenuResQPet(navController: NavController, postsViewModel: CreatePostView
 
                     Button(
                         modifier = Modifier
-                            .padding(1.dp).offset(x = 225.dp),
+                            .padding(1.dp)
+                            .offset(x = 225.dp),
                         onClick = {
                             signUpModel.logOut()
                             navController.navigate(NavigationState.Home.route)
@@ -174,9 +184,24 @@ fun MainMenuResQPet(navController: NavController, postsViewModel: CreatePostView
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                val cardItems =  listOf(CardItem(stringResource(R.string.adopt1), R.drawable.heart, null, NavigationState.Adopt.route), CardItem(
-                    stringResource(R.string.events), R.drawable.shelter1, null, "eventInfo/${latestIdEvents}"), CardItem(
-                    stringResource(R.string.donate1), R.drawable.shelter2, null, NavigationState.Donate.route))
+                val cardItems = listOf(
+                    CardItem(
+                        stringResource(R.string.adopt1),
+                        R.drawable.heart,
+                        null,
+                        NavigationState.Adopt.route
+                    ), CardItem(
+                        stringResource(R.string.events),
+                        R.drawable.shelter1,
+                        null,
+                        "eventInfo/${latestIdEvents}"
+                    ), CardItem(
+                        stringResource(R.string.donate1),
+                        R.drawable.shelter2,
+                        null,
+                        NavigationState.Donate.route
+                    )
+                )
 
                 LazyRow {
                     itemsIndexed(items = cardItems) { _, item ->
@@ -231,13 +256,14 @@ fun MainMenuResQPet(navController: NavController, postsViewModel: CreatePostView
             NoPostsDialog(showDialog = showDialog)
         }
 
-        PostsBar(Modifier.weight(0.5f), posts, navController)
+        PostsBar(Modifier.weight(0.5f), posts, navController, state)
+        }
     }
 
 }
 
 @Composable
-fun PostsBar(modifier: Modifier = Modifier, posts: State<List<Post>>, navController: NavController) {
+fun PostsBar(modifier: Modifier = Modifier, posts: State<List<Post>>, navController: NavController, state: PostListState) {
 
     val showDialog = remember { mutableStateOf(false) }
 
@@ -281,14 +307,15 @@ fun PostsBar(modifier: Modifier = Modifier, posts: State<List<Post>>, navControl
                 contentPadding = PaddingValues(8.dp),
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
-                itemsIndexed(items = posts.value) { _, item  ->
+
+                Log.d("Probando lectura de datos", state.posts.toString())
+
+                itemsIndexed(items = state.posts) { _, item  ->
                     PostCard(postItem = item, navController)
                 }
             }
         }
     }
-
-
 
     // Bottom Navigation Bar
     Row(

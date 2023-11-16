@@ -49,17 +49,17 @@ import coil.compose.rememberImagePainter
 import com.example.resqpet.R
 import com.example.resqpet.ui.createpost.viewmodel.CreatePostViewModel
 import com.example.resqpet.ui.createpost.viewmodel.Post
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 @SuppressLint("RememberReturnType")
 @Composable
-fun PostFiltering(navController: NavController, postsViewModel: CreatePostViewModel) {
+fun PostFiltering(navController: NavController, postsViewModel: CreatePostViewModel, isRefreshing: Boolean, refreshData: () -> Unit) {
 
     val viewModel: CreatePostViewModel = postsViewModel
     val posts by viewModel.posts.observeAsState(emptyList())
     val selectedCategories = remember { mutableStateListOf<String>() }
     var searchQuery by remember { mutableStateOf("") } // Add this line
-
-
 
     val categoryMapping = mapOf(
         "Adoption" to "adoption",
@@ -67,70 +67,83 @@ fun PostFiltering(navController: NavController, postsViewModel: CreatePostViewMo
         "Events" to "event"
     )
 
-    Column{
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(color = colorResource(R.color.secondaryColor))
-                .align(Alignment.CenterHorizontally)
-                .height(100.dp)
-                .padding(top = 15.dp, start = 60.dp)
-        ){
-            SearchBar(onQueryChanged = { newQuery -> searchQuery = newQuery })
-        }
+    SwipeRefresh(
+        state = rememberSwipeRefreshState(isRefreshing),
+        onRefresh = refreshData
+    )
+    {
+    Column {
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(colorResource(R.color.backgroundColor))
-                .height(5000.dp)
-        ) {
-            Column {
-                Box(modifier = Modifier
+            Box(
+                modifier = Modifier
                     .fillMaxWidth()
-                    .background(colorResource(R.color.primaryColor))
-                    .align(Alignment.CenterHorizontally)) {
-                    LazyRow (modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .clip(RoundedCornerShape(16.dp))) {
-                        itemsIndexed(items = categoryMapping.keys.toList()) { _, displayName ->
-                            FilterCheckbox(displayName) { isChecked ->
-                                val realCategoryName = categoryMapping[displayName] ?: return@FilterCheckbox
-                                if (isChecked) {
-                                    selectedCategories.add(realCategoryName)
-                                } else {
-                                    selectedCategories.remove(realCategoryName)
+                    .background(color = colorResource(R.color.secondaryColor))
+                    .align(Alignment.CenterHorizontally)
+                    .height(100.dp)
+                    .padding(top = 15.dp, start = 60.dp)
+            ) {
+                SearchBar(onQueryChanged = { newQuery -> searchQuery = newQuery })
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(colorResource(R.color.backgroundColor))
+                    .height(5000.dp)
+            ) {
+                Column {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(colorResource(R.color.primaryColor))
+                            .align(Alignment.CenterHorizontally)
+                    ) {
+                        LazyRow(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                        ) {
+                            itemsIndexed(items = categoryMapping.keys.toList()) { _, displayName ->
+                                FilterCheckbox(displayName) { isChecked ->
+                                    val realCategoryName =
+                                        categoryMapping[displayName] ?: return@FilterCheckbox
+                                    if (isChecked) {
+                                        selectedCategories.add(realCategoryName)
+                                    } else {
+                                        selectedCategories.remove(realCategoryName)
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
-                val filteredPosts = posts.filter { post ->
-                    val isInSelectedCategory = selectedCategories.isEmpty() || post.category in selectedCategories
-                    val matchesSearchQuery = searchQuery.isEmpty() ||
-                            post.postAdopt?.postTitle?.contains(searchQuery, true) == true ||
-                            post.postEvent?.postTitle?.contains(searchQuery, true) == true
+                    val filteredPosts = posts.filter { post ->
+                        val isInSelectedCategory =
+                            selectedCategories.isEmpty() || post.category in selectedCategories
+                        val matchesSearchQuery = searchQuery.isEmpty() ||
+                                post.postAdopt?.postTitle?.contains(searchQuery, true) == true ||
+                                post.postEvent?.postTitle?.contains(searchQuery, true) == true
 
-                    isInSelectedCategory && matchesSearchQuery
-                }
+                        isInSelectedCategory && matchesSearchQuery
+                    }
 
 
-                LazyColumn(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(colorResource(R.color.primaryColor))
-                        .width(350.dp)
-                        .height(600.dp)
-                        .align(Alignment.CenterHorizontally)
-                ) {
-                    itemsIndexed(items = filteredPosts) { _, post ->
-                        PostCard(
-                            post = post
-                        )
+                    LazyColumn(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(colorResource(R.color.primaryColor))
+                            .width(350.dp)
+                            .height(600.dp)
+                            .align(Alignment.CenterHorizontally)
+                    ) {
+                        itemsIndexed(items = filteredPosts) { _, post ->
+                            PostCard(
+                                post = post
+                            )
+                        }
                     }
                 }
             }

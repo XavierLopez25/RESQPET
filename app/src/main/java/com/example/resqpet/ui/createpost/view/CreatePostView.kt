@@ -51,15 +51,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.resqpet.ui.createpost.viewmodel.CreatePostViewModel
-
+import com.example.resqpet.ui.createpost.viewmodel.PostDetailViewModel
 
 
 @Composable
-fun CreatePost(navController: NavController, postsViewModel: CreatePostViewModel) {
-
+fun CreatePost(navController: NavController, postsViewModel: CreatePostViewModel, postDetailViewModel: PostDetailViewModel) {
 
 
     val viewModel: CreatePostViewModel = postsViewModel
+    val postsViewModel: PostDetailViewModel = postDetailViewModel
 
     LaunchedEffect(key1 = navController.currentBackStackEntry) {
         viewModel.resetFields()
@@ -68,50 +68,52 @@ fun CreatePost(navController: NavController, postsViewModel: CreatePostViewModel
     val postDataAdopt by viewModel.postAdoption.observeAsState()
 
     val postDataEventHC by viewModel.postEventHC.observeAsState()
-    
+
     val context = LocalContext.current
 
-    val pickImageLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
-        // Save the Uri in your ViewModel
-        viewModel.saveImageUri(uri)
-    }
-
-
-
-    val takePictureLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.TakePicturePreview()) { bitmap: Bitmap? ->
-        if (bitmap != null) {
-            println("Success: Bitmap received.")
-
-            // Convert Bitmap to Uri and save it in your ViewModel
-            val uri = bitmap.let { imageBitmap ->
-                val values = ContentValues().apply {
-                    // Ensure unique file name
-                    put(MediaStore.Images.Media.DISPLAY_NAME, "Title_${System.currentTimeMillis()}.jpg")
-                    put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
-                }
-
-                val contentResolver = context.contentResolver
-                val imageUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
-
-                imageUri?.let {
-                    contentResolver.openOutputStream(it)?.use { outputStream ->
-                        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
-                    }
-                }
-                imageUri
-            }
+    val pickImageLauncher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
+            // Save the Uri in your ViewModel
             viewModel.saveImageUri(uri)
-        } else {
-            println("Error: Bitmap is null.")
         }
-    }
 
 
+    val takePictureLauncher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.TakePicturePreview()) { bitmap: Bitmap? ->
+            if (bitmap != null) {
+                println("Success: Bitmap received.")
+
+                // Convert Bitmap to Uri and save it in your ViewModel
+                val uri = bitmap.let { imageBitmap ->
+                    val values = ContentValues().apply {
+                        // Ensure unique file name
+                        put(
+                            MediaStore.Images.Media.DISPLAY_NAME,
+                            "Title_${System.currentTimeMillis()}.jpg"
+                        )
+                        put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+                    }
+
+                    val contentResolver = context.contentResolver
+                    val imageUri =
+                        contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+
+                    imageUri?.let {
+                        contentResolver.openOutputStream(it)?.use { outputStream ->
+                            imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                        }
+                    }
+                    imageUri
+                }
+                viewModel.saveImageUri(uri)
+            } else {
+                println("Error: Bitmap is null.")
+            }
+        }
 
 
     // Estado para mantener la categoría seleccionada
     var selectedCategory by remember { mutableStateOf("none") }
-
 
     Column{
         Column(modifier = Modifier.weight(2f)){
@@ -344,7 +346,8 @@ fun CreatePost(navController: NavController, postsViewModel: CreatePostViewModel
                 Text(text = stringResource(R.string.cancel), style = MaterialTheme.typography.titleLarge, fontSize = 25.sp, color = colorResource(R.color.primaryColor), modifier = Modifier.offset(x = (-145).dp, y = 35.dp))
 
                 IconButton(onClick = { viewModel.createNewPostWithImage(selectedCategory, postDataAdopt, postDataEventHC)
-                                     navController.popBackStack()}, modifier = Modifier.size(150.dp).offset(x = (50).dp),) {
+                                     navController.popBackStack()
+                                     postDetailViewModel.addNewPost(viewModel.getId(), selectedCategory, postDataAdopt, postDataEventHC, viewModel.getImageUri())}, modifier = Modifier.size(150.dp).offset(x = (50).dp),) {
                     Image(painter = painterResource(id = R.drawable.adoptbutton), contentDescription = "Descripción de la imagen")
                     Text(text = stringResource(R.string.adopt), style = MaterialTheme.typography.titleLarge, fontSize = 25.sp, color = colorResource(R.color.primaryColor), modifier = Modifier.offset(x = (-10).dp, y = 10.dp))
                 }

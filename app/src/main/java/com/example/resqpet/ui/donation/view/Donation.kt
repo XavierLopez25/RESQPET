@@ -50,11 +50,9 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Donation(navController: NavController) {
-
     val viewModel: DonationViewModel = viewModel()
     val donationData by viewModel.donationData.observeAsState()
     val contributorName by remember { mutableStateOf("") }
@@ -63,7 +61,6 @@ fun Donation(navController: NavController) {
     val donateMonetary by remember { mutableStateOf(false) }
     val donateMedicalResources by remember { mutableStateOf(false) }
     val donateFood by remember { mutableStateOf(false) }
-
     var belongsToFoundation by remember { mutableStateOf(true) }
 
     Box(
@@ -116,7 +113,6 @@ fun Donation(navController: NavController) {
                     )
                     .background(Color.Transparent)
             ) {
-
                 Box(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
@@ -125,7 +121,6 @@ fun Donation(navController: NavController) {
                         .background(colorResource(R.color.secondaryColor), shape = RoundedCornerShape(16.dp))
                         .padding(vertical = 10.dp, horizontal = 10.dp)
                 ) {
-
                     Box(
                         modifier = Modifier
                             .width(155.dp)
@@ -152,7 +147,6 @@ fun Donation(navController: NavController) {
                 }
             }
         }
-
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -167,14 +161,12 @@ fun Donation(navController: NavController) {
                     .background(colorResource(R.color.primaryColor))
                     .padding(30.dp)
             ) {
-
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     item {
-
                         Text(
                             text = "Contributor Name",
                             fontWeight = FontWeight.Bold,
@@ -213,9 +205,7 @@ fun Donation(navController: NavController) {
                             color = colorResource(R.color.backgroundColor),
                             style = MaterialTheme.typography.titleMedium,
                         )
-
                         Spacer(modifier = Modifier.height(10.dp))
-
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
@@ -242,7 +232,6 @@ fun Donation(navController: NavController) {
                                     style = MaterialTheme.typography.titleSmall
                                 )
                             }
-
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
@@ -265,7 +254,6 @@ fun Donation(navController: NavController) {
                                     style = MaterialTheme.typography.titleSmall
                                 )
                             }
-
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
@@ -289,7 +277,6 @@ fun Donation(navController: NavController) {
                                 )
                             }
                         }
-
                         Spacer(modifier = Modifier.height(20.dp))
 
                         Text(
@@ -298,7 +285,6 @@ fun Donation(navController: NavController) {
                             color = colorResource(R.color.backgroundColor),
                             style = MaterialTheme.typography.titleMedium,
                         )
-
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
@@ -311,7 +297,6 @@ fun Donation(navController: NavController) {
                                         uncheckedColor = colorResource(R.color.backgroundColor)
                                     )
                                 )
-
                             Text(
                                 text = stringResource(R.string.yes),
                                 color = colorResource(R.color.backgroundColor),
@@ -319,9 +304,7 @@ fun Donation(navController: NavController) {
                                 style = MaterialTheme.typography.titleSmall
                             )
                         }
-
                         Spacer(modifier = Modifier.height(20.dp))
-
                         if (belongsToFoundation) {
                             Text(
                                 text = stringResource(R.string.foundation_phone_number),
@@ -449,13 +432,8 @@ fun Donation(navController: NavController) {
                         }
                     }
                 }
-
-
             }
-
         }
-
-
         IconButton(
             onClick = { viewModel.cancelDonation("", "", "", donateMonetary = false, donateMedicalResources = false, donateFood = false) },
             modifier = Modifier.size(200.dp)
@@ -472,7 +450,6 @@ fun Donation(navController: NavController) {
                     painter = painterResource(id = R.drawable.cancelbutton),
                     contentDescription = "cancel"
                 )
-
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
@@ -489,7 +466,6 @@ fun Donation(navController: NavController) {
                 }
             }
         }
-
         IconButton(
             onClick = { viewModel.submitDonation(contributorName, phoneNumber, address, donateMonetary, donateMedicalResources, donateFood) },
             modifier = Modifier.size(200.dp).offset((10).dp, (65).dp)
@@ -504,26 +480,20 @@ fun Donation(navController: NavController) {
                     painter = painterResource(id = R.drawable.donatebutton),
                     contentDescription = "donation"
                 )
-
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .offset((-20).dp, (-15).dp)
                 ) {
-
                     Text(
                         text = stringResource(R.string.donate),
                         color = colorResource(R.color.backgroundColor),
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.headlineSmall
-
                     )
-
                 }
             }
-
         }
     }
-
 }
