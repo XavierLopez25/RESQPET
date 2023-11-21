@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.resqpet.R
+import com.example.resqpet.navigation.NavigationState
 import com.example.resqpet.ui.createpost.viewmodel.CreatePostViewModel
 import com.example.resqpet.ui.createpost.viewmodel.Post
 
@@ -50,7 +51,7 @@ fun MainEvent(eventId: Int, navController: NavController, postsViewModel: Create
 
     val viewModel: CreatePostViewModel = postsViewModel
 
-    val eventPost = viewModel.posts.value?.firstOrNull { it.id == eventId  && it.category == "event"}
+    val eventPost = viewModel.state.value?.firstOrNull { it.id == eventId  && it.category == "event"}
     LaunchedEffect(key1 = eventId){
         viewModel.fetchPosts()
     }
@@ -99,7 +100,9 @@ fun MainEvent(eventId: Int, navController: NavController, postsViewModel: Create
 
 
         Button(
-            onClick = {/*viewModel.onAssistClicked()*/},
+            onClick = {/*COLOCAR ALERT DIALOG*/
+                navController.navigate(NavigationState.MainMenu.route){
+                    popUpTo(NavigationState.MainMenu.route) { inclusive = true }}},
             colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.secondaryColor)),
             modifier = Modifier.offset(x = (150).dp, y = (690).dp)
 
@@ -253,8 +256,7 @@ fun CardDesign(eventPost: Post?) {
                         focusedIndicatorColor = colorResource(R.color.backgroundColor),
                         focusedLabelColor = colorResource(R.color.backgroundColor),
                         unfocusedLabelColor = colorResource(R.color.backgroundColor),
-                        disabledTextColor = colorResource(R.color.primaryColor
-).copy(alpha = 1f)
+                        disabledTextColor = colorResource(R.color.primaryColor).copy(alpha = 1f)
                     )
                 )
 
@@ -284,8 +286,7 @@ fun CardDesign(eventPost: Post?) {
                         focusedIndicatorColor = colorResource(R.color.backgroundColor),
                         focusedLabelColor = colorResource(R.color.backgroundColor),
                         unfocusedLabelColor = colorResource(R.color.backgroundColor),
-                        disabledTextColor = colorResource(R.color.primaryColor
-).copy(alpha = 1f)
+                        disabledTextColor = colorResource(R.color.primaryColor).copy(alpha = 1f)
                         )
                 )
 

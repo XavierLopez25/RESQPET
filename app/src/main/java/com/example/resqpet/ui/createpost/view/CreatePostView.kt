@@ -50,16 +50,15 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.resqpet.navigation.NavigationState
 import com.example.resqpet.ui.createpost.viewmodel.CreatePostViewModel
-import com.example.resqpet.ui.createpost.viewmodel.PostDetailViewModel
 
 
 @Composable
-fun CreatePost(navController: NavController, postsViewModel: CreatePostViewModel, postDetailViewModel: PostDetailViewModel) {
+fun CreatePost(navController: NavController, postsViewModel: CreatePostViewModel) {
 
 
     val viewModel: CreatePostViewModel = postsViewModel
-    val postsViewModel: PostDetailViewModel = postDetailViewModel
 
     LaunchedEffect(key1 = navController.currentBackStackEntry) {
         viewModel.resetFields()
@@ -340,14 +339,17 @@ fun CreatePost(navController: NavController, postsViewModel: CreatePostViewModel
                 .height(75.dp)
                 .background(colorResource(R.color.backgroundColor))
             ){
-                IconButton(onClick = { viewModel.resetFields() }, modifier = Modifier.size(150.dp).offset(x = (-40).dp)) {
+                IconButton(onClick = {
+                                     navController.popBackStack()}, modifier = Modifier.size(150.dp).offset(x = (-40).dp)) {
                     Image(painter = painterResource(id = R.drawable.adoptbutton), contentDescription = "Descripción de la imagen")
                 }
                 Text(text = stringResource(R.string.cancel), style = MaterialTheme.typography.titleLarge, fontSize = 25.sp, color = colorResource(R.color.primaryColor), modifier = Modifier.offset(x = (-145).dp, y = 35.dp))
 
                 IconButton(onClick = { viewModel.createNewPostWithImage(selectedCategory, postDataAdopt, postDataEventHC)
-                                     navController.popBackStack()
-                                     postDetailViewModel.addNewPost(viewModel.getId(), selectedCategory, postDataAdopt, postDataEventHC, viewModel.getImageUri())}, modifier = Modifier.size(150.dp).offset(x = (50).dp),) {
+                                     navController.navigate(NavigationState.MainMenu.route){
+                                         popUpTo(NavigationState.MainMenu.route) { inclusive = true }
+                                         launchSingleTop = true
+                                     }}, modifier = Modifier.size(150.dp).offset(x = (50).dp),) {
                     Image(painter = painterResource(id = R.drawable.adoptbutton), contentDescription = "Descripción de la imagen")
                     Text(text = stringResource(R.string.adopt), style = MaterialTheme.typography.titleLarge, fontSize = 25.sp, color = colorResource(R.color.primaryColor), modifier = Modifier.offset(x = (-10).dp, y = 10.dp))
                 }

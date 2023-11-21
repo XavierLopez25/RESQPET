@@ -1,11 +1,19 @@
 package com.example.resqpet.ui.register.view
 
+import android.content.ContentValues
+import android.graphics.Bitmap
+import android.net.Uri
+import android.provider.MediaStore
 import android.util.Patterns
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.launch
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +21,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -43,6 +52,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -50,6 +60,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.resqpet.R
@@ -76,6 +88,8 @@ fun RegisterResQPet(navController: NavController, registerViewModel: RegisterVie
     val passwordsMatch by viewModel.passwordsMatch.collectAsState()
     val isFormValid by viewModel.isFormValid.collectAsState()
     val isPasswordLengthValid by viewModel.isPasswordLengthValid.collectAsState()
+    val context = LocalContext.current
+
 
 
 
@@ -103,7 +117,45 @@ fun RegisterResQPet(navController: NavController, registerViewModel: RegisterVie
             )
         }
 
+    val pickImageLauncher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
+            // Save the Uri in your ViewModel
+            viewModel.saveImageUri(uri)
+        }
 
+
+    val takePictureLauncher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.TakePicturePreview()) { bitmap: Bitmap? ->
+            if (bitmap != null) {
+                println("Success: Bitmap received.")
+
+                // Convert Bitmap to Uri and save it in your ViewModel
+                val uri = bitmap.let { imageBitmap ->
+                    val values = ContentValues().apply {
+                        // Ensure unique file name
+                        put(
+                            MediaStore.Images.Media.DISPLAY_NAME,
+                            "Title_${System.currentTimeMillis()}.jpg"
+                        )
+                        put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+                    }
+
+                    val contentResolver = context.contentResolver
+                    val imageUri =
+                        contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+
+                    imageUri?.let {
+                        contentResolver.openOutputStream(it)?.use { outputStream ->
+                            imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                        }
+                    }
+                    imageUri
+                }
+                viewModel.saveImageUri(uri)
+            } else {
+                println("Error: Bitmap is null.")
+            }
+        }
 
 
     Box(
@@ -190,8 +242,8 @@ fun RegisterResQPet(navController: NavController, registerViewModel: RegisterVie
                     Spacer(modifier = Modifier.height(10.dp))
 
                     OutlinedTextField(
-                        value = cname,
-                        onValueChange = {  newValue -> viewModel.setCompleteName(newValue)},
+                        value = username,
+                        onValueChange = {  newValue -> viewModel.setUsername(newValue)},
                         label = { Text(stringResource(R.string.enter_your_public_username)) },
                         leadingIcon = {
                             Icon(
@@ -210,7 +262,7 @@ fun RegisterResQPet(navController: NavController, registerViewModel: RegisterVie
                             cursorColor = colorResource(R.color.primaryColor),
                             textColor = colorResource(R.color.primaryColor)
                         ),
-                        visualTransformation = if (cname.isEmpty()) {
+                        visualTransformation = if (username.isEmpty()) {
                             PlaceholderTransformation("Enter the your public username")
                         } else VisualTransformation.None
                     )
@@ -219,8 +271,8 @@ fun RegisterResQPet(navController: NavController, registerViewModel: RegisterVie
 
 
                     OutlinedTextField(
-                        value = username,
-                        onValueChange = {  newValue -> viewModel.setUsername(newValue)},
+                        value = cname,
+                        onValueChange = {  newValue -> viewModel.setCompleteName(newValue)},
                         label = { Text("Enter your complete name") },
                         leadingIcon = {
                             Icon(
@@ -239,8 +291,8 @@ fun RegisterResQPet(navController: NavController, registerViewModel: RegisterVie
                             cursorColor = colorResource(R.color.primaryColor),
                             textColor = colorResource(R.color.primaryColor)
                         ),
-                        visualTransformation = if (username.isEmpty()) {
-                            PlaceholderTransformation("Enter the your username")
+                        visualTransformation = if (cname.isEmpty()) {
+                            PlaceholderTransformation("Enter the your complete name")
                         } else VisualTransformation.None
                     )
 
@@ -314,10 +366,34 @@ fun RegisterResQPet(navController: NavController, registerViewModel: RegisterVie
 
                     Spacer(modifier = Modifier.height(20.dp))
 
+                    Text(
+                        text = stringResource(R.string.select_your_profile_photo),
+                        color = colorResource(R.color.backgroundColor),
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(top = 2.dp)
+                    )
+
+                    Row(modifier = Modifier.align(Alignment.CenterHorizontally)){
+
+                        // To open gallery
+                        Button(onClick = { pickImageLauncher.launch("image/*") }, colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.secondaryColor))) {
+                            Text("From Gallery", color = colorResource(R.color.primaryColor))
+                        }
+
+
+                        // To take a picture
+                        Button(onClick = { takePictureLauncher.launch() }, colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.secondaryColor))) {
+                            Text("Use Camera", color = colorResource(R.color.primaryColor))
+                        }
+
+                    }
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
                     Button(
                         onClick = {
                             if(isFormValid){
-                                viewModel.onRegisterClicked(username, cname, email, password)
+                                viewModel.onRegisterClicked(username, cname, email, password, viewModel.selectedImageUri.value)
                                 navController.navigate(NavigationState.MainMenu.route)
                             }
                         },

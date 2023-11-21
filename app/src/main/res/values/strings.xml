@@ -95,4 +95,6 @@
     <string name="your_contact_info">Your contact info</string>
     <string name="foundation_s_name">Foundation\'s Name</string>
     <string name="foundation_s_contact_info">Foundation\'s Contact Info</string>
+    <string name="select_your_profile_photo">Select your profile photo</string>
+    <string name="username1">Username</string>
 </resources>

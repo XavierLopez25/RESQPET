@@ -46,6 +46,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.resqpet.navigation.NavigationState
 import com.example.resqpet.ui.createpost.viewmodel.CreatePostViewModel
 
 
@@ -55,7 +56,7 @@ fun ServiceRQP(healthCId: Int, navController: NavController, postsViewModel: Cre
 
     val viewModel: CreatePostViewModel = postsViewModel
 
-    val healthCPost = viewModel.posts.value?.firstOrNull { it.id == healthCId  && it.category == "health_care"}
+    val healthCPost = viewModel.state.value?.firstOrNull { it.id == healthCId  && it.category == "health_care"}
     LaunchedEffect(key1 = healthCId){
         viewModel.fetchPosts()
     }
@@ -502,7 +503,8 @@ fun ServiceRQP(healthCId: Int, navController: NavController, postsViewModel: Cre
         }
 
         IconButton(
-            onClick = { /*viewModel.onCancelClicked()*/ },
+            onClick = { navController.navigate(NavigationState.MainMenu.route){
+                popUpTo(NavigationState.MainMenu.route) { inclusive = true }} },
             modifier = Modifier.size(200.dp)
         ) {
             Box(
@@ -535,7 +537,9 @@ fun ServiceRQP(healthCId: Int, navController: NavController, postsViewModel: Cre
         }
 
         IconButton(
-            onClick = {  },
+            onClick = { /*COLOCAR ALERT DIALOG*/
+                navController.navigate(NavigationState.MainMenu.route){
+                    popUpTo(NavigationState.MainMenu.route) { inclusive = true }}},
             modifier = Modifier.size(200.dp)
         ) {
             Box(

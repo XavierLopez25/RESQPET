@@ -1,6 +1,5 @@
 package com.example.resqpet.ui.mainmenu.view
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,7 +25,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocalHospital
 import androidx.compose.material.icons.filled.ManageAccounts
 import androidx.compose.material.icons.filled.Search
@@ -41,8 +39,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -56,48 +52,40 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.example.resqpet.R
 import com.example.resqpet.navigation.NavigationState
 import com.example.resqpet.ui.createpost.viewmodel.CreatePostViewModel
 import com.example.resqpet.ui.createpost.viewmodel.Post
-import com.example.resqpet.ui.createpost.viewmodel.PostListState
 import com.example.resqpet.ui.login.viewmodel.LoginViewModel
 import com.example.resqpet.ui.mainmenu.viewmodel.CardItem
 import com.example.resqpet.ui.register.viewmodel.RegisterViewModel
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 @Composable
-fun MainMenuResQPet(navController: NavController, postsViewModel: CreatePostViewModel, registerViewModel: RegisterViewModel, loginViewModel: LoginViewModel, isRefreshing: Boolean, refreshData: () -> Unit, state: PostListState) {
+fun MainMenuResQPet(navController: NavController, postsViewModel: CreatePostViewModel, registerViewModel: RegisterViewModel, loginViewModel: LoginViewModel) {
 
     val viewModel: CreatePostViewModel = postsViewModel
     val signUpModel: RegisterViewModel = registerViewModel
-    val loginViewModel: RegisterViewModel = registerViewModel
 
-    val posts = viewModel._posts.observeAsState(initial = emptyList())
+    val posts = viewModel.state
 
     val latestIdEvents = posts.value.filter { it.category == "event" }.maxByOrNull { it.id }?.id
 
     val showDialog = remember { mutableStateOf(false) }
 
-    LaunchedEffect(key1 = "fetchPosts") {
-        viewModel.fetchPosts()
+    LaunchedEffect(Unit) {
+        viewModel.getDataFromFirestore()
     }
 
-    LaunchedEffect(key1 = posts.value) {
-        println("Posts inside LaunchedEffect: ${posts.value}")
+    LaunchedEffect(key1 = posts) {
+        println("Posts inside LaunchedEffect: ${posts}")
     }
 
     viewModel.fetchPosts()
     println(viewModel.fetchPosts())
 
-
-    SwipeRefresh(
-        state = rememberSwipeRefreshState(isRefreshing),
-        onRefresh = refreshData)
-    {
 
     Column(modifier = Modifier.fillMaxSize()) {
 
@@ -256,14 +244,15 @@ fun MainMenuResQPet(navController: NavController, postsViewModel: CreatePostView
             NoPostsDialog(showDialog = showDialog)
         }
 
-        PostsBar(Modifier.weight(0.5f), posts, navController, state)
+        PostsBar(Modifier.weight(0.5f), navController, viewModel)
         }
     }
 
-}
 
 @Composable
-fun PostsBar(modifier: Modifier = Modifier, posts: State<List<Post>>, navController: NavController, state: PostListState) {
+fun PostsBar(modifier: Modifier = Modifier, navController: NavController, createPostViewModel: CreatePostViewModel) {
+
+
 
     val showDialog = remember { mutableStateOf(false) }
 
@@ -285,7 +274,7 @@ fun PostsBar(modifier: Modifier = Modifier, posts: State<List<Post>>, navControl
                     modifier = Modifier
                         .padding(1.dp),
                     onClick = {
-                        if (posts.value.isEmpty()) {
+                        if (createPostViewModel.state.value.isEmpty() ) {
                             showDialog.value = true
                         }else{
                             navController.navigate(NavigationState.Posts.route)
@@ -308,9 +297,7 @@ fun PostsBar(modifier: Modifier = Modifier, posts: State<List<Post>>, navControl
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
 
-                Log.d("Probando lectura de datos", state.posts.toString())
-
-                itemsIndexed(items = state.posts) { _, item  ->
+                itemsIndexed(items = createPostViewModel.state.value) { _, item  ->
                     PostCard(postItem = item, navController)
                 }
             }
@@ -328,20 +315,14 @@ fun PostsBar(modifier: Modifier = Modifier, posts: State<List<Post>>, navControl
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
-            imageVector = Icons.Default.Home,
-            contentDescription = "Home Icon",
-            tint = colorResource(R.color.primaryColor),
-            modifier = Modifier.clickable { navController.navigate(NavigationState.Home.route) }
-        )
-        Icon(
             imageVector = Icons.Default.Search,
             contentDescription = "Search Icon",
             tint = colorResource(R.color.primaryColor),
             modifier = Modifier.clickable {
-                if (posts.value.isEmpty()) {
+                if (createPostViewModel.state.value.isEmpty()) {
                     showDialog.value = true
                 }else{
-                    navController.navigate(NavigationState.Search.route) }
+                    navController.navigate(NavigationState.Posts.route) }
                 }
         )
         Icon(
@@ -357,7 +338,7 @@ fun PostsBar(modifier: Modifier = Modifier, posts: State<List<Post>>, navControl
             contentDescription = "Health Icon",
             tint = colorResource(R.color.primaryColor),
             modifier = Modifier.clickable {
-                val latestIdHealthC = posts.value.filter { it.category == "health_care" }.maxByOrNull { it.id }?.id
+                val latestIdHealthC = createPostViewModel.state.value.filter { it.category == "health_care" }.maxByOrNull { it.id }?.id
                 if (latestIdHealthC == null) {
                     showDialog.value = true
                 } else {

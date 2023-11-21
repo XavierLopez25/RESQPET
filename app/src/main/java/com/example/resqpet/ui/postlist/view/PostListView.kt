@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -17,6 +19,8 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.Reply
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
@@ -47,14 +51,14 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.example.resqpet.R
+import com.example.resqpet.navigation.NavigationState
 import com.example.resqpet.ui.createpost.viewmodel.CreatePostViewModel
 import com.example.resqpet.ui.createpost.viewmodel.Post
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+
 
 @SuppressLint("RememberReturnType")
 @Composable
-fun PostFiltering(navController: NavController, postsViewModel: CreatePostViewModel, isRefreshing: Boolean, refreshData: () -> Unit) {
+fun PostFiltering(navController: NavController, postsViewModel: CreatePostViewModel) {
 
     val viewModel: CreatePostViewModel = postsViewModel
     val posts by viewModel.posts.observeAsState(emptyList())
@@ -67,11 +71,7 @@ fun PostFiltering(navController: NavController, postsViewModel: CreatePostViewMo
         "Events" to "event"
     )
 
-    SwipeRefresh(
-        state = rememberSwipeRefreshState(isRefreshing),
-        onRefresh = refreshData
-    )
-    {
+
     Column {
 
             Box(
@@ -83,6 +83,19 @@ fun PostFiltering(navController: NavController, postsViewModel: CreatePostViewMo
                     .padding(top = 15.dp, start = 60.dp)
             ) {
                 SearchBar(onQueryChanged = { newQuery -> searchQuery = newQuery })
+
+                IconButton(
+                    onClick = { navController.navigate(NavigationState.MainMenu.route){
+                        popUpTo(NavigationState.MainMenu.route) { inclusive = true }} },
+                    modifier = Modifier.size(100.dp).offset((270).dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.backbutton2),
+                        contentDescription = "Regresar a principal",
+                        modifier = Modifier
+                            .size(60.dp)
+                    )
+                }
             }
 
             Box(
@@ -121,8 +134,7 @@ fun PostFiltering(navController: NavController, postsViewModel: CreatePostViewMo
                     Spacer(modifier = Modifier.height(24.dp))
 
                     val filteredPosts = posts.filter { post ->
-                        val isInSelectedCategory =
-                            selectedCategories.isEmpty() || post.category in selectedCategories
+                        val isInSelectedCategory = selectedCategories.isEmpty() || post.category in selectedCategories
                         val matchesSearchQuery = searchQuery.isEmpty() ||
                                 post.postAdopt?.postTitle?.contains(searchQuery, true) == true ||
                                 post.postEvent?.postTitle?.contains(searchQuery, true) == true
@@ -130,26 +142,49 @@ fun PostFiltering(navController: NavController, postsViewModel: CreatePostViewMo
                         isInSelectedCategory && matchesSearchQuery
                     }
 
-
-                    LazyColumn(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(colorResource(R.color.primaryColor))
-                            .width(350.dp)
-                            .height(600.dp)
-                            .align(Alignment.CenterHorizontally)
-                    ) {
-                        itemsIndexed(items = filteredPosts) { _, post ->
-                            PostCard(
-                                post = post
-                            )
+                    // Check for no matches
+                    if (filteredPosts.isEmpty()) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (selectedCategories.isEmpty() && searchQuery.isEmpty()) {
+                                Text("There are no posts available.", color = colorResource(
+                                    id = R.color.errorColor))
+                            } else if (selectedCategories.isNotEmpty() && searchQuery.isEmpty()) {
+                                Text("There are no posts with this category, be the first to make one!", color = colorResource(
+                                    id = R.color.errorColor
+                                ))
+                            } else if (!searchQuery.isEmpty()) {
+                                Text("There are no posts with that name :(")
+                            }
+                        }
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(colorResource(R.color.primaryColor))
+                                .width(350.dp)
+                                .height(600.dp)
+                                .align(Alignment.CenterHorizontally)
+                        ) {
+                            itemsIndexed(items = filteredPosts) { _, post ->
+                                PostCard(
+                                    post = post
+                                )
+                            }
                         }
                     }
+
+
+
                 }
             }
         }
     }
-}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -212,16 +247,16 @@ fun PostCard(post: Post) {
             .fillMaxWidth()
             .padding(16.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(Color.White)
+            .background(colorResource(id = R.color.secondaryColor))
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(painter = imagePainter, contentDescription = null, modifier = Modifier.size(60.dp))
         Spacer(modifier = Modifier.width(16.dp))
         Column {
-            Text(text = postTitleC, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            Text(text = postTitleC, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = colorResource(id = R.color.primaryColor))
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = postDescC, fontSize = 14.sp)
+            Text(text = postDescC, fontSize = 14.sp, color = colorResource(id = R.color.primaryColor))
         }
     }
 }

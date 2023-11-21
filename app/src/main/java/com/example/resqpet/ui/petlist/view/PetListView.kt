@@ -36,14 +36,14 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.example.resqpet.R
+import com.example.resqpet.navigation.NavigationState
 import com.example.resqpet.ui.createpost.viewmodel.CreatePostViewModel
 import com.example.resqpet.ui.createpost.viewmodel.Post
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+
 
 
 @Composable
-fun PetList(navController: NavController, postsViewModel: CreatePostViewModel, isRefreshing: Boolean, refreshData: () -> Unit) {
+fun PetList(navController: NavController, postsViewModel: CreatePostViewModel) {
 
     val viewModel: CreatePostViewModel = postsViewModel
 
@@ -52,11 +52,6 @@ fun PetList(navController: NavController, postsViewModel: CreatePostViewModel, i
         viewModel.fetchPosts()
     }
 
-    SwipeRefresh(
-        state = rememberSwipeRefreshState(isRefreshing),
-        onRefresh = refreshData
-    )
-    {
 
     Box(
         modifier = Modifier
@@ -82,15 +77,15 @@ fun PetList(navController: NavController, postsViewModel: CreatePostViewModel, i
                         .offset((1).dp, (10).dp)
                 )
                 IconButton(
-                    onClick = { /* acción cuando se hace clic */ },
-                    modifier = Modifier.size(100.dp)
+                    onClick = { navController.navigate(NavigationState.MainMenu.route){
+                        popUpTo(NavigationState.MainMenu.route) { inclusive = true }} },
+                    modifier = Modifier.size(100.dp).offset((280).dp, (0).dp)
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.backbutton1),
                         contentDescription = "Regresar a principal",
                         modifier = Modifier
                             .size(80.dp)
-                            .offset((280).dp, (0).dp)
                     )
                 }
 
@@ -133,7 +128,7 @@ fun PetList(navController: NavController, postsViewModel: CreatePostViewModel, i
 
         }
     }
-}
+
 
 @Composable
 fun PetCard(post: Post, modifier: Modifier = Modifier) {

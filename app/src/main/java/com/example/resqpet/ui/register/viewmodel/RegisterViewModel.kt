@@ -1,12 +1,16 @@
 package com.example.resqpet.ui.register.viewmodel
 
+import android.net.Uri
 import android.util.Log
 import android.util.Patterns
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,6 +30,7 @@ class RegisterViewModel(): ViewModel() {
     private val _passwordsMatch = MutableStateFlow(true)
     private val _isFormValid = MutableStateFlow(false)
     private val _isPasswordLengthValid = MutableStateFlow(true)
+    private var _selectedImageUri = MutableLiveData<String>()
 
 
 
@@ -41,6 +46,7 @@ class RegisterViewModel(): ViewModel() {
     val passwordsMatch: StateFlow<Boolean> = _passwordsMatch.asStateFlow()
     val isFormValid: StateFlow<Boolean> = _isFormValid.asStateFlow()
     val isPasswordLengthValid: StateFlow<Boolean> = _isPasswordLengthValid.asStateFlow()
+    val selectedImageUri: LiveData<String> get() = _selectedImageUri
 
 
     private fun validateForm() {
@@ -95,11 +101,15 @@ class RegisterViewModel(): ViewModel() {
         _passwordVisible.value = !_passwordVisible.value // Esto cambia el valor actual a su opuesto
     }
 
-    fun onRegisterClicked(username: String, cname: String, email: String, password: String) {
+    fun onRegisterClicked(username: String, cname: String, email: String, password: String, profilePhoto: String?) {
         viewModelScope.launch {
-            createUserInFirebase(User(username, cname, email, password))
+            createUserInFirebase(User(username, cname, email, password, profilePhoto))
             resetFields()
         }
+    }
+
+    fun saveImageUri(uri: Uri?) {
+        _selectedImageUri.value = uri.toString() // Convierte Uri a String antes de guardarlo
     }
 
     private fun resetFields() {
@@ -109,6 +119,9 @@ class RegisterViewModel(): ViewModel() {
         _password.value = ""
         _passwordC.value = ""
     }
+
+
+
 
     private fun createUserInFirebase(user: User) {
 
@@ -126,6 +139,17 @@ class RegisterViewModel(): ViewModel() {
                 Log.d("TESTING FIREBASE", "Exception = ${it.localizedMessage}")
             }
 
+        FirebaseFirestore.getInstance().collection("Users").document(user.email).set(user)
+            .addOnCompleteListener {
+                Log.d("USER COLLECTION", "COMPLETED!")
+                Log.d("USER COLLECTION", "isSuccesful = ${it.isSuccessful}")
+                registrationProgress.value = false
+            }
+            .addOnFailureListener {
+                Log.d("USER COLLECTION", "FAILURE")
+                Log.d("USER COLLECTION", "Exception = ${it.message}")
+                Log.d("USER COLLECTION", "Exception = ${it.localizedMessage}")
+            }
     }
 
     fun logOut(){

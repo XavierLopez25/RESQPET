@@ -436,7 +436,7 @@ fun Donation(navController: NavController) {
         }
         IconButton(
             onClick = { viewModel.cancelDonation("", "", "", donateMonetary = false, donateMedicalResources = false, donateFood = false) },
-            modifier = Modifier.size(200.dp)
+            modifier = Modifier.size(125.dp)
                 .offset((1).dp, (65).dp)
         ) {
             Box(
@@ -468,7 +468,7 @@ fun Donation(navController: NavController) {
         }
         IconButton(
             onClick = { viewModel.submitDonation(contributorName, phoneNumber, address, donateMonetary, donateMedicalResources, donateFood) },
-            modifier = Modifier.size(200.dp).offset((10).dp, (65).dp)
+            modifier = Modifier.size(125.dp).offset((10).dp, (65).dp)
         ) {
             Box(
                 contentAlignment = Alignment.Center,

@@ -54,7 +54,7 @@ fun AnimalProfile(animalId: Int, navController: NavController, postsViewModel: C
 
     val viewModel: CreatePostViewModel = postsViewModel
 
-    val animal = viewModel.posts.value?.firstOrNull { it.id == animalId  && it.category == "adoption"}
+    val animal = viewModel.state.value.firstOrNull { it.id == animalId  && it.category == "adoption"}
     LaunchedEffect(key1 = animalId){
         viewModel.fetchPosts()
     }
@@ -206,7 +206,9 @@ fun AnimalProfile(animalId: Int, navController: NavController, postsViewModel: C
                     .graphicsLayer { translationY = -190f },
                 contentAlignment = Alignment.Center
             ) {
-                IconButton(onClick = { /* acción cuando se hace clic */ }, modifier = Modifier
+                IconButton(onClick = { /* COLOCAR ALERT DIALOG */
+                    navController.navigate(NavigationState.MainMenu.route){
+                        popUpTo(NavigationState.MainMenu.route) { inclusive = true }}}, modifier = Modifier
                     .size(400.dp)
                     .offset(y = 125.dp)) {
                     Image(

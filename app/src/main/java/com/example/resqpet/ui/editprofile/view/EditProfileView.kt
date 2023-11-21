@@ -1,5 +1,12 @@
 package com.example.resqpet.ui.editprofile.view
 
+import android.content.ContentValues
+import android.graphics.Bitmap
+import android.net.Uri
+import android.provider.MediaStore
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.launch
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -11,6 +18,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -18,9 +26,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Visibility
@@ -34,12 +44,15 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -50,9 +63,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.rememberImagePainter
 import com.example.resqpet.R
+import com.example.resqpet.navigation.NavigationState
 import com.example.resqpet.ui.editprofile.viewmodel.EditProfileViewModel
-
+import java.net.URI
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,6 +77,10 @@ fun EditProfileScreen(navController: NavController) {
     val viewModel: EditProfileViewModel = viewModel()
     val profileData by viewModel.profileData
     val passwordVisible by viewModel.isPasswordVisible.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchUserProfile()
+    }
 
 
     val scrollState = rememberScrollState()
@@ -106,7 +125,7 @@ fun EditProfileScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            ProfilePhotoWithEditButton()
+            ProfilePhotoWithEditButton(viewModel)
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -118,8 +137,8 @@ fun EditProfileScreen(navController: NavController) {
             ) {
                 Column {
                     OutlinedTextField(
-                        value = profileData.name,
-                        onValueChange = { newValue -> viewModel.onNameChanged(newValue)},
+                        value = profileData.completeName,
+                        onValueChange = { newValue -> viewModel.onCompleteNameChanged(newValue)},
                         label = { Text(stringResource(R.string.full_name)) },
                         colors = TextFieldDefaults.textFieldColors(
                             containerColor = colorResource(R.color.backgroundColor),
@@ -133,13 +152,15 @@ fun EditProfileScreen(navController: NavController) {
                     Spacer(modifier = Modifier.height(16.dp))
 
                     OutlinedTextField(
-                        value = "",
-                        onValueChange = { newValue -> viewModel.onEmailChanged(newValue) },
-                        label = { Text(stringResource(R.string.contact_email)) },
+                        value = profileData.username,
+                        onValueChange = { newValue -> viewModel.onNameChanged(newValue) },
+                        label = { Text(stringResource(R.string.username1)) },
                         colors = TextFieldDefaults.textFieldColors(
                             containerColor = colorResource(R.color.backgroundColor),
                             focusedIndicatorColor = colorResource(R.color.secondaryColor),
-                            focusedLabelColor = colorResource(R.color.textColor)
+                            focusedLabelColor = colorResource(R.color.textColor),
+                            textColor = colorResource(R.color.primaryColor)
+
                         ),
                         trailingIcon =  { Icon(Icons.Filled.Email, contentDescription = null, tint = colorResource(R.color.iconColor)) }
                     )
@@ -147,13 +168,15 @@ fun EditProfileScreen(navController: NavController) {
                     Spacer(modifier = Modifier.height(16.dp))
 
                     OutlinedTextField(
-                        value = "",
+                        value = profileData.password,
                         onValueChange = { newValue -> viewModel.onPwdChanged(newValue) },
                         label = { Text(stringResource(R.string.password1)) },
                         colors = TextFieldDefaults.textFieldColors(
                             containerColor = colorResource(R.color.backgroundColor),
                             focusedIndicatorColor = colorResource(R.color.secondaryColor),
-                            focusedLabelColor = colorResource(R.color.textColor)
+                            focusedLabelColor = colorResource(R.color.textColor),
+                            textColor = colorResource(R.color.primaryColor)
+
                         ),
                         trailingIcon = {
                             val image = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
@@ -167,37 +190,7 @@ fun EditProfileScreen(navController: NavController) {
 
                     )
 
-
-
                     Spacer(modifier = Modifier.height(16.dp))
-
-                    OutlinedTextField(
-                        value = "",
-                        onValueChange = { newValue -> viewModel.onPhoneChanged(newValue) },
-                        label = { Text(stringResource(R.string.phone_number1)) },
-                        colors = TextFieldDefaults.textFieldColors(
-                            containerColor = colorResource(R.color.backgroundColor),
-                            focusedIndicatorColor = colorResource(R.color.secondaryColor),
-                            focusedLabelColor = colorResource(R.color.textColor)
-                        ),
-                        trailingIcon =  { Icon(Icons.Filled.Phone, contentDescription = null, tint = colorResource(R.color.iconColor)) }
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    OutlinedTextField(
-                        value = "",
-                        onValueChange = { newValue -> viewModel.onAddressChanged(newValue) },
-                        label = { Text(stringResource(R.string.address1)) },
-                        colors = TextFieldDefaults.textFieldColors(
-                            containerColor = colorResource(R.color.backgroundColor),
-                            focusedIndicatorColor = colorResource(R.color.secondaryColor),
-                            focusedLabelColor = colorResource(R.color.textColor)
-                        ),
-                        trailingIcon =  { Icon(Icons.Filled.Home, contentDescription = null, tint = colorResource(R.color.iconColor)) }
-                    )
-
-                    Spacer(modifier = Modifier.height(32.dp))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -206,7 +199,8 @@ fun EditProfileScreen(navController: NavController) {
                         Button(
                             modifier = Modifier
                                 .padding(15.dp),
-                            onClick = { viewModel.discardChanges() },
+                            onClick = { navController.navigate(NavigationState.MainMenu.route){
+                                popUpTo(NavigationState.MainMenu.route) { inclusive = true }} },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = colorResource(R.color.secondaryColor)
                             )
@@ -217,7 +211,9 @@ fun EditProfileScreen(navController: NavController) {
                         Button(
                             modifier = Modifier
                                 .padding(15.dp),
-                            onClick = { viewModel.saveProfile() },
+                            onClick = { viewModel.saveProfile()
+                                navController.navigate(NavigationState.MainMenu.route){
+                                    popUpTo(NavigationState.MainMenu.route) { inclusive = true }}},
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = colorResource(R.color.secondaryColor)
                             )
@@ -232,13 +228,67 @@ fun EditProfileScreen(navController: NavController) {
 }
 
 @Composable
-fun ProfilePhotoWithEditButton() {
+fun ProfilePhotoWithEditButton(viewModel: EditProfileViewModel) {
+
+    val context = LocalContext.current
+
+    val selectedImageUri = viewModel.selectedImageUri.observeAsState().value
+
+    val imagePainter = if (!selectedImageUri.isNullOrEmpty()) {
+        // Load image from the Uri if it's not null or empty
+        rememberImagePainter(data = selectedImageUri)
+    } else {
+        // Load a default image from resources if the URI is null or empty
+        painterResource(id = R.drawable.noimageuploaded)
+    }
+
+
+    val pickImageLauncher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
+            // Save the Uri in your ViewModel
+            viewModel.saveImageUri(uri)
+        }
+
+
+    val takePictureLauncher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.TakePicturePreview()) { bitmap: Bitmap? ->
+            if (bitmap != null) {
+                println("Success: Bitmap received.")
+
+                // Convert Bitmap to Uri and save it in your ViewModel
+                val uri = bitmap.let { imageBitmap ->
+                    val values = ContentValues().apply {
+                        // Ensure unique file name
+                        put(
+                            MediaStore.Images.Media.DISPLAY_NAME,
+                            "Title_${System.currentTimeMillis()}.jpg"
+                        )
+                        put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+                    }
+
+                    val contentResolver = context.contentResolver
+                    val imageUri =
+                        contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+
+                    imageUri?.let {
+                        contentResolver.openOutputStream(it)?.use { outputStream ->
+                            imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                        }
+                    }
+                    imageUri
+                }
+                viewModel.saveImageUri(uri)
+            } else {
+                println("Error: Bitmap is null.")
+            }
+        }
+
     Box(
         modifier = Modifier.size(230.dp),
         contentAlignment = Alignment.BottomEnd
     ) {
         Image(
-            painter = painterResource(id = R.drawable.catto2),
+            painter = imagePainter,
             contentDescription = null,
             modifier = Modifier
                 .fillMaxSize()
@@ -246,21 +296,24 @@ fun ProfilePhotoWithEditButton() {
                 .size(70.dp)
         )
 
-        // Edit button
-        Box(
-            modifier = Modifier
-                .size(60.dp)
-                .clip(CircleShape)
-                .background(Color.Gray)
-                .clickable { /* handle click event, e.g., open photo picker */ },
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                modifier = Modifier.size(40.dp),
-                imageVector = Icons.Default.Edit,
-                contentDescription = "Edit Profile Photo",
-                tint = Color.White
-            )
-        }
+            IconButton(onClick = { takePictureLauncher.launch() }, modifier = Modifier
+                .size(65.dp)
+                .offset(x = (-165).dp)) {
+                Icon(
+                    imageVector = Icons.Default.CameraAlt,
+                    contentDescription = "Descripción de la imagen",
+                    tint = colorResource(id = R.color.secondaryColor), // Set the color of the icon
+                    modifier = Modifier.size(60.dp)
+                )
+            }
+            IconButton(onClick = { pickImageLauncher.launch("image/*") }, modifier = Modifier.size(65.dp)) {
+                Icon(
+                    imageVector = Icons.Default.Image,
+                    contentDescription = "Descripción de la imagen",
+                    tint = colorResource(id = R.color.secondaryColor), // Set the color of the icon
+                    modifier = Modifier.size(60.dp)
+                )
+            }
+
     }
 }
