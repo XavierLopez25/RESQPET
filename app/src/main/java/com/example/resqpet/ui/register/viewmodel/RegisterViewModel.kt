@@ -11,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,6 +34,7 @@ class RegisterViewModel(): ViewModel() {
     private var _selectedImageUri = MutableLiveData<String>()
 
 
+    private val storageReference = FirebaseStorage.getInstance().reference.child("ProfilePhotos")
 
 
     // Exponer como StateFlow
@@ -109,7 +111,24 @@ class RegisterViewModel(): ViewModel() {
     }
 
     fun saveImageUri(uri: Uri?) {
-        _selectedImageUri.value = uri.toString() // Convierte Uri a String antes de guardarlo
+        uri?.let {
+            uploadImageToFirebaseStorage(it) { downloadUrl ->
+                _selectedImageUri.value = downloadUrl.toString() // Save download URL instead of local URI
+            }
+        }
+    }
+
+    private fun uploadImageToFirebaseStorage(imageUri: Uri, onSuccess: (Uri) -> Unit) {
+        val ref = storageReference.child("profilephotos/${System.currentTimeMillis()}.jpg")
+        ref.putFile(imageUri)
+            .addOnSuccessListener { taskSnapshot ->
+                taskSnapshot.metadata?.reference?.downloadUrl?.addOnSuccessListener { downloadUri ->
+                    onSuccess(downloadUri)
+                }
+            }
+            .addOnFailureListener {
+                // Handle failure...
+            }
     }
 
     private fun resetFields() {
