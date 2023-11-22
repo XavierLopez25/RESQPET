@@ -11,12 +11,15 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Query
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 class CreatePostViewModel: ViewModel(){
 
     private val db = FirebaseFirestore.getInstance()
+    private val storageReference = FirebaseStorage.getInstance().reference.child("Images")
+
 
     init{
         getData()
@@ -46,14 +49,33 @@ class CreatePostViewModel: ViewModel(){
     }
 
     fun saveImageUri(uri: Uri?) {
-        _selectedImageUri.value = uri.toString() // Convierte Uri a String antes de guardarlo
+        uri?.let {
+            uploadImageToFirebaseStorage(it) { downloadUrl ->
+                _selectedImageUri.value = downloadUrl.toString() // Save download URL instead of local URI
+            }
+        }
     }
+
+    private fun uploadImageToFirebaseStorage(imageUri: Uri, onSuccess: (Uri) -> Unit) {
+        val ref = storageReference.child("images/${System.currentTimeMillis()}.jpg")
+        ref.putFile(imageUri)
+            .addOnSuccessListener { taskSnapshot ->
+                taskSnapshot.metadata?.reference?.downloadUrl?.addOnSuccessListener { downloadUri ->
+                    onSuccess(downloadUri)
+                }
+            }
+            .addOnFailureListener {
+                // Handle failure...
+            }
+    }
+
     // Call this function to create a new Post with the selected image URI
     fun createNewPostWithImage(category: String, postAdopt: PostAdoption?, postEvent: PostEventHC?) {
+        val imageUrl = selectedImageUri.value ?: return // Don't proceed if image URL is null
         val newPost = Post(
             id = postIdCounter,
             category = category,
-            image = selectedImageUri.value,
+            image = imageUrl, // Use image URL from Firebase Storage
             postAdopt = postAdopt,
             postEvent = postEvent
         )
