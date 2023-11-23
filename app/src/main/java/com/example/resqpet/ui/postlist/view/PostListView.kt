@@ -158,7 +158,7 @@ fun PostFiltering(navController: NavController, postsViewModel: CreatePostViewMo
                                     id = R.color.errorColor
                                 ))
                             } else if (!searchQuery.isEmpty()) {
-                                Text("There are no posts with that name :(")
+                                Text("There are no posts with that name :(", color = colorResource(id = R.color.errorColor))
                             }
                         }
                     } else {
