@@ -340,18 +340,18 @@ fun CreatePost(navController: NavController, postsViewModel: CreatePostViewModel
                 .background(colorResource(R.color.backgroundColor))
             ){
                 IconButton(onClick = {
-                                     navController.popBackStack()}, modifier = Modifier.size(150.dp).offset(x = (-40).dp)) {
+                                     navController.popBackStack()}, modifier = Modifier.size(150.dp).offset(x = (-30).dp)) {
                     Image(painter = painterResource(id = R.drawable.adoptbutton), contentDescription = "Descripción de la imagen")
                 }
-                Text(text = stringResource(R.string.cancel), style = MaterialTheme.typography.titleLarge, fontSize = 25.sp, color = colorResource(R.color.primaryColor), modifier = Modifier.offset(x = (-145).dp, y = 35.dp))
+                Text(text = stringResource(R.string.cancel), style = MaterialTheme.typography.titleMedium, fontSize = 21.sp, color = colorResource(R.color.textColor), modifier = Modifier.offset(x = (-135).dp, y = 40.dp))
 
                 IconButton(onClick = { viewModel.createNewPostWithImage(selectedCategory, postDataAdopt, postDataEventHC)
                                      navController.navigate(NavigationState.MainMenu.route){
                                          popUpTo(NavigationState.MainMenu.route) { inclusive = true }
                                          launchSingleTop = true
-                                     }}, modifier = Modifier.size(150.dp).offset(x = (50).dp),) {
+                                     }}, modifier = Modifier.size(250.dp).offset(x = (65).dp),) {
                     Image(painter = painterResource(id = R.drawable.adoptbutton), contentDescription = "Descripción de la imagen")
-                    Text(text = stringResource(R.string.adopt), style = MaterialTheme.typography.titleLarge, fontSize = 25.sp, color = colorResource(R.color.primaryColor), modifier = Modifier.offset(x = (-10).dp, y = 10.dp))
+                    Text(text = stringResource(R.string.post), style = MaterialTheme.typography.titleMedium, fontSize = 20.sp, color = colorResource(R.color.textColor), modifier = Modifier.offset(x = (-3).dp, y = 15.dp))
                 }
             }
         }

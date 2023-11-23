@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,6 +31,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,14 +47,15 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.resqpet.R
 import com.example.resqpet.navigation.NavigationState
+import com.example.resqpet.screens.CardDesign
 import com.example.resqpet.ui.createpost.viewmodel.CreatePostViewModel
 import com.example.resqpet.ui.createpost.viewmodel.Post
 
 @Composable
 fun MainEvent(eventId: Int, navController: NavController, postsViewModel: CreatePostViewModel) {
 
-
     val viewModel: CreatePostViewModel = postsViewModel
+    var showDialog by remember { mutableStateOf(false) }
 
     val eventPost = viewModel.state.value?.firstOrNull { it.id == eventId  && it.category == "event"}
     LaunchedEffect(key1 = eventId){
@@ -98,16 +104,32 @@ fun MainEvent(eventId: Int, navController: NavController, postsViewModel: Create
             }
         }
 
-
         Button(
-            onClick = {/*COLOCAR ALERT DIALOG*/
-                navController.navigate(NavigationState.MainMenu.route){
-                    popUpTo(NavigationState.MainMenu.route) { inclusive = true }}},
+            onClick = {
+                showDialog = true
+            },
             colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.secondaryColor)),
             modifier = Modifier.offset(x = (150).dp, y = (690).dp)
 
         ) {
-            Text(stringResource(R.string.assist), color = Color.White, style =  MaterialTheme.typography.titleMedium)
+            Text(
+                stringResource(R.string.assist),
+                color = Color.White,
+                style = MaterialTheme.typography.titleMedium
+            )
+        }
+            if (showDialog) {
+                AlertDialog(
+                    onDismissRequest = { showDialog = false },
+                    confirmButton = {
+                        Button(onClick = {
+                            navController.popBackStack()
+                            showDialog = false }) {
+                            Text("Ok")
+                        }
+                    },
+                    text = { Text("The foundation will get in touch with you!") }
+                )
         }
     }
 }

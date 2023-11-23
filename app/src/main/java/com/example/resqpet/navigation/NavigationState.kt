@@ -20,8 +20,6 @@ sealed class NavigationState(val route: String) {
 
     object hcDetail: NavigationState("health_care/{postId}")
 
-
-
     object AddPost: NavigationState("AddPost")
 
 

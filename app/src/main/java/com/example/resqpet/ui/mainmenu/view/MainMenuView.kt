@@ -45,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -248,12 +249,10 @@ fun MainMenuResQPet(navController: NavController, postsViewModel: CreatePostView
         }
     }
 
-
 @Composable
 fun PostsBar(modifier: Modifier = Modifier, navController: NavController, createPostViewModel: CreatePostViewModel) {
 
-
-
+    val posts = createPostViewModel.state
     val showDialog = remember { mutableStateOf(false) }
 
     Box(
@@ -269,7 +268,7 @@ fun PostsBar(modifier: Modifier = Modifier, navController: NavController, create
                 modifier = Modifier.fillMaxWidth()
 
             ) {
-                Text(text = stringResource(R.string.latest_posts), color = colorResource(R.color.textColor), fontSize = 16.sp)
+                Text(text = stringResource(R.string.latest_posts), color = colorResource(R.color.textColor), fontSize = 20.sp)
                 Button(
                     modifier = Modifier
                         .padding(1.dp),
@@ -284,7 +283,7 @@ fun PostsBar(modifier: Modifier = Modifier, navController: NavController, create
                         containerColor = Color(0xFFA1CCD1)
                     )
                 ) {
-                    Text(text = stringResource(R.string.see_all_posts), color = Color(0xFFF4F2DE), fontSize = 20.sp)
+                    Text(text = stringResource(R.string.see_all_posts), color = Color(0xFFF4F2DE), fontSize = 15.sp)
                 }
             }
 
@@ -338,11 +337,12 @@ fun PostsBar(modifier: Modifier = Modifier, navController: NavController, create
             contentDescription = "Health Icon",
             tint = colorResource(R.color.primaryColor),
             modifier = Modifier.clickable {
-                val latestIdHealthC = createPostViewModel.state.value.filter { it.category == "health_care" }.maxByOrNull { it.id }?.id
+                val latestIdHealthC = posts.value.filter { it.category == "health_care" }.maxByOrNull { it.id }?.id
+
                 if (latestIdHealthC == null) {
                     showDialog.value = true
                 } else {
-                    navController.navigate("hcDetail/${latestIdHealthC}")
+                    navController.navigate("health_care/${latestIdHealthC}")
                 }
             }
         )

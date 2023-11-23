@@ -22,6 +22,8 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.House
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,6 +35,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,9 +61,11 @@ import com.example.resqpet.ui.createpost.viewmodel.CreatePostViewModel
 fun ServiceRQP(healthCId: Int, navController: NavController, postsViewModel: CreatePostViewModel) {
 
     val viewModel: CreatePostViewModel = postsViewModel
+    var showDialog by remember { mutableStateOf(false) }
 
-    val healthCPost = viewModel.state.value?.firstOrNull { it.id == healthCId  && it.category == "health_care"}
-    LaunchedEffect(key1 = healthCId){
+    val healthCPost =
+        viewModel.state.value?.firstOrNull { it.id == healthCId && it.category == "health_care" }
+    LaunchedEffect(key1 = healthCId) {
         viewModel.fetchPosts()
     }
 
@@ -65,7 +73,7 @@ fun ServiceRQP(healthCId: Int, navController: NavController, postsViewModel: Cre
     var checkedMedium = false
     var checkedBig = false
 
-    when(healthCPost!!.postEvent!!.minSize){
+    when (healthCPost!!.postEvent!!.minSize) {
         "Small" -> checkedSmall = true
         "Medium" -> checkedMedium = true
         "Big" -> checkedBig = true
@@ -141,7 +149,10 @@ fun ServiceRQP(healthCId: Int, navController: NavController, postsViewModel: Cre
                         .align(Alignment.BottomEnd)
                         .width(170.dp)
                         .height(170.dp)
-                        .background(colorResource(R.color.secondaryColor), shape = RoundedCornerShape(16.dp))
+                        .background(
+                            colorResource(R.color.secondaryColor),
+                            shape = RoundedCornerShape(16.dp)
+                        )
                         .padding(vertical = 10.dp, horizontal = 10.dp)
                 ) {
 
@@ -149,7 +160,10 @@ fun ServiceRQP(healthCId: Int, navController: NavController, postsViewModel: Cre
                         modifier = Modifier
                             .width(155.dp)
                             .height(155.dp)
-                            .background(colorResource(R.color.backgroundColor), shape = RoundedCornerShape(16.dp))
+                            .background(
+                                colorResource(R.color.backgroundColor),
+                                shape = RoundedCornerShape(16.dp)
+                            )
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.catto4),
@@ -188,7 +202,6 @@ fun ServiceRQP(healthCId: Int, navController: NavController, postsViewModel: Cre
                     .padding(30.dp)
             ) {
 
-
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Top,
@@ -196,7 +209,12 @@ fun ServiceRQP(healthCId: Int, navController: NavController, postsViewModel: Cre
                 ) {
                     item {
 
-                        Text(healthCPost.postEvent!!.postTitle, fontSize = 35.sp, color = Color.White, style =  MaterialTheme.typography.displayLarge)
+                        Text(
+                            healthCPost.postEvent!!.postTitle,
+                            fontSize = 35.sp,
+                            color = Color.White,
+                            style = MaterialTheme.typography.displayLarge
+                        )
 
 
                         Text(
@@ -258,7 +276,7 @@ fun ServiceRQP(healthCId: Int, navController: NavController, postsViewModel: Cre
                                 disabledTextColor = colorResource(R.color.primaryColor).copy(alpha = 1f)
 
 
-                                )
+                            )
                         )
 
                         Spacer(modifier = Modifier.height(10.dp))
@@ -318,7 +336,7 @@ fun ServiceRQP(healthCId: Int, navController: NavController, postsViewModel: Cre
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Checkbox(
-                                    checked =  checkedBig,
+                                    checked = checkedBig,
                                     onCheckedChange = {},
                                     colors = CheckboxDefaults.colors(
                                         checkedColor = colorResource(R.color.secondaryColor),
@@ -364,7 +382,7 @@ fun ServiceRQP(healthCId: Int, navController: NavController, postsViewModel: Cre
                                 disabledTextColor = colorResource(R.color.primaryColor).copy(alpha = 1f)
 
 
-                                )
+                            )
                         )
 
                         Text(
@@ -461,7 +479,7 @@ fun ServiceRQP(healthCId: Int, navController: NavController, postsViewModel: Cre
                                 disabledTextColor = colorResource(R.color.primaryColor).copy(alpha = 1f)
 
 
-                                )
+                            )
                         )
 
                         Spacer(modifier = Modifier.height(10.dp))
@@ -503,74 +521,76 @@ fun ServiceRQP(healthCId: Int, navController: NavController, postsViewModel: Cre
         }
 
         IconButton(
-            onClick = { navController.navigate(NavigationState.MainMenu.route){
-                popUpTo(NavigationState.MainMenu.route) { inclusive = true }} },
+            onClick = {
+                navController.navigate(NavigationState.MainMenu.route) {
+                    popUpTo(NavigationState.MainMenu.route) { inclusive = true }
+                }
+            },
             modifier = Modifier.size(200.dp)
+                .offset((-10).dp, (595).dp)
         ) {
+            Image(
+                painter = painterResource(id = R.drawable.cancelbutton),
+                contentDescription = "cancel"
+            )
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .size(200.dp)
-                    .offset((0).dp, (600).dp)
+                    .offset((-35).dp, (30).dp)
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.cancelbutton),
-                    contentDescription = "cancel"
+                Text(
+                    text = stringResource(R.string.cancel2),
+                    color = colorResource(R.color.backgroundColor),
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.headlineSmall
                 )
-
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .size(200.dp)
-                        .offset((-35).dp, (35).dp)
-                ) {
-                    Text(
-                        text = stringResource(R.string.cancel2),
-                        color = colorResource(R.color.backgroundColor),
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineSmall
-                    )
-                }
             }
         }
 
         IconButton(
-            onClick = { /*COLOCAR ALERT DIALOG*/
-                navController.navigate(NavigationState.MainMenu.route){
-                    popUpTo(NavigationState.MainMenu.route) { inclusive = true }}},
+            onClick = { showDialog = true },
             modifier = Modifier.size(200.dp)
+                .offset((240).dp, (580).dp)
         ) {
+            Image(
+                painter = painterResource(id = R.drawable.donatebutton),
+                contentDescription = "donation"
+            )
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .offset((200).dp, (565).dp)
+                    .offset((-60).dp, (-40).dp)
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.donatebutton),
-                    contentDescription = "donation"
+
+                Text(
+                    text = stringResource(R.string.go),
+                    color = colorResource(R.color.textColor),
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.headlineSmall
+
                 )
 
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .offset((-50).dp, (-15).dp)
-                ) {
+            }
 
-                    Text(
-                        text = stringResource(R.string.go),
-                        color = colorResource(R.color.backgroundColor),
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineSmall
-
-                    )
-
-                }
+            if (showDialog) {
+                AlertDialog(
+                    onDismissRequest = { showDialog = false },
+                    confirmButton = {
+                        Button(onClick = {
+                            navController.popBackStack()
+                            showDialog = false
+                        }) {
+                            Text("Ok")
+                        }
+                    },
+                    text = { Text("The foundation will get in touch with you!") }
+                )
             }
         }
     }
 }
+
 

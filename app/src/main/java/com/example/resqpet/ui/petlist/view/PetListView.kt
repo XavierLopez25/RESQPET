@@ -79,7 +79,7 @@ fun PetList(navController: NavController, postsViewModel: CreatePostViewModel) {
                 IconButton(
                     onClick = { navController.navigate(NavigationState.MainMenu.route){
                         popUpTo(NavigationState.MainMenu.route) { inclusive = true }} },
-                    modifier = Modifier.size(100.dp).offset((280).dp, (0).dp)
+                    modifier = Modifier.size(100.dp).offset((300).dp, (0).dp)
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.backbutton1),

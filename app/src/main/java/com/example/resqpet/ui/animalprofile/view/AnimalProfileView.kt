@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -53,6 +55,7 @@ import com.example.resqpet.ui.createpost.viewmodel.CreatePostViewModel
 fun AnimalProfile(animalId: Int, navController: NavController, postsViewModel: CreatePostViewModel) {
 
     val viewModel: CreatePostViewModel = postsViewModel
+    var showDialog by remember { mutableStateOf(false) }
 
     val animal = viewModel.state.value.firstOrNull { it.id == animalId  && it.category == "adoption"}
     LaunchedEffect(key1 = animalId){
@@ -84,7 +87,7 @@ fun AnimalProfile(animalId: Int, navController: NavController, postsViewModel: C
 
                 if (animal != null) {
                     Text(
-                         stringResource(R.string.hi_i_m) + animal.postAdopt!!.petsName, fontWeight = FontWeight.Bold, fontSize = 23.sp, modifier = Modifier
+                         stringResource(R.string.hi_i_m) + animal.postAdopt!!.petsName, fontWeight = FontWeight.Bold, fontSize = 30.sp, modifier = Modifier
                             .align(Alignment.CenterStart)
                             .offset(
                                 x = dimensionResource(id = R.dimen.text_offset),
@@ -202,22 +205,39 @@ fun AnimalProfile(animalId: Int, navController: NavController, postsViewModel: C
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = dimensionResource(id = R.dimen.bottom_box_padding_bottom))
-                    .graphicsLayer { translationY = -190f },
+                    .graphicsLayer { translationY = -109f },
                 contentAlignment = Alignment.Center
             ) {
-                IconButton(onClick = { /* COLOCAR ALERT DIALOG */
-                    navController.navigate(NavigationState.MainMenu.route){
-                        popUpTo(NavigationState.MainMenu.route) { inclusive = true }}}, modifier = Modifier
-                    .size(400.dp)
-                    .offset(y = 125.dp)) {
+                IconButton(onClick = {
+                    showDialog = true
+                }, modifier = Modifier
+                    .size(300.dp)
+                    .offset(y = 30.dp)) {
                     Image(
                         painter = painterResource(id = R.drawable.adoptbutton),
                         contentDescription = "Descripción de la imagen",
                     )
                 }
-
-                Text(text = stringResource(R.string.adopt), style = MaterialTheme.typography.titleLarge, fontSize = 50.sp, color = colorResource(R.color.textColor), modifier = Modifier.offset(y = 155.dp))
+                Text(
+                    text = stringResource(R.string.adopt),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontSize = 25.sp,
+                    color = colorResource(R.color.textColor),
+                    modifier = Modifier.offset(y = 45.dp)
+                )
+                if (showDialog) {
+                    AlertDialog(
+                        onDismissRequest = { showDialog = false },
+                        confirmButton = {
+                            Button(onClick = {
+                                navController.popBackStack()
+                                showDialog = false }) {
+                                Text("Ok")
+                            }
+                        },
+                        text = { Text("The foundation will get in touch with you!") }
+                    )
+                }
             }
         }
     }

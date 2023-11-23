@@ -40,6 +40,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
@@ -57,6 +58,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -115,9 +117,11 @@ fun EditProfileScreen(navController: NavController) {
                     )
                     Text(
                         text = stringResource(R.string.edit_profile),
-                        fontFamily = FontFamily.SansSerif,
-                        fontSize = 20.sp,
-                        color = colorResource(R.color.backgroundColor)
+                        fontSize = 40.sp,
+                        color = colorResource(R.color.backgroundColor),
+                        style = MaterialTheme.typography.displayLarge,
+                        fontWeight = FontWeight.Bold
+
                     )
                     Spacer(modifier = Modifier.width(24.dp))
                 }

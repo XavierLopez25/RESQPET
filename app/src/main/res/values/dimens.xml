@@ -24,7 +24,7 @@
     <dimen name="adopt_button_size">400dp</dimen>
     <dimen name="adopt_button_offset_y">125dp</dimen>
     <dimen name="adopt_text_offset_y">155dp</dimen>
-    <dimen name="bottom_box_padding_bottom">16dp</dimen>
+    <dimen name="bottom_box_padding_bottom">2dp</dimen>
 
     <!-- Rounded corner dimensions -->
     <dimen name="rounded_corner">16dp</dimen>

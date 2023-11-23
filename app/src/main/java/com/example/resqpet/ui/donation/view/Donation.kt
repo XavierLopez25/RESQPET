@@ -20,6 +20,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.House
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -49,6 +51,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
+import com.example.resqpet.navigation.NavigationState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,6 +65,7 @@ fun Donation(navController: NavController) {
     val donateMedicalResources by remember { mutableStateOf(false) }
     val donateFood by remember { mutableStateOf(false) }
     var belongsToFoundation by remember { mutableStateOf(true) }
+    var showDialog by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -118,14 +122,20 @@ fun Donation(navController: NavController) {
                         .align(Alignment.BottomEnd)
                         .width(170.dp)
                         .height(170.dp)
-                        .background(colorResource(R.color.secondaryColor), shape = RoundedCornerShape(16.dp))
+                        .background(
+                            colorResource(R.color.secondaryColor),
+                            shape = RoundedCornerShape(16.dp)
+                        )
                         .padding(vertical = 10.dp, horizontal = 10.dp)
                 ) {
                     Box(
                         modifier = Modifier
                             .width(155.dp)
                             .height(155.dp)
-                            .background(colorResource(R.color.backgroundColor), shape = RoundedCornerShape(16.dp))
+                            .background(
+                                colorResource(R.color.backgroundColor),
+                                shape = RoundedCornerShape(16.dp)
+                            )
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.doggo6),
@@ -177,7 +187,8 @@ fun Donation(navController: NavController) {
                             OutlinedTextField(
                                 value = it,
                                 onValueChange = { newValue ->
-                                    viewModel.donationData.value = donationData?.copy(contributorName = newValue)
+                                    viewModel.donationData.value =
+                                        donationData?.copy(contributorName = newValue)
                                 },
                                 label = { Text(stringResource(R.string.profile)) },
                                 leadingIcon = {
@@ -217,7 +228,8 @@ fun Donation(navController: NavController) {
                                     Checkbox(
                                         checked = it,
                                         onCheckedChange = { newValue ->
-                                            viewModel.donationData.value = donationData!!.copy(donateMonetary = newValue)
+                                            viewModel.donationData.value =
+                                                donationData!!.copy(donateMonetary = newValue)
                                         },
                                         colors = CheckboxDefaults.colors(
                                             checkedColor = colorResource(R.color.secondaryColor),
@@ -239,7 +251,8 @@ fun Donation(navController: NavController) {
                                     Checkbox(
                                         checked = it,
                                         onCheckedChange = { newValue ->
-                                            viewModel.donationData.value = donationData!!.copy(donateMedicalResources = newValue)
+                                            viewModel.donationData.value =
+                                                donationData!!.copy(donateMedicalResources = newValue)
                                         },
                                         colors = CheckboxDefaults.colors(
                                             checkedColor = colorResource(R.color.secondaryColor),
@@ -261,7 +274,8 @@ fun Donation(navController: NavController) {
                                     Checkbox(
                                         checked = it,
                                         onCheckedChange = { newValue ->
-                                            viewModel.donationData.value = donationData!!.copy(donateFood = newValue)
+                                            viewModel.donationData.value =
+                                                donationData!!.copy(donateFood = newValue)
                                         },
                                         colors = CheckboxDefaults.colors(
                                             checkedColor = colorResource(R.color.secondaryColor),
@@ -288,15 +302,15 @@ fun Donation(navController: NavController) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                           belongsToFoundation
-                                Checkbox(
-                                    checked = belongsToFoundation,
-                                    onCheckedChange = { belongsToFoundation = it },
-                                    colors = CheckboxDefaults.colors(
-                                        checkedColor = colorResource(R.color.secondaryColor),
-                                        uncheckedColor = colorResource(R.color.backgroundColor)
-                                    )
+                            belongsToFoundation
+                            Checkbox(
+                                checked = belongsToFoundation,
+                                onCheckedChange = { belongsToFoundation = it },
+                                colors = CheckboxDefaults.colors(
+                                    checkedColor = colorResource(R.color.secondaryColor),
+                                    uncheckedColor = colorResource(R.color.backgroundColor)
                                 )
+                            )
                             Text(
                                 text = stringResource(R.string.yes),
                                 color = colorResource(R.color.backgroundColor),
@@ -315,8 +329,9 @@ fun Donation(navController: NavController) {
                             donationData?.let {
                                 OutlinedTextField(
                                     value = it.phoneNumber,
-                                    onValueChange = {  newValue ->
-                                        viewModel.donationData.value = donationData!!.copy(phoneNumber = newValue)
+                                    onValueChange = { newValue ->
+                                        viewModel.donationData.value =
+                                            donationData!!.copy(phoneNumber = newValue)
                                     },
                                     label = { Text(stringResource(R.string.phone)) },
                                     leadingIcon = {
@@ -346,8 +361,9 @@ fun Donation(navController: NavController) {
                             donationData?.let {
                                 OutlinedTextField(
                                     value = it.address,
-                                    onValueChange = {  newValue ->
-                                        viewModel.donationData.value = donationData!!.copy(address = newValue)
+                                    onValueChange = { newValue ->
+                                        viewModel.donationData.value =
+                                            donationData!!.copy(address = newValue)
                                     },
                                     label = { Text(stringResource(R.string.address)) },
                                     leadingIcon = {
@@ -377,8 +393,9 @@ fun Donation(navController: NavController) {
                             donationData?.let {
                                 OutlinedTextField(
                                     value = it.phoneNumber,
-                                    onValueChange = {  newValue ->
-                                        viewModel.donationData.value = donationData!!.copy(phoneNumber = newValue)
+                                    onValueChange = { newValue ->
+                                        viewModel.donationData.value =
+                                            donationData!!.copy(phoneNumber = newValue)
                                     },
                                     label = { Text(stringResource(R.string.phone)) },
                                     leadingIcon = {
@@ -408,8 +425,9 @@ fun Donation(navController: NavController) {
                             donationData?.let {
                                 OutlinedTextField(
                                     value = it.address,
-                                    onValueChange = {  newValue ->
-                                        viewModel.donationData.value = donationData!!.copy(address = newValue)
+                                    onValueChange = { newValue ->
+                                        viewModel.donationData.value =
+                                            donationData!!.copy(address = newValue)
                                     },
                                     label = { Text(stringResource(R.string.address)) },
                                     leadingIcon = {
@@ -435,17 +453,23 @@ fun Donation(navController: NavController) {
             }
         }
         IconButton(
-            onClick = { viewModel.cancelDonation("", "", "", donateMonetary = false, donateMedicalResources = false, donateFood = false) },
-            modifier = Modifier.size(125.dp)
-                .offset((1).dp, (65).dp)
+            onClick = {
+                viewModel.cancelDonation(
+                    "",
+                    "",
+                    "",
+                    donateMonetary = false,
+                    donateMedicalResources = false,
+                    donateFood = false
+                )
+                navController.navigate(NavigationState.MainMenu.route) {
+                    popUpTo(NavigationState.MainMenu.route) { inclusive = true }
+                    launchSingleTop = true
+                }
+            },
+            modifier = Modifier.size(200.dp)
+                .offset((-10).dp, (595).dp)
         ) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .size(200.dp)
-                    .offset((0).dp, (600).dp)
-            ) {
                 Image(
                     painter = painterResource(id = R.drawable.cancelbutton),
                     contentDescription = "cancel"
@@ -455,7 +479,7 @@ fun Donation(navController: NavController) {
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .size(200.dp)
-                        .offset((-35).dp, (35).dp)
+                        .offset((-30).dp, (30).dp)
                 ) {
                     Text(
                         text = stringResource(R.string.cancel),
@@ -465,17 +489,21 @@ fun Donation(navController: NavController) {
                     )
                 }
             }
-        }
         IconButton(
-            onClick = { viewModel.submitDonation(contributorName, phoneNumber, address, donateMonetary, donateMedicalResources, donateFood) },
-            modifier = Modifier.size(125.dp).offset((10).dp, (65).dp)
+            onClick = {
+                showDialog = true
+                viewModel.submitDonation(
+                    contributorName,
+                    phoneNumber,
+                    address,
+                    donateMonetary,
+                    donateMedicalResources,
+                    donateFood
+                )
+            },
+            modifier = Modifier.size(200.dp).offset((220).dp, (590).dp)
         ) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .offset((200).dp, (565).dp)
-            ) {
+
                 Image(
                     painter = painterResource(id = R.drawable.donatebutton),
                     contentDescription = "donation"
@@ -484,16 +512,31 @@ fun Donation(navController: NavController) {
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
-                        .offset((-20).dp, (-15).dp)
+                        .offset((-25).dp, (-45).dp)
                 ) {
                     Text(
                         text = stringResource(R.string.donate),
-                        color = colorResource(R.color.backgroundColor),
+                        color = colorResource(R.color.textColor),
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.headlineSmall
                     )
                 }
-            }
+                if (showDialog) {
+                    AlertDialog(
+                        onDismissRequest = { showDialog = false },
+                        confirmButton = {
+                            Button(onClick = {
+                                navController.popBackStack()
+                                showDialog = false
+                            }) {
+                                Text("Ok")
+                            }
+                        },
+                        text = { Text("The foundation will get in touch with you!") }
+                    )
+                }
         }
+
     }
 }
+
