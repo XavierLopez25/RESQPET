@@ -411,7 +411,7 @@ fun PostCard(postItem: Post /*CardItem*/, navController: NavController) {
             )
 
             Text(
-                text = postItem.category,
+                text = "Category: ${postItem.category}",
                 style = MaterialTheme.typography.labelLarge,
                 color = colorResource(R.color.textColor),
                 textAlign = TextAlign.Center,

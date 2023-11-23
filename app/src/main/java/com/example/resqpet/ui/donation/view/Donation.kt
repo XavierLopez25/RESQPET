@@ -160,7 +160,8 @@ fun Donation(navController: NavController) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .align(Alignment.BottomEnd).offset((0).dp, (-60).dp)
+                .align(Alignment.BottomEnd)
+                .offset((0).dp, (-60).dp)
                 .padding(30.dp)
         ) {
             Box(
@@ -205,6 +206,7 @@ fun Donation(navController: NavController) {
                                     focusedIndicatorColor = colorResource(R.color.backgroundColor),
                                     focusedLabelColor = colorResource(R.color.backgroundColor),
                                     unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                                    textColor = colorResource(R.color.primaryColor)
                                 )
                             )
                         }
@@ -348,6 +350,8 @@ fun Donation(navController: NavController) {
                                         focusedIndicatorColor = colorResource(R.color.backgroundColor),
                                         focusedLabelColor = colorResource(R.color.backgroundColor),
                                         unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                                        textColor = colorResource(R.color.primaryColor)
+
                                     )
                                 )
                             }
@@ -380,6 +384,8 @@ fun Donation(navController: NavController) {
                                         focusedIndicatorColor = colorResource(R.color.backgroundColor),
                                         focusedLabelColor = colorResource(R.color.backgroundColor),
                                         unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                                        textColor = colorResource(R.color.primaryColor)
+
                                     )
                                 )
                             }
@@ -412,6 +418,8 @@ fun Donation(navController: NavController) {
                                         focusedIndicatorColor = colorResource(R.color.backgroundColor),
                                         focusedLabelColor = colorResource(R.color.backgroundColor),
                                         unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                                        textColor = colorResource(R.color.primaryColor)
+
                                     )
                                 )
                             }
@@ -444,6 +452,8 @@ fun Donation(navController: NavController) {
                                         focusedIndicatorColor = colorResource(R.color.backgroundColor),
                                         focusedLabelColor = colorResource(R.color.backgroundColor),
                                         unfocusedLabelColor = colorResource(R.color.backgroundColor),
+                                        textColor = colorResource(R.color.primaryColor)
+
                                     )
                                 )
                             }
@@ -467,7 +477,8 @@ fun Donation(navController: NavController) {
                     launchSingleTop = true
                 }
             },
-            modifier = Modifier.size(200.dp)
+            modifier = Modifier
+                .size(200.dp)
                 .offset((-10).dp, (595).dp)
         ) {
                 Image(
@@ -501,7 +512,9 @@ fun Donation(navController: NavController) {
                     donateFood
                 )
             },
-            modifier = Modifier.size(200.dp).offset((220).dp, (590).dp)
+            modifier = Modifier
+                .size(200.dp)
+                .offset((220).dp, (590).dp)
         ) {
 
                 Image(

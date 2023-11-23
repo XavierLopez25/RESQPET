@@ -46,8 +46,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.resqpet.R
-import com.example.resqpet.navigation.NavigationState
-import com.example.resqpet.screens.CardDesign
 import com.example.resqpet.ui.createpost.viewmodel.CreatePostViewModel
 import com.example.resqpet.ui.createpost.viewmodel.Post
 
@@ -57,7 +55,7 @@ fun MainEvent(eventId: Int, navController: NavController, postsViewModel: Create
     val viewModel: CreatePostViewModel = postsViewModel
     var showDialog by remember { mutableStateOf(false) }
 
-    val eventPost = viewModel.state.value?.firstOrNull { it.id == eventId  && it.category == "event"}
+    val eventPost = viewModel.state.value.firstOrNull { it.id == eventId  && it.category == "event"}
     LaunchedEffect(key1 = eventId){
         viewModel.fetchPosts()
     }
@@ -147,7 +145,6 @@ fun CardDesign(eventPost: Post?) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(eventPost!!.postEvent!!.postTitle, fontSize = 35.sp, color = Color.White, style =  MaterialTheme.typography.displayLarge)
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
@@ -155,6 +152,10 @@ fun CardDesign(eventPost: Post?) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Text(eventPost!!.postEvent!!.postTitle, fontSize = 35.sp, color = Color.White, style =  MaterialTheme.typography.displayLarge)
 
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(
